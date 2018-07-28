@@ -8,26 +8,66 @@ namespace EmailLib
 {
     public class EmailLibrary
     {
-        public static string APIBaseURL = "https://api.paubox.net/v1/undefeatedgames/";
+        public static string APIURL = "https://api.paubox.net/v1/";
+        public static string APIKey = ConfigurationManager.AppSettings["APIKey"].ToString();
+        public static string APIUser = ConfigurationManager.AppSettings["APIUser"].ToString();
+        public static string APIBaseURL = APIURL + APIUser + "/";
 
-        public static void SendMessage(Message msg)
-        {        
+        public static GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
+        {
+            GetEmailDispositionResponse apiResponse = new GetEmailDispositionResponse();
             try
-            {                
+            {
+                string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
+                string Response = APIHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
+
+                if (apiResponse != null && apiResponse.Data != null && apiResponse.Data.Message != null
+                    && apiResponse.Data.Message.Message_Deliveries != null && apiResponse.Data.Message.Message_Deliveries.Count > 0)
+                {
+                    foreach (var message_deliveries in apiResponse.Data.Message.Message_Deliveries)
+                    {
+                        if (string.IsNullOrWhiteSpace(message_deliveries.Status.OpenedStatus))
+                        {
+                            message_deliveries.Status.OpenedStatus = "unopened";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                //throw;
+            }
+            return apiResponse;
+        }
+
+        public static SendMessageResponse SendMessage(Message msg)
+        {
+            SendMessageResponse apiResponse = new SendMessageResponse();
+            try
+            {
                 //Prepare JSON request for passing it to Send Message API
                 JObject requestObject = JObject.FromObject(new
                 {
                     data = ConvertMessageObjectToJSON(msg) // Convert i/p Message object to JSON , as per the API
                 });
-                
-                APIHelper.CallToAPI(APIBaseURL, "messages", "Token token=6f7c0110a47f82e7bff933f68cc8d7ec", "POST",JsonConvert.SerializeObject(requestObject));
+
+                string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
             }
             catch (Exception ex)
             {
 
-                throw;
+                //throw;
             }
+            return apiResponse;
 
+        }
+
+        private static string GetAuthorizationHeader()
+        {
+            return string.Format("Token token={0}", APIKey);
         }
 
         /// <summary>
@@ -90,46 +130,9 @@ namespace EmailLib
             return requestJSON;
         }
 
-        public static void GetEmailDisposition(string sourceTrackingId)
-        {
-            try
-            {                
-                string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
-                APIHelper.CallToAPI(APIBaseURL, requestURI, "Token token=6f7c0110a47f82e7bff933f68cc8d7ec", "GET");
-            }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
-        }
     }
-    public class Header
-    {
-        public string Subject { get; set; }
-        public string From { get; set; }
-        public string ReplyTo { get; set; }
-    }
-    public class Content
-    {
-        public string PlainText { get; set; }
-        public string HtmlText { get; set; }
-    }
-    public class Attachment
-    {
-        public string FileName { get; set; }
-        public string ContentType { get; set; }
-        public string Content { get; set; }
-    }
-    public class Message
-    {
-        public string[] Recipients { get; set; }
-        public string[] Bcc { get; set; }
-        public Header Header { get; set; }
-        public bool AllowNonTLS { get; set; } = false;
-        public Content Content { get; set; }
-        public List<Attachment> Attachments { get; set; }
-    }
+
 
 }
 

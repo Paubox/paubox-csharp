@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -30,26 +29,16 @@ namespace EmailLib
                 
                 if (APIVerb == "GET")
                 {
-                    response = client.GetAsync(requestURI).Result;  // Blocking call!
+                    response = client.GetAsync(requestURI).Result;  
                 }
                 else if (APIVerb == "POST")
                 {
                     response = client.PostAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
                 }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Parse the response body. Blocking!
-                    apiResponse = response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
-                    apiResponse = null;
-                    return null;
-                }
+                
+                apiResponse = response.Content.ReadAsStringAsync();
             }
-            return apiResponse.Result.ToString();
+            return apiResponse.Result.ToString();            
         }
     }
 }
