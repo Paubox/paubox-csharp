@@ -65,9 +65,9 @@ namespace EmailLib
     public class MessageStatus
     {
         public string DeliveryStatus { get; set; }
-        public DateTime DeliveryTime { get; set; }
+        public DateTime? DeliveryTime { get; set; }
         public string OpenedStatus { get; set; }        
-        public DateTime OpenedTime { get; set; }
+        public DateTime? OpenedTime { get; set; }
     }
 
     //Common Classes
