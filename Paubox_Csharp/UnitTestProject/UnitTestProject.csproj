@@ -59,6 +59,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="SendMessage_TestData.csv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EmailLib\EmailLib.csproj">
