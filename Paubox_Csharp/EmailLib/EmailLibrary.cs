@@ -8,10 +8,8 @@ namespace EmailLib
 {
     public class EmailLibrary
     {
-        public static string APIURL = "https://api.paubox.net/v1/";
-        public static string APIKey = ConfigurationManager.AppSettings["APIKey"].ToString();
-        public static string APIUser = ConfigurationManager.AppSettings["APIUser"].ToString();
-        public static string APIBaseURL = APIURL + APIUser + "/";
+        private static string APIKey = ConfigurationManager.AppSettings["APIKey"];
+        private static string APIBaseURL = "https://api.paubox.net/v1/" + ConfigurationManager.AppSettings["APIUser"] + "/";
 
         public static GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
         {
@@ -42,7 +40,7 @@ namespace EmailLib
             return apiResponse;
         }
 
-        public static SendMessageResponse SendMessage(Message msg)
+        public static SendMessageResponse SendMessage(Message message)
         {
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
@@ -50,7 +48,7 @@ namespace EmailLib
                 //Prepare JSON request for passing it to Send Message API
                 JObject requestObject = JObject.FromObject(new
                 {
-                    data = ConvertMessageObjectToJSON(msg) // Convert i/p Message object to JSON , as per the API
+                    data = ConvertMessageObjectToJSON(message) // Convert i/p Message object to JSON , as per the API
                 });
 
                 string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
@@ -78,7 +76,7 @@ namespace EmailLib
         private static JObject ConvertMessageObjectToJSON(Message msg)
         {
             JObject attachmentJSON = new JObject();
-            JArray attachmentJSONArray = new JArray();
+            JArray attachmentJSONArray = null;
 
             JObject headerJSON = JObject.FromObject(new
                 Dictionary<string, string>() {
@@ -97,6 +95,8 @@ namespace EmailLib
             //If there are attachments, then prepare attachment array JSON
             if (msg.Attachments != null && msg.Attachments.Count > 0)
             {
+                attachmentJSONArray = new JArray();
+
                 foreach (var attachment in msg.Attachments)
                 {
                     attachmentJSON = JObject.FromObject(new
@@ -107,10 +107,6 @@ namespace EmailLib
                     });
                     attachmentJSONArray.Add(attachmentJSON);
                 }
-            }
-            else
-            {
-                attachmentJSONArray = null;
             }
 
             JObject MessageJSON = JObject.FromObject(new
@@ -129,8 +125,6 @@ namespace EmailLib
             });
             return requestJSON;
         }
-
-
     }
 
 

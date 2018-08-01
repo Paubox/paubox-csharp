@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace EmailLib
 {
-    public class APIHelper
+    internal class APIHelper
     {
-
         public static string CallToAPI(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string requestBody = "")
         {
             Task<string> apiResponse = null;
@@ -18,8 +17,8 @@ namespace EmailLib
                 client.BaseAddress = new Uri(BaseAPIUrl);
 
                 // Add an Accept header for JSON format.
-                client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
                 if (!string.IsNullOrEmpty(authHeader))
                 {
                     client.DefaultRequestHeaders.Add("Authorization", authHeader);
@@ -38,6 +37,7 @@ namespace EmailLib
                 
                 apiResponse = response.Content.ReadAsStringAsync();
             }
+
             return apiResponse.Result.ToString();            
         }
     }

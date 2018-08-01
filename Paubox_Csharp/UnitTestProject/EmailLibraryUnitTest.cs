@@ -11,12 +11,13 @@ namespace UnitTestProject
     {
         public class TestData
         {
-            static string CSVFileName = @"E:\Paubox REST API project\SendMessage_TestData.csv"; 
+            static string csvFileName = @"D:\Projects\Paubox\paubox-csharp\Paubox_Csharp\UnitTestProject\SendMessage_TestData.csv";
+
             public static List<Message> GetTestDataForSuccess()
             {
                 Message objTestData = null;
                 List<Message> objListTestData = new List<Message>();
-                using (var inputStream = new FileStream(CSVFileName, FileMode.Open, FileAccess.Read))
+                using (var inputStream = new FileStream(csvFileName, FileMode.Open, FileAccess.Read))
                 {
                     using (var streamReader = new StreamReader(inputStream))
                     {
@@ -79,7 +80,7 @@ namespace UnitTestProject
             {
                 Message objTestData = null;
                 List<Message> objListTestData = new List<Message>();
-                using (var inputStream = new FileStream(CSVFileName, FileMode.Open, FileAccess.Read))
+                using (var inputStream = new FileStream(csvFileName, FileMode.Open, FileAccess.Read))
                 {
                     using (var streamReader = new StreamReader(inputStream))
                     {
