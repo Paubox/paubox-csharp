@@ -14,7 +14,7 @@ namespace SampleConsoleApp
         static string SendMessage()
         {
             Message message = new Message();
-            message.Recipients = new string[] { "vighneshtrivedi2004@gmail.com" };
+            message.Recipients = new string[] { "username@domain.com" };
 
             Content content = new Content();
             Header header = new Header();
