@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace EmailLib
 {
+
+    #region  Classes for Send Message method
     public class Header
     {
         public string Subject { get; set; }
@@ -36,16 +38,17 @@ namespace EmailLib
         public string Data { get; set; }
         public List<Error> Errors { get; set; }
     }
+    #endregion  Classes for Send Message method
 
-    //Classes for Get Email Disposition API
+    #region  Classes for Get Email Disposition method
     public class GetEmailDispositionResponse
     {
         public string SourceTrackingId { get; set; }
-        public SubData Data { get; set; }
+        public MessageData Data { get; set; }
         public List<Error> Errors { get; set; }
     }
 
-    public class SubData
+    public class MessageData
     {
         public MessageDetails Message { get; set; }
     }
@@ -70,11 +73,14 @@ namespace EmailLib
         public DateTime? OpenedTime { get; set; }
     }
 
-    //Common Classes
+    #endregion  Classes for Get Email Disposition method
+
+    #region Common Classes
     public class Error
     {
         public int Code { get; set; }
         public string Title { get; set; }
         public string Details { get; set; }
     }
+    #endregion Common Classes
 }

@@ -1,8 +1,5 @@
 ﻿using EmailLib;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SampleConsoleApp
 {
@@ -11,7 +8,7 @@ namespace SampleConsoleApp
         static void Main(string[] args)
         {
             string trackingId = SendMessage();
-            GetEmailDispositionResponse response = EmailLib.EmailLibrary.GetEmailDisposition(trackingId);
+            GetEmailDispositionResponse response = EmailLibrary.GetEmailDisposition(trackingId);
         }
 
         static string SendMessage()
@@ -38,7 +35,7 @@ namespace SampleConsoleApp
             message.Content = content;
             message.Attachments = listAttachments;
 
-            SendMessageResponse response = EmailLib.EmailLibrary.SendMessage(message);
+            SendMessageResponse response = EmailLibrary.SendMessage(message);
 
             return response.SourceTrackingId;
         }

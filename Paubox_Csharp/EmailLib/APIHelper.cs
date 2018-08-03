@@ -8,6 +8,15 @@ namespace EmailLib
 {
     internal class APIHelper
     {
+        /// <summary>
+        /// This method calls an API and returns API response
+        /// </summary>
+        /// <param name="BaseAPIUrl"></param>
+        /// <param name="requestURI"></param>
+        /// <param name="authHeader"></param>
+        /// <param name="APIVerb"></param>
+        /// <param name="requestBody"></param>
+        /// <returns>apiResponse</returns>
         public static string CallToAPI(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string requestBody = "")
         {
             Task<string> apiResponse = null;
@@ -21,7 +30,7 @@ namespace EmailLib
 
                 if (!string.IsNullOrEmpty(authHeader))
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", authHeader);
+                    client.DefaultRequestHeaders.Add("Authorization", authHeader);  // Adds Authorization Header
                 }
 
                 HttpResponseMessage response = new HttpResponseMessage();
