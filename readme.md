@@ -1,3 +1,4 @@
+![Paubox]([[https://github.com/Paubox/paubox-csharp/octocat.png|alt=octocat]])
 #Paubox C Sharp
 
 This is the official C# wrapper for the Paubox Transactional Email HTTP API. 
