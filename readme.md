@@ -64,7 +64,8 @@ static SendMessageResponse SendMessage()
  return response;
 }
 ```
-###Allowing non-TLS message delivery
+
+### Allowing non-TLS message delivery
 If you want to send non-PHI mail that does not need to be HIPAA-compliant, you can
 allow the message delivery to take place even if a TLS connection is unavailable. This
 means a message will not be converted into a secure portal message when a unencrypted
