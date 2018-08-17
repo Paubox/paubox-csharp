@@ -1,13 +1,20 @@
-![Paubox](https://github.com/Paubox/paubox-csharp/paubox-logo.png)
+<img src="https://github.com/Paubox/paubox-csharp/raw/master/paubox_logo.png" alt="Paubox" width="150px">
 
 # Paubox C Sharp
-
 This is the official C# wrapper for the Paubox Transactional Email HTTP API. 
 
 The Paubox Transactional Email API allows your application to send secure, HIPAA-compliant email via Paubox and track deliveries and opens.
 
 The API wrapper allows you to construct and send messages.
 
+# Table of Contents
+* [Installation](#installation)
+*  [Usage](#usage)
+*  [Contributing](#contributing)
+*  [License](#license)
+
+
+<a name="#installation"></a>
 ## Installation
 Add the provided class library (Paubox.Email.API.dll and Newtonsoft.Json.dll) in your C#
 project by using ‘Add Reference’ option within Project – References node.
@@ -32,7 +39,7 @@ This library supports .NET v4.6.1. Add the following to your config file:
 ```
 <startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/></startup>
 ```
-
+<a name="#usage"></a>
 ## Usage
 ### Sending Messages using the Paubox C# Library
 
@@ -96,3 +103,23 @@ static void GetEmailDisposition()
  EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
 }
 ```
+<a name="#contributing"></a>
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/paubox/paubox-csharp.
+
+<a name="#license"></a>
+## License
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Copyright
+Copyright &copy; 2018, Paubox Inc.
