@@ -1,7 +1,7 @@
 <img src="https://github.com/Paubox/paubox-csharp/raw/master/paubox_logo.png" alt="Paubox" width="150px">
 
 # Paubox C Sharp
-This is the official C# wrapper for the Paubox Transactional Email HTTP API. 
+This is the official C# wrapper for the Paubox Transactional Email HTTP API. It is currently in alpha development.
 
 The Paubox Transactional Email API allows your application to send secure, HIPAA-compliant email via Paubox and track deliveries and opens.
 
@@ -17,7 +17,7 @@ The API wrapper allows you to construct and send messages.
 <a name="#installation"></a>
 ## Installation
 Add the provided class library (Paubox.Email.API.dll and Newtonsoft.Json.dll) in your C#
-project by using ‘Add Reference’ option within Project – References node.
+project by using ‘Add Reference’ option within the Project – References node.
 
 ### Getting Paubox API Credentials
 You will need to have a Paubox account. Please contact [Paubox Customer Success](https://paubox.zendesk.com/hc/en-us) for details on gaining access to the Transactional Email API alpha testing program.
@@ -43,7 +43,7 @@ This library supports .NET v4.6.1. Add the following to your config file:
 ## Usage
 ### Sending Messages using the Paubox C# Library
 
-To send email, prepare a Message object and call EmailLibrary.SendMessage method:
+To send an email, prepare a Message object and call EmailLibrary.SendMessage method:
 
 ```csharp
 static SendMessageResponse SendMessage()
