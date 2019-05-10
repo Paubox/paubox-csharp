@@ -1,6 +1,6 @@
 <img src="https://github.com/Paubox/paubox-csharp/raw/master/paubox_logo.png" alt="Paubox" width="150px">
 
-# Paubox C Sharp
+# Paubox C#
 This is the official C# wrapper for the Paubox Transactional Email HTTP API. It is currently in alpha development.
 
 The Paubox Transactional Email API allows your application to send secure, HIPAA-compliant email via Paubox and track deliveries and opens.
