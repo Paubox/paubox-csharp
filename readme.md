@@ -98,9 +98,8 @@ static SendMessageResponse SendNonTLSMessage()
 ### Forcing Secure Notifications
 Paubox Secure Notifications allow an extra layer of security, especially when coupled with an organization's requirement for message recipients to use 2-factor authentication to read messages (this setting is available to org administrators in the Paubox Admin Panel).
 
-Instead of receiving the message contents, the recipient will receive a notification email that they have a new message in Paubox.
+Instead of receiving an email with the message contents, the recipient will receive a notification email that they have a new message in Paubox.
 
-To 
 
 ```
 static SendMessageResponse SendMessage()
