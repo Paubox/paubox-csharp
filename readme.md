@@ -70,7 +70,7 @@ static SendMessageResponse SendMessage()
 ### Allowing non-TLS message delivery
 If you want to send non-PHI mail that does not need to be HIPAA-compliant, you can
 allow the message delivery to take place even if a TLS connection is unavailable. This
-means a message will not be converted into a secure portal message when a unencrypted
+means a message will not be converted into a Secure Notification message when a unencrypted
 connection is encountered. For this, just set message.AllowNonTLS to true, as
 shown below:
 
@@ -88,6 +88,34 @@ static SendMessageResponse SendNonTLSMessage()
  header.ReplyTo = "reply-to@yourdomain.com";
  content.PlainText = "Hello World!";
  message.AllowNonTLS = true;
+ message.Header = header;
+ message.Content = content;
+ SendMessageResponse response = EmailLibrary.SendMessage(message);
+ return response;
+}
+```
+
+### Forcing Secure Notifications
+Paubox Secure Notifications allow an extra layer of security, especially when coupled with an organization's requirement for message recipients to use 2-factor authentication to read messages (this setting is available to org administrators in the Paubox Admin Panel).
+
+Instead of receiving the message contents, the recipient will receive a notification email that they have a new message in Paubox.
+
+To 
+
+```
+static SendMessageResponse SendMessage()
+{
+ Message message = new Message();
+ Content content = new Content();
+ Header header = new Header();
+ message.Recipients = new string[] { "someone@domain.com",
+ "someoneelse@domain.com" };
+ header.From = "you@yourdomain.com";
+ message.Bcc = new string[] { "bcc-recipient@domain.com" };
+ header.Subject = "Testing!";
+ header.ReplyTo = "reply-to@yourdomain.com";
+ content.PlainText = "Hello World!";
+ message.ForceSecureNotification = true;
  message.Header = header;
  message.Content = content;
  SendMessageResponse response = EmailLibrary.SendMessage(message);
