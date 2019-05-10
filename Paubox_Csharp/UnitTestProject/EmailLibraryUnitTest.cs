@@ -31,7 +31,7 @@ namespace UnitTestProject
                         while ((inputLine = streamReader.ReadLine()) != null)
                         {
                             var data = inputLine.Split(',');
-                            if (data[13] != "SUCCESS") // If Expected output is not Success , then skip the test data
+                            if (data[14] != "SUCCESS") // If Expected output is not Success , then skip the test data
                                 continue;
 
                             objTestData = new Message();
@@ -69,6 +69,9 @@ namespace UnitTestProject
 
                                 listAttachments.Add(attachment);
                             }
+
+                            if (!string.IsNullOrWhiteSpace(data[13]))
+                                objTestData.forceSecureNotification = bool.Parse(data[13]);
 
                             objTestData.Header = header;
                             objTestData.Content = content;
@@ -98,7 +101,7 @@ namespace UnitTestProject
                         while ((inputLine = streamReader.ReadLine()) != null)
                         {
                             var data = inputLine.Split(',');
-                            if (data[13] != "ERROR") // If Expected output is not Error , then skip the test data
+                            if (data[14] != "ERROR") // If Expected output is not Error , then skip the test data
                                 continue;
 
                             objTestData = new Message();
@@ -136,6 +139,9 @@ namespace UnitTestProject
 
                                 listAttachments.Add(attachment);
                             }
+
+                            if (!string.IsNullOrWhiteSpace(data[13]))
+                                objTestData.forceSecureNotification = bool.Parse(data[13]);
 
                             objTestData.Header = header;
                             objTestData.Content = content;

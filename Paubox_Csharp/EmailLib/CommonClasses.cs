@@ -28,6 +28,7 @@ namespace EmailLib
         public string[] Bcc { get; set; }
         public Header Header { get; set; }
         public bool AllowNonTLS { get; set; } = false;
+        public bool ForceSecureNotification { get; set; } = false;
         public Content Content { get; set; }
         public List<Attachment> Attachments { get; set; }
     }
