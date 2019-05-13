@@ -71,7 +71,7 @@ namespace UnitTestProject
                             }
 
                             if (!string.IsNullOrWhiteSpace(data[13]))
-                                objTestData.forceSecureNotification = bool.Parse(data[13]);
+                                objTestData.ForceSecureNotification = bool.Parse(data[13]);
 
                             objTestData.Header = header;
                             objTestData.Content = content;
@@ -141,7 +141,7 @@ namespace UnitTestProject
                             }
 
                             if (!string.IsNullOrWhiteSpace(data[13]))
-                                objTestData.forceSecureNotification = bool.Parse(data[13]);
+                                objTestData.ForceSecureNotification = bool.Parse(data[13]);
 
                             objTestData.Header = header;
                             objTestData.Content = content;

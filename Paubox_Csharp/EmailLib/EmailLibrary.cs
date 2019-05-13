@@ -154,7 +154,7 @@ namespace EmailLib
                     bcc = message.Bcc,
                     headers = headerJSON,
                     allowNonTLS = message.AllowNonTLS,
-                    forceSecureNotification = message.forceSecureNotification,
+                    forceSecureNotification = message.ForceSecureNotification,
                     content = contentJSON,
                     attachments = attachmentJSONArray
                 });
