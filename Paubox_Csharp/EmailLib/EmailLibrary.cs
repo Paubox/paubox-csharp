@@ -66,7 +66,7 @@ namespace EmailLib
 
                 string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
                 apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
-                if (apiResponse.Data == null && apiResponse.SourceTrackingId==null && apiResponse.Errors == null)
+                if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
                 {
                     throw new SystemException(Response);
                 }
@@ -99,6 +99,7 @@ namespace EmailLib
             JObject contentJSON = null;
             JObject headerJSON = null;
             JObject requestJSON = null;
+            JObject MessageJSON = null;            
 
             if (message != null)
             {
@@ -115,7 +116,7 @@ namespace EmailLib
                 else
                 {
                     throw new ArgumentNullException("Message Header cannot be null.");
-                }
+                }            
 
                 if (message.Content != null)
                 {
@@ -129,7 +130,6 @@ namespace EmailLib
                 {
                     throw new ArgumentNullException("Message Content cannot be null.");
                 }
-
 
                 //If there are attachments, then prepare attachment array JSON
                 if (message.Attachments != null && message.Attachments.Count > 0)
@@ -148,16 +148,21 @@ namespace EmailLib
                     }
                 }
 
-                JObject MessageJSON = JObject.FromObject(new
+                MessageJSON = JObject.FromObject(new
                 {
                     recipients = message.Recipients,
                     bcc = message.Bcc,
                     headers = headerJSON,
                     allowNonTLS = message.AllowNonTLS,
-                    forceSecureNotification = message.ForceSecureNotification,
                     content = contentJSON,
                     attachments = attachmentJSONArray
                 });
+
+                bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(message.ForceSecureNotification);
+                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null 
+                {
+                    MessageJSON.Add("forceSecureNotification", forceSecureNotificationValue);
+                }
 
                 requestJSON = JObject.FromObject(new
                 {
@@ -170,6 +175,36 @@ namespace EmailLib
             }
 
             return requestJSON;
+        }
+
+        /// <summary>
+        /// Returns valid nullable bool ForceSecureNotification value
+        /// </summary>
+        /// <param name="forceSecureNotification"></param>
+        /// <returns></returns>
+        private static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
+        {
+            string forceSecureNotificationValue = null;
+            if (string.IsNullOrWhiteSpace(forceSecureNotification))
+            {
+                return null;
+            }
+            else
+            {
+                forceSecureNotificationValue = forceSecureNotification.Trim().ToLower();
+                if (forceSecureNotificationValue.Equals("true"))
+                {
+                    return true;
+                }
+                else if (forceSecureNotificationValue.Equals("false"))
+                {
+                    return false;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 
