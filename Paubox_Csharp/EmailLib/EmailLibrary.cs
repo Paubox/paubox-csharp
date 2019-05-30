@@ -99,7 +99,8 @@ namespace EmailLib
             JObject contentJSON = null;
             JObject headerJSON = null;
             JObject requestJSON = null;
-            JObject MessageJSON = null;            
+            JObject MessageJSON = null;
+            string base64EncodedHtmlText = null;
 
             if (message != null)
             {
@@ -116,14 +117,21 @@ namespace EmailLib
                 else
                 {
                     throw new ArgumentNullException("Message Header cannot be null.");
-                }            
+                }
+
+                if (!string.IsNullOrWhiteSpace(message.Content.HtmlText)) // Converting the html text to a base 64 string
+                {
+                    byte[] htmlTextByteArray = System.Text.Encoding.UTF8.GetBytes(message.Content.HtmlText);
+                    // convert the byte array to a Base64 string
+                    base64EncodedHtmlText = Convert.ToBase64String(htmlTextByteArray);
+                }
 
                 if (message.Content != null)
                 {
                     contentJSON = JObject.FromObject(new
                     Dictionary<string, string>() {
                          { "text/plain" , message.Content.PlainText},
-                         { "text/html" , message.Content.HtmlText}
+                         { "text/html" , base64EncodedHtmlText}
                     });
                 }
                 else
