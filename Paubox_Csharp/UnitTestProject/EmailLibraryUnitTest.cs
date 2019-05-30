@@ -70,8 +70,7 @@ namespace UnitTestProject
                                 listAttachments.Add(attachment);
                             }
 
-                            if (!string.IsNullOrWhiteSpace(data[13]))
-                                objTestData.ForceSecureNotification = bool.Parse(data[13]);
+                            objTestData.ForceSecureNotification = data[13];
 
                             objTestData.Header = header;
                             objTestData.Content = content;
@@ -140,8 +139,7 @@ namespace UnitTestProject
                                 listAttachments.Add(attachment);
                             }
 
-                            if (!string.IsNullOrWhiteSpace(data[13]))
-                                objTestData.ForceSecureNotification = bool.Parse(data[13]);
+                            objTestData.ForceSecureNotification = data[13];
 
                             objTestData.Header = header;
                             objTestData.Content = content;

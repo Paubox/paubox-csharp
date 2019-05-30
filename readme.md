@@ -114,7 +114,7 @@ static SendMessageResponse SendMessage()
  header.Subject = "Testing!";
  header.ReplyTo = "reply-to@yourdomain.com";
  content.PlainText = "Hello World!";
- message.ForceSecureNotification = true;
+ message.ForceSecureNotification = "true";
  message.Header = header;
  message.Content = content;
  SendMessageResponse response = EmailLibrary.SendMessage(message);
