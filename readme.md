@@ -56,6 +56,7 @@ static SendMessageResponse SendMessage()
  message.Recipients = new string[] { "someone@domain.com",
  "someoneelse@domain.com" };
  header.From = "you@yourdomain.com";
+ message.Cc = new string[] { "cc-recipient@domain.com" };
  message.Bcc = new string[] { "bcc-recipient@domain.com" };
  header.Subject = "Testing!";
  header.ReplyTo = "reply-to@yourdomain.com";
@@ -74,7 +75,7 @@ means a message will not be converted into a Secure Notification message when a 
 connection is encountered. For this, just set message.AllowNonTLS to true, as
 shown below:
 
-```
+```csharp
 static SendMessageResponse SendNonTLSMessage()
 {
  Message message = new Message();
@@ -83,6 +84,7 @@ static SendMessageResponse SendNonTLSMessage()
  message.Recipients = new string[] { "someone@domain.com",
  "someoneelse@domain.com" };
  header.From = "you@yourdomain.com";
+ message.Cc = new string[] { "cc-recipient@domain.com" };
  message.Bcc = new string[] { "bcc-recipient@domain.com" };
  header.Subject = "Testing!";
  header.ReplyTo = "reply-to@yourdomain.com";
@@ -101,7 +103,7 @@ Paubox Secure Notifications allow an extra layer of security, especially when co
 Instead of receiving an email with the message contents, the recipient will receive a notification email that they have a new message in Paubox.
 
 
-```
+```csharp
 static SendMessageResponse SendMessage()
 {
  Message message = new Message();
@@ -110,6 +112,7 @@ static SendMessageResponse SendMessage()
  message.Recipients = new string[] { "someone@domain.com",
  "someoneelse@domain.com" };
  header.From = "you@yourdomain.com";
+ message.Cc = new string[] { "cc-recipient@domain.com" };
  message.Bcc = new string[] { "bcc-recipient@domain.com" };
  header.Subject = "Testing!";
  header.ReplyTo = "reply-to@yourdomain.com";
@@ -126,7 +129,7 @@ static SendMessageResponse SendMessage()
 To get email status for any source tracking id, call the
 EmailLibrary.GetEmailDisposition method:
 
-```
+```csharp
 static void GetEmailDisposition()
 {
  GetEmailDispositionResponse response =
