@@ -26,6 +26,7 @@ namespace EmailLib
     {
         public string[] Recipients { get; set; }
         public string[] Bcc { get; set; }
+        public string[] Cc { get; set; }
         public Header Header { get; set; }
         public bool AllowNonTLS { get; set; } = false;
         public string ForceSecureNotification { get; set; }

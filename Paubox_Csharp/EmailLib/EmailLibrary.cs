@@ -160,6 +160,7 @@ namespace EmailLib
                 {
                     recipients = message.Recipients,
                     bcc = message.Bcc,
+                    cc = message.Cc,
                     headers = headerJSON,
                     allowNonTLS = message.AllowNonTLS,
                     content = contentJSON,
