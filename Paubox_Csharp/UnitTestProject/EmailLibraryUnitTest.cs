@@ -31,7 +31,7 @@ namespace UnitTestProject
                         while ((inputLine = streamReader.ReadLine()) != null)
                         {
                             var data = inputLine.Split(',');
-                            if (data[14] != "SUCCESS") // If Expected output is not Success , then skip the test data
+                            if (data[15] != "SUCCESS") // If Expected output is not Success , then skip the test data
                                 continue;
 
                             objTestData = new Message();
@@ -42,6 +42,7 @@ namespace UnitTestProject
 
                             objTestData.Recipients = new string[] { data[1] };
                             objTestData.Bcc = new string[] { data[2] };
+                            objTestData.Cc = new string[] { data[14] };
 
                             header.Subject = data[3];
                             header.From = data[4];
@@ -100,7 +101,7 @@ namespace UnitTestProject
                         while ((inputLine = streamReader.ReadLine()) != null)
                         {
                             var data = inputLine.Split(',');
-                            if (data[14] != "ERROR") // If Expected output is not Error , then skip the test data
+                            if (data[15] != "ERROR") // If Expected output is not Error , then skip the test data
                                 continue;
 
                             objTestData = new Message();
@@ -111,6 +112,7 @@ namespace UnitTestProject
 
                             objTestData.Recipients = new string[] { data[1] };
                             objTestData.Bcc = new string[] { data[2] };
+                            objTestData.Cc = new string[] { data[14] };
 
                             header.Subject = data[3];
                             header.From = data[4];
@@ -336,7 +338,7 @@ namespace UnitTestProject
             }
         }
 
-        #endregion Unit Tests for Send Message Method
+        #endregion Unit Tests for Send Message Method        
     }
 
 
