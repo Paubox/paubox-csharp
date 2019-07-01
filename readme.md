@@ -43,7 +43,7 @@ This library supports .NET v4.6.1 and higher. Add the following to your config f
 <a name="#usage"></a>
 ## Usage
 
-###Adding Paubox namespace
+### Adding Paubox namespace
 
 Please add the Paubox namespace in the using section as shown below:
 
