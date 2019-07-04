@@ -7,7 +7,7 @@
     <ProjectGuid>{F48BAFA9-E2F1-40C7-89B6-8F38B95695BC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EmailLib</RootNamespace>
+    <RootNamespace>Paubox</RootNamespace>
     <AssemblyName>Paubox.Email.API</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

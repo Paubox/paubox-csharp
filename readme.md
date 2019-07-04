@@ -16,8 +16,7 @@ The API wrapper allows you to construct and send messages.
 
 <a name="#installation"></a>
 ## Installation
-Add the provided class library (Paubox.Email.API.dll and Newtonsoft.Json.dll) in your C#
-project by using ‘Add Reference’ option within the Project – References node.
+Add the class library [Paubox.Email.API.dll](lib/Paubox.Email.API.dll) in your C# project by using ‘Add Reference’ option within the Project – References node.
 
 ### Getting Paubox API Credentials
 You will need to have a Paubox account. You can [sign up here](https://www.paubox.com/join/see-pricing?unit=messages).
@@ -36,13 +35,22 @@ Windows Service) or Web.Config (For ASP.NET projects):
 ```
 
 ### Adding the .NET Framework Configuration
-This library supports .NET v4.6.1. Add the following to your config file:
+This library supports .NET v4.6.1 and higher. Add the following to your config file:
 
 ```
 <startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/></startup>
 ```
 <a name="#usage"></a>
 ## Usage
+
+### Adding Paubox namespace
+
+Please add the Paubox namespace in the using section as shown below:
+
+```csharp
+using Paubox;
+```
+
 ### Sending Messages using the Paubox C# Library
 
 To send an email, prepare a Message object and call EmailLibrary.SendMessage method:

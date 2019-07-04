@@ -1,4 +1,4 @@
-﻿using EmailLib;
+﻿using Paubox;
 using System.Collections.Generic;
 
 namespace SampleConsoleApp

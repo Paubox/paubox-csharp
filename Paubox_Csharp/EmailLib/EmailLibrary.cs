@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace EmailLib
+namespace Paubox
 {
     public class EmailLibrary
     {
