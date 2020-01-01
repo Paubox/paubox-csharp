@@ -163,4 +163,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ## Copyright
-Copyright &copy; 2019, Paubox Inc.
+Copyright &copy; 2020, Paubox Inc.
