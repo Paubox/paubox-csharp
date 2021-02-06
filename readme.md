@@ -1,4 +1,4 @@
-<img src="https://github.com/Paubox/paubox-csharp/raw/master/paubox_logo.png" alt="Paubox" width="150px">
+<img src="https://avatars.githubusercontent.com/u/22528478?s=200&v=4" alt="Paubox" width="150px">
 
 # Paubox C#
 This is the official C# wrapper for the Paubox Email API.
