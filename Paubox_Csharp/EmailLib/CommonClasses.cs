@@ -54,7 +54,7 @@ namespace Paubox
     {
         public MessageDetails Message { get; set; }
     }
-   
+
     public class MessageDetails
     {
         public string Id { get; set; }
@@ -71,11 +71,72 @@ namespace Paubox
     {
         public string DeliveryStatus { get; set; }
         public DateTime? DeliveryTime { get; set; }
-        public string OpenedStatus { get; set; }        
+        public string OpenedStatus { get; set; }
         public DateTime? OpenedTime { get; set; }
     }
 
+
+
     #endregion  Classes for Get Email Disposition method
+
+    #region Classes For Dynamic Template 
+
+    #region Requst
+    public class DynamicTemplateRequest
+    {
+        public string TemplatePath { get; set; }
+        public string TemplateName { get; set; }
+    }
+    #endregion
+
+    #region Response
+
+    public class CreateDynamicTemplateResponse
+    {
+        public string Message { get; set; }
+        public Params Params { get; set; }
+    }
+
+    public class Params
+    {
+        public string Name { get; set; }
+        public Body Body { get; set; }
+    }
+
+    public class Body
+    {
+        public string Tempfile { get; set; }
+        public string Original_filename { get; set; }
+        public string Content_type { get; set; }
+        public string Headers { get; set; }
+    }
+
+    public class DynamicTemplateAllResponse
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public int api_customer_id { get; set; }
+    }
+
+    public class DynamicTemplateResponse
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public int api_customer_id { get; set; }
+        public string body { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+    }
+
+    public class DeleteDynamicTemplateResponse
+    {
+        public string message { get; set; }
+    }
+
+
+    #endregion
+
+    #endregion
 
     #region Common Classes
     public class Error
