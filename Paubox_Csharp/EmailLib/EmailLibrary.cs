@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Paubox
 {
@@ -16,13 +17,13 @@ namespace Paubox
         /// </summary>
         /// <param name="sourceTrackingId"></param>
         /// <returns>GetEmailDispositionResponse</returns>
-        public static GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
+        public static async Task<GetEmailDispositionResponse> GetEmailDisposition(string sourceTrackingId)
         {
             GetEmailDispositionResponse apiResponse = new GetEmailDispositionResponse();
             try
             {
                 string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
-                string Response = APIHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                string Response = await APIHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
                 {
@@ -53,7 +54,7 @@ namespace Paubox
         /// </summary>
         /// <param name="message"></param>
         /// <returns>SendMessageResponse</returns>
-        public static SendMessageResponse SendMessage(Message message)
+        public static async Task<SendMessageResponse> SendMessage(Message message)
         {
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
@@ -64,7 +65,7 @@ namespace Paubox
                     data = ConvertMessageObjectToJSON(message) // Convert i/p Message object to JSON , as per the API
                 });
 
-                string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                string Response = await APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
                 apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
                 {
@@ -215,8 +216,8 @@ namespace Paubox
                 }
             }
         }
+
+
     }
-
-
 }
 

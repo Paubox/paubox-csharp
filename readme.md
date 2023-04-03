@@ -144,6 +144,39 @@ static void GetEmailDisposition()
  EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
 }
 ```
+
+## DynamicTemplate
+### CreateDynamicTemplate
+```csharp 
+public async Task<CreateDynamicTemplateResponse> CreateDynamicTemplate(DynamicTemplateRequest templateRequest)
+```
+This method creates a new dynamic email template. The templateRequest parameter is of type DynamicTemplateRequest and contains the details of the template to be created. The method returns a Task object that resolves to a CreateDynamicTemplateResponse object that contains the details of the newly created template.
+
+### GetAllDynamicTemplate
+```csharp 
+public async Task<List<DynamicTemplateAllResponse>> GetAllDynamicTemplate()
+```
+This method retrieves all dynamic email templates. The method returns a Task object that resolves to a List of DynamicTemplateAllResponse objects that contain the details of all the dynamic templates.
+
+### GetDynamicTemplate
+```csharp 
+public async Task<DynamicTemplateResponse> GetDynamicTemplate(int ID)
+```
+This method retrieves a specific dynamic email template by ID. The ID parameter is of type int and represents the ID of the dynamic template to be retrieved. The method returns a Task object that resolves to a DynamicTemplateResponse object that contains the details of the specified template.
+
+### DeleteDynamicTemplate
+```csharp 
+public async Task<DeleteDynamicTemplateResponse> DeleteDynamicTemplate(int ID)
+```
+This method deletes a dynamic email template by ID. The ID parameter is of type int and represents the ID of the dynamic template to be deleted. The method returns a Task object that resolves to a DeleteDynamicTemplateResponse object that contains the details of the deleted template.
+
+### UpdateDynamicTemplate
+```csharp 
+public async Task<CreateDynamicTemplateResponse> UpdateDynamicTemplate(int ID, DynamicTemplateRequest templateRequest)
+```
+This method updates a dynamic email template by ID. The ID parameter is of type int and represents the ID of the dynamic template to be updated. The templateRequest parameter is of type DynamicTemplateRequest and contains the updated details of the template. The method returns a Task object that resolves to a CreateDynamicTemplateResponse object that contains the details of the updated template.
+
+
 <a name="#contributing"></a>
 ## Contributing
 

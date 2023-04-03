@@ -240,10 +240,10 @@ namespace UnitTestProject
         /// <param name="sourceTrackingId"></param>
         [Test, TestCase("1aed91d1-f7ce-4c3d-8df2-85ecd225a7fc")]
         [TestCase("ce1e2143-474d-43ba-b829-17a26b8005e5")]
-        public void TestGetEmailDisposition_ReturnSuccess(string sourceTrackingId)
+        public async void TestGetEmailDisposition_ReturnSuccess(string sourceTrackingId)
         {
 
-            var actualResponse = EmailLibrary.GetEmailDisposition(sourceTrackingId);
+            var actualResponse = await EmailLibrary.GetEmailDisposition(sourceTrackingId);
             if (actualResponse == null || actualResponse.Data == null || actualResponse.Data.Message == null || string.IsNullOrWhiteSpace(actualResponse.Data.Message.Id))
             {
                 Assert.Fail();
@@ -270,10 +270,10 @@ namespace UnitTestProject
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("151515215")]
-        public void TestGetEmailDisposition_ReturnError(string sourceTrackingId)
+        public async void TestGetEmailDisposition_ReturnError(string sourceTrackingId)
         {
 
-            var actualResponse = EmailLibrary.GetEmailDisposition(sourceTrackingId);
+            var actualResponse = await EmailLibrary.GetEmailDisposition(sourceTrackingId);
             if (actualResponse == null || actualResponse.Errors == null || actualResponse.Errors.Count <= 0)
             {
                 Assert.Fail();
@@ -300,9 +300,9 @@ namespace UnitTestProject
         /// </summary>
         /// <param name="testMsg"></param>
         [Test, TestCaseSource(typeof(TestData), "GetTestDataForSuccess")]
-        public void TestSendMessage_ReturnSuccess(Message testMsg)
+        public async void TestSendMessage_ReturnSuccess(Message testMsg)
         {
-            var actualResponse = EmailLibrary.SendMessage(testMsg);
+            var actualResponse = await EmailLibrary.SendMessage(testMsg);
             if (actualResponse == null || actualResponse.Data == null || actualResponse.SourceTrackingId == null)
             {
                 Assert.Fail();
@@ -318,9 +318,9 @@ namespace UnitTestProject
         /// </summary>
         /// <param name="testMsg"></param>
         [Test, TestCaseSource(typeof(TestData), "GetTestDataForFailure")]
-        public void TestSendMessage_ReturnError(Message testMsg)
+        public async void TestSendMessage_ReturnError(Message testMsg)
         {
-            var actualResponse = EmailLibrary.SendMessage(testMsg);
+            var actualResponse = await EmailLibrary.SendMessage(testMsg);
             if (actualResponse != null)
             {
                 if (actualResponse.Errors != null && actualResponse.Errors.Count > 0)
