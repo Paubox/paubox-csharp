@@ -55,6 +55,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WebhookLibraryTests.cs" />
     <Compile Include="DynamicTemplateLibraryTests.cs" />
     <Compile Include="EmailLibraryUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

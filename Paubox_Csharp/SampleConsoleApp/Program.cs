@@ -14,6 +14,8 @@ namespace SampleConsoleApp
     {
         static void Main(string[] args)
         {
+            WebHook();
+
             CreateDynamicTemplate();
             string trackingId = SendMessage().Result;
             GetEmailDispositionResponse response = EmailLibrary.GetEmailDisposition(trackingId).Result;
@@ -83,6 +85,41 @@ namespace SampleConsoleApp
             Console.WriteLine(JsonConvert.SerializeObject(responseUpdated));
 
             var responseDeleted = await DynamicTemplate.DeleteDynamicTemplate(responseSingle.id);
+            Console.WriteLine(JsonConvert.SerializeObject(responseDeleted));
+        }
+
+        static async Task WebHook()
+        {
+            var webhookLibrary = new WebhookLibrary();
+            var responseCreated = await webhookLibrary.CreateWebhookEndpoint(new WebhookEndpointRequest()
+            {
+                target_url = "https://example.com",
+                events = new[] { "api_mail_log_delivered" },
+                active = true,
+                signing_key = "Abc",
+                api_key = "abc"
+            });
+
+            Console.WriteLine(JsonConvert.SerializeObject(responseCreated));
+
+            var getAll = await webhookLibrary.GetAllWebhookEndpoints();
+
+            Console.WriteLine($"Webhook endpoints count: {getAll.Count}");
+
+            var responseSingle = await webhookLibrary.GetWebhookEndpoint(responseCreated.data.id);
+            Console.WriteLine(JsonConvert.SerializeObject(responseSingle));
+
+            var responseUpdated = await webhookLibrary.UpdateWebhookEndpoint(responseSingle.id, new WebhookEndpointRequest()
+            {
+                target_url = "https://example.com",
+                events = new[] { "api_mail_log_delivered" },
+                active = true,
+                signing_key = "Abc",
+                api_key = "abc"
+            });
+            Console.WriteLine(JsonConvert.SerializeObject(responseUpdated));
+
+            var responseDeleted = await webhookLibrary.DeleteWebhookEndpoint(responseSingle.id);
             Console.WriteLine(JsonConvert.SerializeObject(responseDeleted));
         }
     }

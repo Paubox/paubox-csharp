@@ -177,6 +177,38 @@ public async Task<CreateDynamicTemplateResponse> UpdateDynamicTemplate(int ID, D
 This method updates a dynamic email template by ID. The ID parameter is of type int and represents the ID of the dynamic template to be updated. The templateRequest parameter is of type DynamicTemplateRequest and contains the updated details of the template. The method returns a Task object that resolves to a CreateDynamicTemplateResponse object that contains the details of the updated template.
 
 
+## WebhookEndpoints
+### CreateWebhookEndpoint
+```csharp 
+public async Task<WebhookEndpointResponse> CreateWebhookEndpoint(WebhookEndpointRequest endpointRequest)
+```
+This method creates a new webhook endpoint. The endpointRequest parameter is of type WebhookEndpointRequest and contains the details of the endpoint to be created. The method returns a Task object that resolves to a WebhookEndpointResponse object that contains the details of the newly created endpoint.
+
+### GetAllWebhookEndpoints
+```csharp 
+public async Task<List<WebhookEndpoint>> GetAllWebhookEndpoints()
+```
+This method retrieves all webhook endpoints. The method returns a Task object that resolves to a List of WebhookEndpoint objects that contain the details of all the endpoints.
+
+### GetWebhookEndpoint
+```csharp 
+public async Task<WebhookEndpoint> GetWebhookEndpoint(int ID)
+```
+This method retrieves a specific webhook endpoint by ID. The ID parameter is of type int and represents the ID of the endpoint to be retrieved. The method returns a Task object that resolves to a WebhookEndpoint object that contains the details of the specified endpoint.
+
+### DeleteWebhookEndpoint
+```csharp 
+public async Task<WebhookEndpointResponse> DeleteWebhookEndpoint(int ID)
+```
+This method deletes a webhook endpoint by ID. The ID parameter is of type int and represents the ID of the endpoint to be deleted. The method returns a Task object that resolves to a WebhookEndpointResponse object that contains the details of the deleted endpoint.
+
+### UpdateWebhookEndpoint
+```csharp 
+public async Task<WebhookEndpointResponse> UpdateWebhookEndpoint(int ID, WebhookEndpointRequest endpointRequest)
+```
+This method updates a webhook endpoint by ID. The ID parameter is of type int and represents the ID of the webhook endpoint to be updated. The endpointRequest parameter is of type WebhookEndpointRequest and contains the updated details of the endpoint. The method returns a Task object that resolves to a WebhookEndpointResponse object that contains the details of the updated endpoint.
+
+
 <a name="#contributing"></a>
 ## Contributing
 

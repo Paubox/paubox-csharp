@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="APIHelper.cs" />
     <Compile Include="CommonClasses.cs" />
+    <Compile Include="WebhookLibrary.cs" />
     <Compile Include="DynamicTemplateLibrary.cs" />
     <Compile Include="EmailLibrary.cs" />
     <Compile Include="MimeType.cs" />

@@ -138,6 +138,47 @@ namespace Paubox
 
     #endregion
 
+    #region Classes For Webhook_Endpoints
+
+    #region Request
+
+    public class WebhookEndpointRequest
+    {
+        public string target_url { get; set; }
+        public string[] events { get; set; }
+        public bool active { get; set; }
+        public string signing_key { get; set; }
+        public string api_key { get; set; }
+    }
+
+    #endregion
+
+    #region Response
+
+    public class WebhookEndpoint
+    {
+        public int id { get; set; }
+        public string target_url { get; set; }
+        public int api_customer_id { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public string[] events { get; set; }
+        public bool active { get; set; }
+        public object signing_key { get; set; }
+        public object api_key { get; set; }
+    }
+
+
+    public class WebhookEndpointResponse
+    {
+        public string message { get; set; }
+        public WebhookEndpoint data { get; set; }
+    }
+
+    #endregion
+
+    #endregion
+
     #region Common Classes
     public class Error
     {
