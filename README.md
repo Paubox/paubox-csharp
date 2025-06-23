@@ -4,20 +4,29 @@
 
 This is the official C# wrapper/SDK for the Paubox Email API.
 
-The Paubox Email API allows your application to send secure, HIPAA compliant email via Paubox and track deliveries and opens.
+The Paubox Email API allows your application to send secure, HIPAA compliant email via Paubox and track deliveries and
+opens.
 
 The API wrapper allows you to construct and send messages.
 
 - [Installation](#installation)
   - [Getting Paubox API Credentials](#getting-paubox-api-credentials)
   - [Configuring API Credentials](#configuring-api-credentials)
-  - [Adding the .NET Framework Configuration](#adding-the-net-framework-configuration)
+  - [Supported .NET Versions](#supported-net-versions)
 - [Usage](#usage)
   - [Adding Paubox namespace](#adding-paubox-namespace)
   - [Send Message](#send-message)
     - [Allowing non-TLS message delivery](#allowing-non-tls-message-delivery)
     - [Forcing Secure Notifications](#forcing-secure-notifications)
   - [Get Email Disposition](#get-email-disposition)
+  - [Send Bulk Messages](#send-bulk-messages)
+  - [Dynamic Templates](#dynamic-templates)
+    - [Create Dynamic Template](#create-dynamic-template)
+    - [Update Dynamic Template](#update-dynamic-template)
+    - [Delete Dynamic Template](#delete-dynamic-template)
+    - [Get Dynamic Template](#get-dynamic-template)
+    - [List Dynamic Templates](#list-dynamic-templates)
+    - [Send a Dynamically Templated Message](#send-a-dynamically-templated-message)
 - [Contributing](#contributing)
 - [License](#license)
 - [Copyright](#copyright)
@@ -44,12 +53,24 @@ Windows Service) or Web.Config (For ASP.NET projects):
 <add key="APIUser" value="Your-Username-Here"/>
 ```
 
-### Adding the .NET Framework Configuration
+### Supported .NET Versions
 
-This library supports .NET v4.6.1 and higher. Add the following to your config file:
+This library supports the following .NET versions (see [here](https://dotnet.microsoft.com/en-us/download/dotnet?cid=getdotnetcorecli) for official support dates):
+
+| .NET Version         | Support Type          | End of Support    | Paubox SDK Support  |
+| -------------------- | --------------------- | ----------------- | ------------------- |
+| .NET v10.0 (preview) | Long Term Support     | TBA               | ❌ Not yet supported |
+| .NET v9.0 (latest)   | Standard Term Support | May 12, 2026      | ✅ Supported         |
+| .NET v8.0            | Long Term Support     | November 10, 2026 | ✅ Supported         |
+
+To use this library, you must use a supported .NET version.
+
+To add the .NET version to your project, add the following to your config file:
 
 ```xml
-<startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/></startup>
+<startup>
+  <supportedRuntime version="v9.0" sku=".NETFramework,Version=v9.0"/>
+</startup>
 ```
 
 ## Usage
@@ -160,6 +181,36 @@ static void GetEmailDisposition()
         EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
 }
 ```
+
+### Send Bulk Messages
+
+Coming soon.
+
+### Dynamic Templates
+
+#### Create Dynamic Template
+
+Coming soon.
+
+#### Update Dynamic Template
+
+Coming soon.
+
+#### Delete Dynamic Template
+
+Coming soon.
+
+#### Get Dynamic Template
+
+Coming soon.
+
+#### List Dynamic Templates
+
+Coming soon.
+
+#### Send a Dynamically Templated Message
+
+Coming soon.
 
 ## Contributing
 

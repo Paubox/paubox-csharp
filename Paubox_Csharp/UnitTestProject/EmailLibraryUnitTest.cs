@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace UnitTestProject
@@ -12,7 +12,18 @@ namespace UnitTestProject
     {
         public class TestData
         {
-            static string csvFileName = ConfigurationManager.AppSettings["CSVTestDataFilePath"];
+            static string csvFileName;
+
+            static TestData()
+            {
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                csvFileName = configuration["CSVTestDataFilePath"];
+            }
 
             /// <summary>
             /// Get Test data of Messages for Successful Scenarios
@@ -232,7 +243,7 @@ namespace UnitTestProject
             //}
         }
 
-        #region Unit Tests for Get Email Disposition Method        
+        #region Unit Tests for Get Email Disposition Method
 
         /// <summary>
         /// Test for Get Email Disposition method to check if all test cases return successful response
@@ -338,7 +349,7 @@ namespace UnitTestProject
             }
         }
 
-        #endregion Unit Tests for Send Message Method        
+        #endregion Unit Tests for Send Message Method
     }
 
 

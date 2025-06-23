@@ -2,14 +2,28 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace Paubox
 {
     public class EmailLibrary
     {
-        private static string APIKey = ConfigurationManager.AppSettings["APIKey"];
-        private static string APIBaseURL = "https://api.paubox.net/v1/" + ConfigurationManager.AppSettings["APIUser"] + "/";
+        private static readonly IConfiguration Configuration;
+        private static readonly string APIKey;
+        private static readonly string APIBaseURL;
+
+        static EmailLibrary()
+        {
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            APIKey = Configuration["APIKey"];
+            string apiUser = Configuration["APIUser"];
+            APIBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+        }
 
         /// <summary>
         /// Gets Email Delivery Information
@@ -168,7 +182,7 @@ namespace Paubox
                 });
 
                 bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(message.ForceSecureNotification);
-                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null 
+                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null
                 {
                     MessageJSON.Add("forceSecureNotification", forceSecureNotificationValue);
                 }
