@@ -1,46 +1,57 @@
-<img src="https://avatars.githubusercontent.com/u/22528478?s=200&v=4" alt="Paubox" width="150px">
+![Paubox Logo](https://avatars.githubusercontent.com/u/22528478?s=200&v=4)
 
-# Paubox C#
-This is the official C# wrapper for the Paubox Email API.
+# Paubox C# SDK <!-- omit in toc -->
+
+This is the official C# wrapper/SDK for the Paubox Email API.
 
 The Paubox Email API allows your application to send secure, HIPAA compliant email via Paubox and track deliveries and opens.
 
 The API wrapper allows you to construct and send messages.
 
-# Table of Contents
-* [Installation](#installation)
-*  [Usage](#usage)
-*  [Contributing](#contributing)
-*  [License](#license)
+- [Installation](#installation)
+  - [Getting Paubox API Credentials](#getting-paubox-api-credentials)
+  - [Configuring API Credentials](#configuring-api-credentials)
+  - [Adding the .NET Framework Configuration](#adding-the-net-framework-configuration)
+- [Usage](#usage)
+  - [Adding Paubox namespace](#adding-paubox-namespace)
+  - [Send Message](#send-message)
+    - [Allowing non-TLS message delivery](#allowing-non-tls-message-delivery)
+    - [Forcing Secure Notifications](#forcing-secure-notifications)
+  - [Get Email Disposition](#get-email-disposition)
+- [Contributing](#contributing)
+- [License](#license)
+- [Copyright](#copyright)
 
-
-<a name="#installation"></a>
 ## Installation
+
 Add the class library [Paubox.Email.API.dll](lib/Paubox.Email.API.dll) in your C# project by using ‘Add Reference’ option within the Project – References node.
 
 ### Getting Paubox API Credentials
+
 You will need to have a Paubox account. You can [sign up here](https://www.paubox.com/join/see-pricing?unit=messages).
 
 Once you have an account, follow the instructions on the Rest API dashboard to verify domain ownership and generate API credentials.
 
 ### Configuring API Credentials
+
 Include your API credentials in a config file.
 
 Add two app settings keys with their values in App.Config (For Desktop App,
 Windows Service) or Web.Config (For ASP.NET projects):
 
-```csharp
+```xml
 <add key="APIKey" value="Your-API-Key-Here"/>
 <add key="APIUser" value="Your-Username-Here"/>
 ```
 
 ### Adding the .NET Framework Configuration
+
 This library supports .NET v4.6.1 and higher. Add the following to your config file:
 
-```
+```xml
 <startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/></startup>
 ```
-<a name="#usage"></a>
+
 ## Usage
 
 ### Adding Paubox namespace
@@ -51,32 +62,35 @@ Please add the Paubox namespace in the using section as shown below:
 using Paubox;
 ```
 
-### Sending Messages using the Paubox C# Library
+### Send Message
 
-To send an email, prepare a Message object and call EmailLibrary.SendMessage method:
+Please also see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#send-message).
+
+To send an email, prepare a `Message` object and call EmailLibrary.SendMessage` method:
 
 ```csharp
 static SendMessageResponse SendMessage()
 {
- Message message = new Message();
- Content content = new Content();
- Header header = new Header();
- message.Recipients = new string[] { "someone@domain.com",
- "someoneelse@domain.com" };
- header.From = "you@yourdomain.com";
- message.Cc = new string[] { "cc-recipient@domain.com" };
- message.Bcc = new string[] { "bcc-recipient@domain.com" };
- header.Subject = "Testing!";
- header.ReplyTo = "reply-to@yourdomain.com";
- content.PlainText = "Hello World!";
- message.Header = header;
- message.Content = content;
- SendMessageResponse response = EmailLibrary.SendMessage(message);
- return response;
+  Message message = new Message();
+  Content content = new Content();
+  Header header = new Header();
+  message.Recipients = new string[] { "someone@domain.com",
+  "someoneelse@domain.com" };
+  header.From = "you@yourdomain.com";
+  message.Cc = new string[] { "cc-recipient@domain.com" };
+  message.Bcc = new string[] { "bcc-recipient@domain.com" };
+  header.Subject = "Testing!";
+  header.ReplyTo = "reply-to@yourdomain.com";
+  content.PlainText = "Hello World!";
+  message.Header = header;
+  message.Content = content;
+  SendMessageResponse response = EmailLibrary.SendMessage(message);
+  return response;
 }
 ```
 
-### Allowing non-TLS message delivery
+#### Allowing non-TLS message delivery
+
 If you want to send non-PHI mail that does not need to be HIPAA-compliant, you can
 allow the message delivery to take place even if a TLS connection is unavailable. This
 means a message will not be converted into a Secure Notification message when a unencrypted
@@ -105,11 +119,11 @@ static SendMessageResponse SendNonTLSMessage()
 }
 ```
 
-### Forcing Secure Notifications
+#### Forcing Secure Notifications
+
 Paubox Secure Notifications allow an extra layer of security, especially when coupled with an organization's requirement for message recipients to use 2-factor authentication to read messages (this setting is available to org administrators in the Paubox Admin Panel).
 
 Instead of receiving an email with the message contents, the recipient will receive a notification email that they have a new message in Paubox.
-
 
 ```csharp
 static SendMessageResponse SendMessage()
@@ -133,34 +147,28 @@ static SendMessageResponse SendMessage()
 }
 ```
 
-### Checking Email Dispositions
-To get email status for any source tracking id, call the
-EmailLibrary.GetEmailDisposition method:
+### Get Email Disposition
+
+Please also see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#get-email-disposition).
+
+To get email status for any source tracking id, call the `EmailLibrary.GetEmailDisposition` method:
 
 ```csharp
 static void GetEmailDisposition()
 {
- GetEmailDispositionResponse response =
- EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
+  GetEmailDispositionResponse response =
+    EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
 }
 ```
-<a name="#contributing"></a>
+
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/paubox/paubox-csharp.
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-<a name="#license"></a>
 ## License
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See [LICENSE](LICENSE)
 
 ## Copyright
-Copyright &copy; 2021, Paubox, Inc.
+
+Copyright &copy; 2025, Paubox, Inc.
