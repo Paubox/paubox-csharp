@@ -71,21 +71,21 @@ To send an email, prepare a `Message` object and call EmailLibrary.SendMessage` 
 ```csharp
 static SendMessageResponse SendMessage()
 {
-  Message message = new Message();
-  Content content = new Content();
-  Header header = new Header();
-  message.Recipients = new string[] { "someone@domain.com",
-  "someoneelse@domain.com" };
-  header.From = "you@yourdomain.com";
-  message.Cc = new string[] { "cc-recipient@domain.com" };
-  message.Bcc = new string[] { "bcc-recipient@domain.com" };
-  header.Subject = "Testing!";
-  header.ReplyTo = "reply-to@yourdomain.com";
-  content.PlainText = "Hello World!";
-  message.Header = header;
-  message.Content = content;
-  SendMessageResponse response = EmailLibrary.SendMessage(message);
-  return response;
+    Message message = new Message();
+    Content content = new Content();
+    Header header = new Header();
+    message.Recipients = new string[] { "someone@domain.com",
+    "someoneelse@domain.com" };
+    header.From = "you@yourdomain.com";
+    message.Cc = new string[] { "cc-recipient@domain.com" };
+    message.Bcc = new string[] { "bcc-recipient@domain.com" };
+    header.Subject = "Testing!";
+    header.ReplyTo = "reply-to@yourdomain.com";
+    content.PlainText = "Hello World!";
+    message.Header = header;
+    message.Content = content;
+    SendMessageResponse response = EmailLibrary.SendMessage(message);
+    return response;
 }
 ```
 
@@ -100,22 +100,22 @@ shown below:
 ```csharp
 static SendMessageResponse SendNonTLSMessage()
 {
- Message message = new Message();
- Content content = new Content();
- Header header = new Header();
- message.Recipients = new string[] { "someone@domain.com",
- "someoneelse@domain.com" };
- header.From = "you@yourdomain.com";
- message.Cc = new string[] { "cc-recipient@domain.com" };
- message.Bcc = new string[] { "bcc-recipient@domain.com" };
- header.Subject = "Testing!";
- header.ReplyTo = "reply-to@yourdomain.com";
- content.PlainText = "Hello World!";
- message.AllowNonTLS = true;
- message.Header = header;
- message.Content = content;
- SendMessageResponse response = EmailLibrary.SendMessage(message);
- return response;
+    Message message = new Message();
+    Content content = new Content();
+    Header header = new Header();
+    message.Recipients = new string[] { "someone@domain.com",
+    "someoneelse@domain.com" };
+    header.From = "you@yourdomain.com";
+    message.Cc = new string[] { "cc-recipient@domain.com" };
+    message.Bcc = new string[] { "bcc-recipient@domain.com" };
+    header.Subject = "Testing!";
+    header.ReplyTo = "reply-to@yourdomain.com";
+    content.PlainText = "Hello World!";
+    message.AllowNonTLS = true;
+    message.Header = header;
+    message.Content = content;
+    SendMessageResponse response = EmailLibrary.SendMessage(message);
+    return response;
 }
 ```
 
@@ -128,22 +128,22 @@ Instead of receiving an email with the message contents, the recipient will rece
 ```csharp
 static SendMessageResponse SendMessage()
 {
- Message message = new Message();
- Content content = new Content();
- Header header = new Header();
- message.Recipients = new string[] { "someone@domain.com",
- "someoneelse@domain.com" };
- header.From = "you@yourdomain.com";
- message.Cc = new string[] { "cc-recipient@domain.com" };
- message.Bcc = new string[] { "bcc-recipient@domain.com" };
- header.Subject = "Testing!";
- header.ReplyTo = "reply-to@yourdomain.com";
- content.PlainText = "Hello World!";
- message.ForceSecureNotification = "true";
- message.Header = header;
- message.Content = content;
- SendMessageResponse response = EmailLibrary.SendMessage(message);
- return response;
+    Message message = new Message();
+    Content content = new Content();
+    Header header = new Header();
+    message.Recipients = new string[] { "someone@domain.com",
+    "someoneelse@domain.com" };
+    header.From = "you@yourdomain.com";
+    message.Cc = new string[] { "cc-recipient@domain.com" };
+    message.Bcc = new string[] { "bcc-recipient@domain.com" };
+    header.Subject = "Testing!";
+    header.ReplyTo = "reply-to@yourdomain.com";
+    content.PlainText = "Hello World!";
+    message.ForceSecureNotification = "true";
+    message.Header = header;
+    message.Content = content;
+    SendMessageResponse response = EmailLibrary.SendMessage(message);
+    return response;
 }
 ```
 
@@ -156,8 +156,8 @@ To get email status for any source tracking id, call the `EmailLibrary.GetEmailD
 ```csharp
 static void GetEmailDisposition()
 {
-  GetEmailDispositionResponse response =
-    EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
+    GetEmailDispositionResponse response =
+        EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
 }
 ```
 
