@@ -17,6 +17,9 @@ The API wrapper allows you to construct and send messages.
   - [Supported .NET Versions](#supported-net-versions)
 - [Usage](#usage)
   - [Adding Paubox namespace](#adding-paubox-namespace)
+  - [Initializing the EmailLibrary](#initializing-the-emaillibrary)
+    - [Option 1: Initialize with direct parameters](#option-1-initialize-with-direct-parameters)
+    - [Option 2: Initialize with configuration (recommended for .NET Core/.NET 5+)](#option-2-initialize-with-configuration-recommended-for-net-corenet-5)
   - [Send Message](#send-message)
     - [Allowing non-TLS message delivery](#allowing-non-tls-message-delivery)
     - [Forcing Secure Notifications](#forcing-secure-notifications)
@@ -45,7 +48,7 @@ Once you have an account, follow the instructions on the Rest API dashboard to v
 
 ### Configuring API Credentials
 
-Include your API credentials in a configuration file.
+The EmailLibrary SDK requires initialization with your API credentials before use. You can provide these credentials in several ways:
 
 #### For .NET Core/.NET 5+ Projects (Recommended)
 
@@ -59,7 +62,24 @@ Include your API credentials in a configuration file.
 }
 ```
 
+3. Load the configuration and initialize the EmailLibrary:
+
+```csharp
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+EmailLibrary.Initialize(configuration["APIKey"], configuration["APIUser"]);
+```
+
 **Important**: The `appsettings.json` file is ignored by git to protect your credentials. Always use the example file as a template.
+
+**Configuration Fields:**
+
+- `APIKey`: Your Paubox API key (required)
+- `APIUser`: Your Paubox username/domain (required)
 
 #### For Legacy .NET Framework Projects
 
@@ -99,6 +119,30 @@ Please add the Paubox namespace in the using section as shown below:
 
 ```csharp
 using Paubox;
+```
+
+### Initializing the EmailLibrary
+
+Before using the EmailLibrary, you must initialize it with your API credentials. You have two options:
+
+#### Option 1: Initialize with direct parameters
+
+```csharp
+EmailLibrary.Initialize("your-api-key", "your-username");
+```
+
+#### Option 2: Initialize with configuration (recommended for .NET Core/.NET 5+)
+
+```csharp
+// Load your configuration
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+// Initialize the EmailLibrary
+EmailLibrary.Initialize(configuration);
 ```
 
 ### Send Message

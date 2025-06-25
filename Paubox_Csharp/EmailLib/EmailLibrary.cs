@@ -1,28 +1,36 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
 
 namespace Paubox
 {
     public class EmailLibrary
     {
-        private static readonly IConfiguration Configuration;
-        private static readonly string APIKey;
-        private static readonly string APIBaseURL;
+        private static string APIKey;
+        private static string APIBaseURL;
 
-        static EmailLibrary()
+        /// <summary>
+        /// Initialize the EmailLibrary with API credentials
+        /// </summary>
+        /// <param name="apiUser">Your Paubox username/domain</param>
+        /// <param name="apiKey">Your Paubox API key</param>
+        public static void Initialize(string apiUser, string apiKey)
         {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            APIKey = Configuration["APIKey"];
-            string apiUser = Configuration["APIUser"];
             APIBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+            APIKey = apiKey;
+        }
+
+        /// <summary>
+        /// Initialize the EmailLibrary with Configuration
+        /// </summary>
+        /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
+        public static void Initialize(IConfiguration configuration)
+        {
+            APIBaseURL = $"https://api.paubox.net/v1/{configuration["APIUser"]}/";
+            APIKey = configuration["APIKey"];
         }
 
         /// <summary>
@@ -72,6 +80,9 @@ namespace Paubox
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
             {
+                Console.WriteLine("🐛 APIKey = " + APIKey);
+                Console.WriteLine("🐛 APIBaseURL = " + APIBaseURL);
+
                 //Prepare JSON request for passing it to Send Message API
                 JObject requestObject = JObject.FromObject(new
                 {

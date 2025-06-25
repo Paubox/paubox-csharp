@@ -27,6 +27,8 @@ The application uses `appsettings.json` for configuration. The file contains:
 
 - `APIKey`: Your Paubox API key
 - `APIUser`: Your Paubox username/domain
+- `FromEmail`: The email address that will appear as the sender
+- `ToEmail`: The email address that will receive the test message
 
 **Security Note**: The `appsettings.json` file is ignored by git to protect your credentials. Always use `appsettings.example.json` as a template.
 
@@ -37,4 +39,4 @@ This sample application demonstrates:
 - Sending an email with attachments
 - Getting email disposition (delivery status)
 
-The email is sent to `username@domain.com` - update this in `Program.cs` to test with your own email address.
+The email is sent from the address specified in `FromEmail` to the address specified in `ToEmail` in your configuration file.
