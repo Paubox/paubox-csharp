@@ -93,19 +93,22 @@ To send an email, prepare a `Message` object and call EmailLibrary.SendMessage` 
 static SendMessageResponse SendMessage()
 {
     Message message = new Message();
-    Content content = new Content();
-    Header header = new Header();
-    message.Recipients = new string[] { "someone@domain.com",
-    "someoneelse@domain.com" };
-    header.From = "you@yourdomain.com";
+    message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
     message.Cc = new string[] { "cc-recipient@domain.com" };
     message.Bcc = new string[] { "bcc-recipient@domain.com" };
-    header.Subject = "Testing!";
+
+    Header header = new Header();
+    header.From = "you@yourdomain.com";
     header.ReplyTo = "reply-to@yourdomain.com";
-    content.PlainText = "Hello World!";
+    header.Subject = "Testing!";
     message.Header = header;
+
+    Content content = new Content();
+    content.PlainText = "Hello World!";
     message.Content = content;
+
     SendMessageResponse response = EmailLibrary.SendMessage(message);
+
     return response;
 }
 ```
@@ -122,19 +125,21 @@ shown below:
 static SendMessageResponse SendNonTLSMessage()
 {
     Message message = new Message();
-    Content content = new Content();
-    Header header = new Header();
-    message.Recipients = new string[] { "someone@domain.com",
-    "someoneelse@domain.com" };
-    header.From = "you@yourdomain.com";
+    message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
     message.Cc = new string[] { "cc-recipient@domain.com" };
     message.Bcc = new string[] { "bcc-recipient@domain.com" };
-    header.Subject = "Testing!";
-    header.ReplyTo = "reply-to@yourdomain.com";
-    content.PlainText = "Hello World!";
     message.AllowNonTLS = true;
+
+    Header header = new Header();
+    header.From = "you@yourdomain.com";
+    header.ReplyTo = "reply-to@yourdomain.com";
+    header.Subject = "Testing!";
     message.Header = header;
+
+    Content content = new Content();
+    content.PlainText = "Hello World!";
     message.Content = content;
+
     SendMessageResponse response = EmailLibrary.SendMessage(message);
     return response;
 }
@@ -150,20 +155,23 @@ Instead of receiving an email with the message contents, the recipient will rece
 static SendMessageResponse SendMessage()
 {
     Message message = new Message();
-    Content content = new Content();
-    Header header = new Header();
-    message.Recipients = new string[] { "someone@domain.com",
-    "someoneelse@domain.com" };
+    message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
     header.From = "you@yourdomain.com";
     message.Cc = new string[] { "cc-recipient@domain.com" };
     message.Bcc = new string[] { "bcc-recipient@domain.com" };
+    message.ForceSecureNotification = "true";
+
+    Header header = new Header();
     header.Subject = "Testing!";
     header.ReplyTo = "reply-to@yourdomain.com";
-    content.PlainText = "Hello World!";
-    message.ForceSecureNotification = "true";
     message.Header = header;
+
+    Content content = new Content();
+    content.PlainText = "Hello World!";
     message.Content = content;
+
     SendMessageResponse response = EmailLibrary.SendMessage(message);
+
     return response;
 }
 ```
