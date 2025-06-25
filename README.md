@@ -12,6 +12,8 @@ The API wrapper allows you to construct and send messages.
 - [Installation](#installation)
   - [Getting Paubox API Credentials](#getting-paubox-api-credentials)
   - [Configuring API Credentials](#configuring-api-credentials)
+    - [For .NET Core/.NET 5+ Projects (Recommended)](#for-net-corenet-5-projects-recommended)
+    - [For Legacy .NET Framework Projects](#for-legacy-net-framework-projects)
   - [Supported .NET Versions](#supported-net-versions)
 - [Usage](#usage)
   - [Adding Paubox namespace](#adding-paubox-namespace)
@@ -33,7 +35,7 @@ The API wrapper allows you to construct and send messages.
 
 ## Installation
 
-Add the class library [Paubox.Email.API.dll](lib/Paubox.Email.API.dll) in your C# project by using ‘Add Reference’ option within the Project – References node.
+Add the class library [Paubox.Email.API.dll](lib/Paubox.Email.API.dll) in your C# project by using 'Add Reference' option within the Project – References node.
 
 ### Getting Paubox API Credentials
 
@@ -43,7 +45,23 @@ Once you have an account, follow the instructions on the Rest API dashboard to v
 
 ### Configuring API Credentials
 
-Include your API credentials in a config file.
+Include your API credentials in a configuration file.
+
+#### For .NET Core/.NET 5+ Projects (Recommended)
+
+1. Copy `appsettings.example.json` to `appsettings.json` in your project
+2. Update the values in `appsettings.json` with your actual credentials:
+
+```json
+{
+    "APIKey": "Your-API-Key-Here",
+    "APIUser": "Your-Username-Here"
+}
+```
+
+**Important**: The `appsettings.json` file is ignored by git to protect your credentials. Always use the example file as a template.
+
+#### For Legacy .NET Framework Projects
 
 Add two app settings keys with their values in App.Config (For Desktop App,
 Windows Service) or Web.Config (For ASP.NET projects):

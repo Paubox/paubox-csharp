@@ -45,6 +45,8 @@ dotnet test Paubox_Csharp/UnitTestProject/UnitTestProject.csproj
 A separate sample project is provided in `Paubox_Csharp/SampleConsoleApp/SampleConsoleApp.csproj` to perform QA on the
 library.
 
+See also the [Paubox_Csharp/SampleConsoleApp/README.md](Paubox_Csharp/SampleConsoleApp/README.md) file for more information.
+
 ```sh
 dotnet run --project Paubox_Csharp/SampleConsoleApp/SampleConsoleApp.csproj
 ```
