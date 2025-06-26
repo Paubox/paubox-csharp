@@ -67,15 +67,15 @@ several ways:
 
 3. In your own application, load the configuration and initialize the EmailLibrary:
 
-```csharp
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables()
-    .Build();
+    ```csharp
+    var configuration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddEnvironmentVariables()
+        .Build();
 
-EmailLibrary.Initialize(configuration);
-```
+    EmailLibrary.Initialize(configuration);
+    ```
 
 **Important**: The `appsettings.json` file is ignored by git to protect your credentials. Always use the example file as
 a template.
