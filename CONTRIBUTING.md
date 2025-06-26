@@ -24,12 +24,18 @@ If you do not wish to do that, follow the steps below:
 
     ```sh
     dotnet restore Paubox_Csharp/Paubox_Csharp.sln
+    dotnet restore Paubox_Csharp/EmailLib/EmailLib.csproj
+    dotnet restore Paubox_Csharp/SampleConsoleApp/SampleConsoleApp.csproj
+    dotnet restore Paubox_Csharp/UnitTestProject/UnitTestProject.csproj
     ```
 
 3. Build the projects
 
     ```sh
     dotnet build Paubox_Csharp/Paubox_Csharp.sln
+    dotnet build Paubox_Csharp/EmailLib/EmailLib.csproj
+    dotnet build Paubox_Csharp/SampleConsoleApp/SampleConsoleApp.csproj
+    dotnet build Paubox_Csharp/UnitTestProject/UnitTestProject.csproj
     ```
 
 ## Running the unit tests

@@ -80,9 +80,6 @@ namespace Paubox
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
             {
-                Console.WriteLine("🐛 APIKey = " + APIKey);
-                Console.WriteLine("🐛 APIBaseURL = " + APIBaseURL);
-
                 //Prepare JSON request for passing it to Send Message API
                 JObject requestObject = JObject.FromObject(new
                 {
