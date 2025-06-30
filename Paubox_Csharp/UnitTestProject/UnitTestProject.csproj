@@ -27,7 +27,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="appsettings.json" />
-    <None Include="SendMessage_TestData.csv" />
   </ItemGroup>
 
 </Project>
