@@ -7,10 +7,22 @@ using Microsoft.Extensions.Configuration;
 
 namespace Paubox
 {
-    public class EmailLibrary
+    public class EmailLibrary : IEmailLibrary
     {
         private static string APIKey;
         private static string APIBaseURL;
+        private IAPIHelper _apiHelper;
+
+        // Constructor for dependency injection (useful for testing)
+        public EmailLibrary(IAPIHelper apiHelper)
+        {
+            _apiHelper = apiHelper ?? new APIHelper();
+        }
+
+        // Default constructor
+        public EmailLibrary() : this(new APIHelper())
+        {
+        }
 
         /// <summary>
         /// Initialize the EmailLibrary with API credentials
@@ -40,11 +52,16 @@ namespace Paubox
         /// <returns>GetEmailDispositionResponse</returns>
         public static GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
         {
+            return new EmailLibrary().GetEmailDispositionInstance(sourceTrackingId);
+        }
+
+        public GetEmailDispositionResponse GetEmailDispositionInstance(string sourceTrackingId)
+        {
             GetEmailDispositionResponse apiResponse = new GetEmailDispositionResponse();
             try
             {
                 string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
-                string Response = APIHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                string Response = _apiHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
                 {
@@ -77,6 +94,11 @@ namespace Paubox
         /// <returns>SendMessageResponse</returns>
         public static SendMessageResponse SendMessage(Message message)
         {
+            return new EmailLibrary().SendMessageInstance(message);
+        }
+
+        public SendMessageResponse SendMessageInstance(Message message)
+        {
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
             {
@@ -86,7 +108,7 @@ namespace Paubox
                     data = ConvertMessageObjectToJSON(message) // Convert i/p Message object to JSON , as per the API
                 });
 
-                string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                string Response = _apiHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
                 apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
                 {
@@ -238,7 +260,5 @@ namespace Paubox
             }
         }
     }
-
-
 }
 
