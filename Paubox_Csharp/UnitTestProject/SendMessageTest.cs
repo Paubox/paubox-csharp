@@ -36,21 +36,24 @@ public class SendMessageTest
     }
 
     [Test]
-    public void TestSendMessageWithEmptyResponseThrowsSystemException()
+    public void TestSendMessageForBadRequestThrowsSystemException()
     {
-        string apiResponse = EmptyResponse();
+        string apiResponse = BadRequestResponse();
         MockApiResponse(apiResponse);
 
         Message message = CreateTestMessage();
         var exception = Assert.Throws<SystemException>(() => _emailLibrary.SendMessage(message));
 
-        Assert.IsNotNull(exception);
+        Assert.IsNotNull(exception.Message);
+        Assert.IsTrue(exception.Message.Length > 0);
+        StringAssert.Contains("Error Title", exception.Message);
+        StringAssert.Contains("Description of error", exception.Message);
     }
 
     [Test]
-    public void TestSendMessageForBadRequestThrowsSystemException()
+    public void TestSendMessageWithEmptyResponseThrowsSystemException()
     {
-        string apiResponse = BadRequestResponse();
+        string apiResponse = EmptyResponse();
         MockApiResponse(apiResponse);
 
         Message message = CreateTestMessage();

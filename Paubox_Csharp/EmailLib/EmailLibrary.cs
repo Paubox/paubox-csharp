@@ -89,6 +89,11 @@ namespace Paubox
                     throw new SystemException(Response);
                 }
 
+                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
+                {
+                    throw new SystemException(Response);
+                }
+
                 if (apiResponse != null && apiResponse.Data != null && apiResponse.Data.Message != null
                     && apiResponse.Data.Message.Message_Deliveries != null && apiResponse.Data.Message.Message_Deliveries.Count > 0)
                 {
