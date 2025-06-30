@@ -24,22 +24,26 @@ namespace SampleConsoleApp
         {
             Console.WriteLine("▶️ Starting QA Console App...");
 
-            Console.WriteLine("🧰 Initializing EmailLibrary...");
-            EmailLibrary.Initialize(Configuration);
+            Console.WriteLine("🧰 Constructing the EmailLibrary...");
+            EmailLibrary paubox = new EmailLibrary(Configuration);
 
-            string trackingId = SendMessage();
+            Console.WriteLine("✉️ Creating a new valid Message object...");
+            Message message = CreateValidMessage();
 
-            Console.WriteLine("📧 Tracking ID: " + trackingId);
+            Console.WriteLine("✉️ Sending message from " + Configuration["FromEmail"] + " to " + Configuration["ToEmail"] + "...");
+            SendMessageResponse response = paubox.SendMessage(message);
 
-            GetEmailDispositionResponse response = EmailLibrary.GetEmailDisposition(trackingId);
+            string trackingId = response.SourceTrackingId;
+            Console.WriteLine("🔍 Tracking ID: " + trackingId);
 
-            Console.WriteLine("📧 Response: " + response);
+            Console.WriteLine("ℹ️ Getting email disposition for tracking ID: " + trackingId);
+            GetEmailDispositionResponse dispositionResponse = paubox.GetEmailDisposition(trackingId);
+
+            Console.WriteLine("ℹ️ Response: " + dispositionResponse);
         }
 
-        static string SendMessage()
+        static Message CreateValidMessage()
         {
-            Console.WriteLine("📧 Sending message to " + Configuration["ToEmail"] + "...");
-
             Message message = new Message();
             message.Recipients = new string[] { Configuration["ToEmail"] };
 
@@ -61,9 +65,7 @@ namespace SampleConsoleApp
 
             message.Attachments = listAttachments;
 
-            SendMessageResponse response = EmailLibrary.SendMessage(message);
-
-            return response.SourceTrackingId;
+            return message;
         }
     }
 }
