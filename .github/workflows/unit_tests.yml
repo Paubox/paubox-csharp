@@ -1,0 +1,29 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore Paubox_Csharp/Paubox_Csharp.sln
+
+      - name: Build
+        run: dotnet build Paubox_Csharp/Paubox_Csharp.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Paubox_Csharp/Paubox_Csharp.sln --no-build --verbosity normal --configuration Release
