@@ -19,11 +19,17 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Restore dependencies
-        run: dotnet restore Paubox_Csharp/Paubox_Csharp.sln
+      - name: Restore dependencies (EmailLib)
+        run: dotnet restore Paubox_Csharp/EmailLib/EmailLib.csproj
 
-      - name: Build
-        run: dotnet build Paubox_Csharp/Paubox_Csharp.sln --no-restore --configuration Release
+      - name: Build (EmailLib)
+        run: dotnet build Paubox_Csharp/EmailLib/EmailLib.csproj --no-restore --configuration Release
+
+      - name: Restore dependencies (UnitTestProject)
+        run: dotnet restore Paubox_Csharp/UnitTestProject/UnitTestProject.csproj
+
+      - name: Build (UnitTestProject)
+        run: dotnet build Paubox_Csharp/UnitTestProject/UnitTestProject.csproj --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test Paubox_Csharp/Paubox_Csharp.sln --no-build --verbosity normal --configuration Release
+        run: dotnet test Paubox_Csharp/UnitTestProject/UnitTestProject.csproj --no-build --verbosity normal
