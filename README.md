@@ -128,12 +128,12 @@ using Paubox;
 
 ### Initializing the EmailLibrary
 
-Before using the EmailLibrary, you must initialize it with your API credentials. You have two options:
+Before using the EmailLibrary, you must create an instance with your API credentials. You have two options:
 
 #### Option 1: Initialize with direct parameters
 
 ```csharp
-EmailLibrary.Initialize("your-api-key", "your-username");
+var paubox = new EmailLibrary("your-api-key", "your-username");
 ```
 
 #### Option 2: Initialize with configuration (recommended for .NET Core/.NET 5+)
@@ -146,8 +146,8 @@ var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-// Initialize the EmailLibrary
-EmailLibrary.Initialize(configuration);
+// Create the EmailLibrary instance with the configuration
+var paubox = new EmailLibrary(configuration);
 ```
 
 ### Send Message
@@ -172,7 +172,7 @@ Content content = new Content();
 content.PlainText = "Hello World!";
 message.Content = content;
 
-SendMessageResponse response = EmailLibrary.SendMessage(message);
+SendMessageResponse response = paubox.SendMessage(message);
 ```
 
 #### Allowing non-TLS message delivery
@@ -200,7 +200,7 @@ Content content = new Content();
 content.PlainText = "Hello World!";
 message.Content = content;
 
-SendMessageResponse response = EmailLibrary.SendMessage(message);
+SendMessageResponse response = paubox.SendMessage(message);
 ```
 
 #### Forcing Secure Notifications
@@ -226,7 +226,7 @@ Content content = new Content();
 content.PlainText = "Hello World!";
 message.Content = content;
 
-SendMessageResponse response = EmailLibrary.SendMessage(message);
+SendMessageResponse response = paubox.SendMessage(message);
 ```
 
 ### Get Email Disposition
@@ -237,8 +237,7 @@ To get email status for any source tracking id, call the `EmailLibrary.GetEmailD
 tracking id of the message:
 
 ```csharp
-GetEmailDispositionResponse response =
-    EmailLibrary.GetEmailDisposition("2a3c048485aa4cf6");
+GetEmailDispositionResponse response = paubox.GetEmailDisposition("2a3c048485aa4cf6");
 ```
 
 ### Send Bulk Messages

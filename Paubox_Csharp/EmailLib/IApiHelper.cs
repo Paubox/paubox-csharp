@@ -10,8 +10,8 @@ namespace Paubox
 
     public interface IEmailLibrary
     {
-        // Instance methods for testing
-        SendMessageResponse SendMessageInstance(Message message);
-        GetEmailDispositionResponse GetEmailDispositionInstance(string sourceTrackingId);
+        // Instance methods for the new SDK design
+        SendMessageResponse SendMessage(Message message);
+        GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId);
     }
 }
