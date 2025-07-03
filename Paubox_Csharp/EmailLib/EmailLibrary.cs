@@ -160,7 +160,7 @@ namespace Paubox
         }
 
         /// <summary>
-        /// Convert Message object to JSON , as required for the Send Message API
+        /// Convert Message object to JSON, as required for the Send Message API
         /// </summary>
         /// <param name="message"></param>
         /// <returns>JObject</returns>
