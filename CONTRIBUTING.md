@@ -43,7 +43,7 @@ If you do not wish to do that, follow the steps below:
 A separate unit test project is provided in `Paubox_Csharp/UnitTestProject/UnitTestProject.csproj` to test the library.
 
 ```sh
-dotnet test Paubox_Csharp/UnitTestProject/UnitTestProject.csproj
+dotnet test Paubox_Csharp/UnitTestProject/UnitTestProject.csproj --verbosity normal
 ```
 
 ## Running the sample console app

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -41,6 +42,9 @@ namespace Paubox
                 }
                 else if (APIVerb == "POST")
                 {
+                    Console.WriteLine("================================================");
+                    Console.WriteLine("Request Body: " + requestBody);
+                    Console.WriteLine("================================================");
                     response = client.PostAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
                 }
 

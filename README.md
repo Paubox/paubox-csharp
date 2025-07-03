@@ -23,6 +23,7 @@ The API wrapper allows you to construct and send messages.
   - [Send Message](#send-message)
     - [Allowing non-TLS message delivery](#allowing-non-tls-message-delivery)
     - [Forcing Secure Notifications](#forcing-secure-notifications)
+    - [Custom Headers](#custom-headers)
   - [Get Email Disposition](#get-email-disposition)
   - [Send Bulk Messages](#send-bulk-messages)
   - [Dynamic Templates](#dynamic-templates)
@@ -225,6 +226,30 @@ message.Header = header;
 Content content = new Content();
 content.PlainText = "Hello World!";
 message.Content = content;
+
+SendMessageResponse response = paubox.SendMessage(message);
+```
+
+#### Custom Headers
+
+Please see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#data-parameters) for more
+information on custom headers. You can add custom headers to your message by adding them as a Dictionary to the `Header`
+object:
+
+```csharp
+Message message = new Message();
+// ...
+
+Header header = new Header();
+header.Subject = "Testing!";
+header.ReplyTo = "reply-to@yourdomain.com";
+header.CustomHeaders = new Dictionary<string, string> {
+  { "X-Custom-Header", "Custom Value" },
+  { "X-Another-Header", "Another Value" }
+};
+message.Header = header;
+
+// ...
 
 SendMessageResponse response = paubox.SendMessage(message);
 ```
