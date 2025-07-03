@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Paubox
 {
-    internal class APIHelper
+    internal class APIHelper : IAPIHelper
     {
         /// <summary>
         /// This method calls an API and returns API response
@@ -17,12 +17,12 @@ namespace Paubox
         /// <param name="APIVerb"></param>
         /// <param name="requestBody"></param>
         /// <returns>apiResponse</returns>
-        public static string CallToAPI(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string requestBody = "")
+        public string CallToAPI(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string requestBody = "")
         {
             Task<string> apiResponse = null;
 
             using (var client = new HttpClient())
-            {                                
+            {
                 client.BaseAddress = new Uri(BaseAPIUrl);
 
                 // Add an Accept header for JSON format.
@@ -34,20 +34,20 @@ namespace Paubox
                 }
 
                 HttpResponseMessage response = new HttpResponseMessage();
-                
+
                 if (APIVerb == "GET")
                 {
-                    response = client.GetAsync(requestURI).Result;  
+                    response = client.GetAsync(requestURI).Result;
                 }
                 else if (APIVerb == "POST")
                 {
                     response = client.PostAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
                 }
-                
+
                 apiResponse = response.Content.ReadAsStringAsync();
             }
 
-            return apiResponse.Result.ToString();            
+            return apiResponse.Result.ToString();
         }
     }
 }

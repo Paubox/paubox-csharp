@@ -1,30 +1,95 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Paubox
 {
-    public class EmailLibrary
+    public class EmailLibrary : IEmailLibrary
     {
-        private static string APIKey = ConfigurationManager.AppSettings["APIKey"];
-        private static string APIBaseURL = "https://api.paubox.net/v1/" + ConfigurationManager.AppSettings["APIUser"] + "/";
+        private readonly string _apiKey;
+        private readonly string _apiBaseURL;
+        private readonly IAPIHelper _apiHelper;
+
+        /// <summary>
+        /// Constructor for EmailLibrary with API credentials
+        /// </summary>
+        /// <param name="apiKey">Your Paubox API key</param>
+        /// <param name="apiUser">Your Paubox username/domain</param>
+        public EmailLibrary(string apiKey, string apiUser) : this(apiKey, apiUser, new APIHelper())
+        {
+        }
+
+        /// <summary>
+        /// Constructor for EmailLibrary with API credentials and custom API helper (useful for testing)
+        /// </summary>
+        /// <param name="apiKey">Your Paubox API key</param>
+        /// <param name="apiUser">Your Paubox username/domain</param>
+        /// <param name="apiHelper">Custom API helper implementation</param>
+        public EmailLibrary(string apiKey, string apiUser, IAPIHelper apiHelper)
+        {
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
+            if (string.IsNullOrWhiteSpace(apiUser))
+                throw new ArgumentException("API user cannot be null or empty", nameof(apiUser));
+
+            _apiKey = apiKey;
+            _apiBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+            _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
+        }
+
+        /// <summary>
+        /// Constructor for EmailLibrary with Configuration
+        /// </summary>
+        /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
+        public EmailLibrary(IConfiguration configuration) : this(configuration, new APIHelper())
+        {
+        }
+
+        /// <summary>
+        /// Constructor for EmailLibrary with Configuration and custom API helper
+        /// </summary>
+        /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
+        /// <param name="apiHelper">Custom API helper implementation</param>
+        public EmailLibrary(IConfiguration configuration, IAPIHelper apiHelper)
+        {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            var apiKey = configuration["APIKey"];
+            var apiUser = configuration["APIUser"];
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentException("APIKey not found in configuration", nameof(configuration));
+            if (string.IsNullOrWhiteSpace(apiUser))
+                throw new ArgumentException("APIUser not found in configuration", nameof(configuration));
+
+            _apiKey = apiKey;
+            _apiBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+            _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
+        }
 
         /// <summary>
         /// Gets Email Delivery Information
         /// </summary>
         /// <param name="sourceTrackingId"></param>
         /// <returns>GetEmailDispositionResponse</returns>
-        public static GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
+        public GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
         {
             GetEmailDispositionResponse apiResponse = new GetEmailDispositionResponse();
             try
             {
                 string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
-                string Response = APIHelper.CallToAPI(APIBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
+                {
+                    throw new SystemException(Response);
+                }
+
+                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
                 {
                     throw new SystemException(Response);
                 }
@@ -53,7 +118,7 @@ namespace Paubox
         /// </summary>
         /// <param name="message"></param>
         /// <returns>SendMessageResponse</returns>
-        public static SendMessageResponse SendMessage(Message message)
+        public SendMessageResponse SendMessage(Message message)
         {
             SendMessageResponse apiResponse = new SendMessageResponse();
             try
@@ -64,9 +129,15 @@ namespace Paubox
                     data = ConvertMessageObjectToJSON(message) // Convert i/p Message object to JSON , as per the API
                 });
 
-                string Response = APIHelper.CallToAPI(APIBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
                 apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
+
                 if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
+                {
+                    throw new SystemException(Response);
+                }
+
+                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
                 {
                     throw new SystemException(Response);
                 }
@@ -75,6 +146,7 @@ namespace Paubox
             {
                 throw ex;
             }
+
             return apiResponse;
         }
 
@@ -82,9 +154,9 @@ namespace Paubox
         /// Gets Authorization Header
         /// </summary>
         /// <returns></returns>
-        private static string GetAuthorizationHeader()
+        private string GetAuthorizationHeader()
         {
-            return string.Format("Token token={0}", APIKey);
+            return string.Format("Token token={0}", _apiKey);
         }
 
         /// <summary>
@@ -168,7 +240,7 @@ namespace Paubox
                 });
 
                 bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(message.ForceSecureNotification);
-                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null 
+                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null
                 {
                     MessageJSON.Add("forceSecureNotification", forceSecureNotificationValue);
                 }
@@ -216,7 +288,5 @@ namespace Paubox
             }
         }
     }
-
-
 }
 

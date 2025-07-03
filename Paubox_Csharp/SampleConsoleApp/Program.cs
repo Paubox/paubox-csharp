@@ -1,44 +1,71 @@
-﻿using Paubox;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Paubox;
 
 namespace SampleConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        private static readonly IConfiguration Configuration;
+
+        static Program()
         {
-            string trackingId = SendMessage();
-            GetEmailDispositionResponse response = EmailLibrary.GetEmailDisposition(trackingId);
+            string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(exeDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
         }
 
-        static string SendMessage()
+        static void Main(string[] args)
+        {
+            Console.WriteLine("▶️ Starting QA Console App...");
+
+            Console.WriteLine("🧰 Constructing the EmailLibrary...");
+            EmailLibrary paubox = new EmailLibrary(Configuration);
+
+            Console.WriteLine("✉️ Creating a new valid Message object...");
+            Message message = CreateValidMessage();
+
+            Console.WriteLine("✉️ Sending message from " + Configuration["FromEmail"] + " to " + Configuration["ToEmail"] + "...");
+            SendMessageResponse response = paubox.SendMessage(message);
+
+            string trackingId = response.SourceTrackingId;
+            Console.WriteLine("🔍 Tracking ID: " + trackingId);
+
+            Console.WriteLine("ℹ️ Getting email disposition for tracking ID: " + trackingId);
+            GetEmailDispositionResponse dispositionResponse = paubox.GetEmailDisposition(trackingId);
+
+            Console.WriteLine("ℹ️ Response: " + dispositionResponse);
+        }
+
+        static Message CreateValidMessage()
         {
             Message message = new Message();
-            message.Recipients = new string[] { "username@domain.com" };
+            message.Recipients = new string[] { Configuration["ToEmail"] };
+
+            Header header = new Header();
+            header.Subject = "Test Mail from C#";
+            header.From = Configuration["FromEmail"];
+            message.Header = header;
 
             Content content = new Content();
-            Header header = new Header();
+            content.PlainText = "Hello Again";
+            message.Content = content;
+
             Attachment attachment = new Attachment();
             List<Attachment> listAttachments = new List<Attachment>();
             attachment.FileName = "hello_world.txt";
             attachment.ContentType = "text/plain";
             attachment.Content = "SGVsbG8gV29ybGQh\n";
-
             listAttachments.Add(attachment);
 
-
-            header.Subject = "Test Mail from C#";
-            header.From = "renee@undefeatedgames.com";
-            content.PlainText = "Hello Again";
-
-            message.Header = header;
-            message.Content = content;
             message.Attachments = listAttachments;
 
-            SendMessageResponse response = EmailLibrary.SendMessage(message);
-
-            return response.SourceTrackingId;
+            return message;
         }
-
     }
 }
