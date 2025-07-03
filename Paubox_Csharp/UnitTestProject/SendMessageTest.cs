@@ -190,12 +190,6 @@ public class SendMessageTest
         Assert.IsNotNull(exception);
     }
 
-    [Test]
-    public void TestSendMessageWithCustomHeaders()
-    {
-        // TODO: Implement this test
-    }
-
     // ------------------------------------------------------------
     // Helper methods
     //
