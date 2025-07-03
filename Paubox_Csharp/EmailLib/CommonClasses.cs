@@ -10,6 +10,7 @@ namespace Paubox
         public string Subject { get; set; }
         public string From { get; set; }
         public string ReplyTo { get; set; }
+        public Dictionary<string, string> CustomHeaders { get; set; } = new Dictionary<string, string>();
     }
     public class Content
     {
@@ -54,7 +55,7 @@ namespace Paubox
     {
         public MessageDetails Message { get; set; }
     }
-   
+
     public class MessageDetails
     {
         public string Id { get; set; }
@@ -71,7 +72,7 @@ namespace Paubox
     {
         public string DeliveryStatus { get; set; }
         public DateTime? DeliveryTime { get; set; }
-        public string OpenedStatus { get; set; }        
+        public string OpenedStatus { get; set; }
         public DateTime? OpenedTime { get; set; }
     }
 

@@ -185,6 +185,14 @@ namespace Paubox
                      { "from" , message.Header.From},
                      { "reply-to" , message.Header.ReplyTo}
                      });
+
+                    if (message.Header.CustomHeaders != null && message.Header.CustomHeaders.Count > 0)
+                    {
+                        foreach (var header in message.Header.CustomHeaders)
+                        {
+                            headerJSON.Add(header.Key, header.Value);
+                        }
+                    }
                 }
                 else
                 {
