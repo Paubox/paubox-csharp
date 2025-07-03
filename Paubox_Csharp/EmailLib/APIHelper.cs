@@ -42,9 +42,6 @@ namespace Paubox
                 }
                 else if (APIVerb == "POST")
                 {
-                    Console.WriteLine("================================================");
-                    Console.WriteLine("Request Body: " + requestBody);
-                    Console.WriteLine("================================================");
                     response = client.PostAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
                 }
 

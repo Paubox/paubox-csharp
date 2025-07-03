@@ -50,6 +50,10 @@ namespace SampleConsoleApp
             Header header = new Header();
             header.Subject = "Test Mail from C#";
             header.From = Configuration["FromEmail"];
+            header.CustomHeaders = new Dictionary<string, string> {
+                { "X-Custom-Header", "Custom Value" },
+                { "X-Another-Header", "Another Value" }
+            };
             message.Header = header;
 
             Content content = new Content();
