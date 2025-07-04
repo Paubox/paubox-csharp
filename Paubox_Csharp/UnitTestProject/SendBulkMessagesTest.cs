@@ -76,13 +76,15 @@ public class SendBulkMessagesTest
                             {
                                 ["subject"] = "Email 1",
                                 ["from"] = "from1@yourdomain.com",
-                                ["reply-to"] = "reply-to1@yourdomain.com"
+                                ["reply-to"] = "reply-to1@yourdomain.com",
+                                ["X-Custom-Header"] = "Custom Value",
+                                ["X-Another-Header"] = "Another Value"
                             },
                             ["allowNonTLS"] = false,
                             ["content"] = new JObject
                             {
                                 ["text/plain"] = "Email 1 Content",
-                                ["text/html"] = null
+                                ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<html><body><h1>Email 1 Content</h1></body></html>"))
                             },
                             ["attachments"] = null
                         },
@@ -101,9 +103,17 @@ public class SendBulkMessagesTest
                             ["content"] = new JObject
                             {
                                 ["text/plain"] = "Email 2 Content",
-                                ["text/html"] = null
+                                ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<html><body><h1>Email 2 Content</h1></body></html>"))
                             },
-                            ["attachments"] = null
+                            ["attachments"] = new JArray
+                            {
+                                new JObject
+                                {
+                                    ["fileName"] = "attachment1.txt",
+                                    ["contentType"] = "text/plain",
+                                    ["content"] = "Attachment 1 Content"
+                                }
+                            }
                         }
                     }
             }
@@ -127,6 +137,7 @@ public class SendBulkMessagesTest
     //
     private Message[] CreateTestMessages()
     {
+        // Construct the first message with custom header
         Message message1 = new Message()
         {
             Recipients = new string[] { "recipient1@domain.com" },
@@ -136,14 +147,20 @@ public class SendBulkMessagesTest
             {
                 From = "from1@yourdomain.com",
                 ReplyTo = "reply-to1@yourdomain.com",
-                Subject = "Email 1"
+                Subject = "Email 1",
+                CustomHeaders = new Dictionary<string, string> {
+                    { "X-Custom-Header", "Custom Value" },
+                    { "X-Another-Header", "Another Value" }
+                }
             },
             Content = new Content()
             {
-                PlainText = "Email 1 Content"
+                PlainText = "Email 1 Content",
+                HtmlText = "<html><body><h1>Email 1 Content</h1></body></html>"
             }
         };
 
+        // Construct the first message with attachments
         Message message2 = new Message()
         {
             Recipients = new string[] { "recipient2@domain.com" },
@@ -157,7 +174,17 @@ public class SendBulkMessagesTest
             },
             Content = new Content()
             {
-                PlainText = "Email 2 Content"
+                PlainText = "Email 2 Content",
+                HtmlText = "<html><body><h1>Email 2 Content</h1></body></html>"
+            },
+            Attachments = new List<Attachment>()
+            {
+                new Attachment()
+                {
+                    FileName = "attachment1.txt",
+                    ContentType = "text/plain",
+                    Content = "Attachment 1 Content"
+                }
             }
         };
 

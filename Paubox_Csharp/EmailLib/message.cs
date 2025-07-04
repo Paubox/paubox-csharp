@@ -64,6 +64,7 @@ namespace Paubox
             JArray attachmentJSONArray = null;
             if (this.Attachments != null && this.Attachments.Count > 0)
             {
+                attachmentJSONArray = new JArray();
                 foreach (var attachment in this.Attachments)
                 {
                     JObject attachmentJSON = JObject.FromObject(new
