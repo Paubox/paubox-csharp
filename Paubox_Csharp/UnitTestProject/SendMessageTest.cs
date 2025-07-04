@@ -99,7 +99,7 @@ public class SendMessageTest
     [Test]
     public void TestSendMessageSendsTheCorrectPayloadToThePauboxAPIWithCustomHeaders()
     {
-        string apiResponse = SuccessResponse();
+        string apiResponse = SuccessResponseWithCustomHeaders();
         string capturedRequestBody = null;
 
         _mockApiHelper.Setup(
@@ -161,6 +161,14 @@ public class SendMessageTest
             ),
             Times.Once
         );
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("3d38ab13-0af8-4028-bd45-52e882e0d584", result.SourceTrackingId);
+        Assert.AreEqual("Service OK", result.Data);
+        Assert.IsNotNull(result.CustomHeaders);
+        Assert.AreEqual("Custom Value", result.CustomHeaders["X-Custom-Header"]);
+        Assert.AreEqual("Another Value", result.CustomHeaders["X-Another-Header"]);
+        Assert.IsNull(result.Errors);
     }
 
     [Test]
@@ -232,6 +240,20 @@ public class SendMessageTest
         {
             ["SourceTrackingId"] = "3d38ab13-0af8-4028-bd45-52e882e0d584",
             ["Data"] = "Service OK",
+            ["Errors"] = null
+        });
+    }
+
+    private string SuccessResponseWithCustomHeaders()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            ["SourceTrackingId"] = "3d38ab13-0af8-4028-bd45-52e882e0d584",
+            ["Data"] = "Service OK",
+            ["CustomHeaders"] = new Dictionary<string, string> {
+                { "X-Custom-Header", "Custom Value" },
+                { "X-Another-Header", "Another Value" }
+            },
             ["Errors"] = null
         });
     }
