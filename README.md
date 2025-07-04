@@ -176,6 +176,38 @@ message.Content = content;
 SendMessageResponse response = paubox.SendMessage(message);
 ```
 
+Alternatively, you can use an object initializer to create the message:
+
+```csharp
+Message message = new Message() {
+    Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
+    Cc = new string[] { "cc-recipient@domain.com" },
+    Bcc = new string[] { "bcc-recipient@domain.com" },
+    Header = new Header() {
+        Subject = "Testing!",
+        From = "you@yourdomain.com",
+        ReplyTo = "reply-to@yourdomain.com",
+        CustomHeaders = new Dictionary<string, string> {
+            { "X-Custom-Header", "Custom Value" },
+            { "X-Another-Header", "Another Value" }
+        }
+    },
+    Content = new Content() {
+        PlainText = "Hello World!",
+        HtmlText = "<html><body><h1>Hello World!</h1></body></html>"
+    },
+    Attachments = new List<Attachment>() {
+        new Attachment() {
+            FileName = "hello_world.txt",
+            ContentType = "text/plain",
+            Content = "SGVsbG8gV29ybGQh\n"
+        }
+    }
+};
+
+SendMessageResponse response = paubox.SendMessage(message);
+```
+
 #### Allowing non-TLS message delivery
 
 If you want to send non-PHI mail that does not need to be HIPAA-compliant, you can

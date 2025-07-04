@@ -44,32 +44,30 @@ namespace SampleConsoleApp
 
         static Message CreateValidMessage()
         {
-            Message message = new Message();
-            message.Recipients = new string[] { Configuration["ToEmail"] };
-
-            Header header = new Header();
-            header.Subject = "Test Mail from C#";
-            header.From = Configuration["FromEmail"];
-            header.CustomHeaders = new Dictionary<string, string> {
-                { "X-Custom-Header", "Custom Value" },
-                { "X-Another-Header", "Another Value" }
+            return new Message() {
+                Recipients = new string[] { Configuration["ToEmail"] },
+                Cc = new string[] { },
+                Bcc = new string[] { },
+                Header = new Header() {
+                    Subject = "Test Mail from C#",
+                    From = Configuration["FromEmail"],
+                    CustomHeaders = new Dictionary<string, string> {
+                        { "X-Custom-Header", "Custom Value" },
+                        { "X-Another-Header", "Another Value" }
+                    }
+                },
+                Content = new Content() {
+                    PlainText = "Hello Again",
+                    HtmlText = "<html><body><h1>Hello Again</h1></body></html>"
+                },
+                Attachments = new List<Attachment>() {
+                    new Attachment() {
+                        FileName = "hello_world.txt",
+                        ContentType = "text/plain",
+                        Content = "SGVsbG8gV29ybGQh\n"
+                    }
+                }
             };
-            message.Header = header;
-
-            Content content = new Content();
-            content.PlainText = "Hello Again";
-            message.Content = content;
-
-            Attachment attachment = new Attachment();
-            List<Attachment> listAttachments = new List<Attachment>();
-            attachment.FileName = "hello_world.txt";
-            attachment.ContentType = "text/plain";
-            attachment.Content = "SGVsbG8gV29ybGQh\n";
-            listAttachments.Add(attachment);
-
-            message.Attachments = listAttachments;
-
-            return message;
         }
     }
 }
