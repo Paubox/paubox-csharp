@@ -35,6 +35,8 @@ public class SendBulkMessagesTest
         Assert.AreEqual("22222222-2222-2222-2222-222222222222", result.Messages[1].SourceTrackingId);
         Assert.AreEqual("Service OK", result.Messages[0].Data);
         Assert.AreEqual("Service OK", result.Messages[1].Data);
+        Assert.AreEqual("Custom Value", result.Messages[0].CustomHeaders["X-Custom-Header"]);
+        Assert.AreEqual("Another Value", result.Messages[0].CustomHeaders["X-Another-Header"]);
         Assert.IsNull(result.Messages[0].Errors);
         Assert.IsNull(result.Messages[1].Errors);
     }
@@ -132,6 +134,21 @@ public class SendBulkMessagesTest
         );
     }
 
+    [Test]
+    public void TestSendBulkMessagesForBadRequestThrowsSystemException()
+    {
+        string apiResponse = BadRequestResponse();
+        MockApiResponse(apiResponse);
+
+        Message[] messages = CreateTestMessages();
+        var exception = Assert.Throws<SystemException>(() => _emailLibrary.SendBulkMessages(messages));
+
+        Assert.IsNotNull(exception.Message);
+        Assert.IsTrue(exception.Message.Length > 0);
+        StringAssert.Contains("Error Title", exception.Message);
+        StringAssert.Contains("Description of error", exception.Message);
+    }
+
     // ------------------------------------------------------------
     // Helper methods
     //
@@ -213,6 +230,10 @@ public class SendBulkMessagesTest
                 new Dictionary<string, object>
                 {
                     ["SourceTrackingId"] = "11111111-1111-1111-1111-111111111111",
+                    ["CustomHeaders"] = new Dictionary<string, string> {
+                        { "X-Custom-Header", "Custom Value" },
+                        { "X-Another-Header", "Another Value" }
+                    },
                     ["Data"] = "Service OK",
                 },
                 new Dictionary<string, object>
@@ -221,6 +242,24 @@ public class SendBulkMessagesTest
                     ["Data"] = "Service OK",
                 }
             },
+        });
+    }
+
+    private string BadRequestResponse()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            ["SourceTrackingId"] = null,
+            ["Data"] = null,
+            ["Errors"] = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    ["code"] = 400,
+                    ["title"] = "Error Title",
+                    ["details"] = "Description of error"
+                }
+            }
         });
     }
 }
