@@ -149,6 +149,18 @@ public class SendBulkMessagesTest
         StringAssert.Contains("Description of error", exception.Message);
     }
 
+    [Test]
+    public void TestSendBulkMessagesWithEmptyResponseThrowsSystemException()
+    {
+        string apiResponse = EmptyResponse();
+        MockApiResponse(apiResponse);
+
+        Message[] messages = CreateTestMessages();
+        var exception = Assert.Throws<SystemException>(() => _emailLibrary.SendBulkMessages(messages));
+
+        Assert.IsNotNull(exception);
+    }
+
     // ------------------------------------------------------------
     // Helper methods
     //
@@ -249,8 +261,6 @@ public class SendBulkMessagesTest
     {
         return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            ["SourceTrackingId"] = null,
-            ["Data"] = null,
             ["Errors"] = new List<Dictionary<string, object>>
             {
                 new Dictionary<string, object>
@@ -260,6 +270,15 @@ public class SendBulkMessagesTest
                     ["details"] = "Description of error"
                 }
             }
+        });
+    }
+
+    private string EmptyResponse()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            ["Messages"] = null,
+            ["Errors"] = null
         });
     }
 }
