@@ -267,7 +267,29 @@ GetEmailDispositionResponse response = paubox.GetEmailDisposition("2a3c048485aa4
 
 ### Send Bulk Messages
 
-Coming soon.
+Please see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#send-bulk-messages) for more
+details. Specifically:
+
+> We recommend batches of 50 (fifty) or less.
+
+Simply construct an array of `Message` objects and call `EmailLibrary.SendBulkMessages`:
+
+```csharp
+Message message1 = new Message();
+Message message2 = new Message();
+Message message3 = new Message();
+
+// Then construct your message objects as above, specifying headers, content, etc.
+
+// Construct an array of messages:
+Message[] messages = new Message[] {
+    message1,
+    message2,
+    message3
+};
+
+SendBulkMessagesResponse response = paubox.SendBulkMessages(messages);
+```
 
 ### Dynamic Templates
 
