@@ -275,13 +275,10 @@ details. Specifically:
 Simply construct an array of `Message` objects and call `EmailLibrary.SendBulkMessages`:
 
 ```csharp
-Message message1 = new Message();
-Message message2 = new Message();
-Message message3 = new Message();
+Message message1 = new Message(...);
+Message message2 = new Message(...);
+Message message3 = new Message(...);
 
-// Then construct your message objects as above, specifying headers, content, etc.
-
-// Construct an array of messages:
 Message[] messages = new Message[] {
     message1,
     message2,
