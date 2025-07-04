@@ -40,6 +40,7 @@ namespace Paubox
     {
         public string SourceTrackingId { get; set; }
         public string Data { get; set; }
+        public Dictionary<string, string> CustomHeaders { get; set; }
         public List<Error> Errors { get; set; }
     }
 
