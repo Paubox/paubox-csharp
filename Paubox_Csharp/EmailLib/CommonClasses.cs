@@ -24,18 +24,6 @@ namespace Paubox
         public string Content { get; set; }
     }
 
-    public class Message
-    {
-        public string[] Recipients { get; set; }
-        public string[] Bcc { get; set; }
-        public string[] Cc { get; set; }
-        public Header Header { get; set; }
-        public bool AllowNonTLS { get; set; } = false;
-        public string ForceSecureNotification { get; set; }
-        public Content Content { get; set; }
-        public List<Attachment> Attachments { get; set; }
-    }
-
     public class SendMessageResponse
     {
         public string SourceTrackingId { get; set; }
@@ -52,8 +40,9 @@ namespace Paubox
     public class BulkMessageResponse
     {
         public string SourceTrackingId { get; set; }
-        public Dictionary<string, string> CustomHeaders { get; set; }
         public string Data { get; set; }
+        public Dictionary<string, string> CustomHeaders { get; set; }
+        public List<Error> Errors { get; set; }
     }
 
     public class GetEmailDispositionResponse
