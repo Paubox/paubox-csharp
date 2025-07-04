@@ -13,5 +13,6 @@ namespace Paubox
         // Instance methods for the new SDK design
         SendMessageResponse SendMessage(Message message);
         GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId);
+        SendBulkMessagesResponse SendBulkMessages(Message[] messages);
     }
 }

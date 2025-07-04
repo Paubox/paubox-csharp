@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace Paubox
 {
@@ -50,6 +51,7 @@ namespace Paubox
 
         /// <summary>
         /// Constructor for EmailLibrary with Configuration and custom API helper
+        /// (used for dependency injection in unit tests)
         /// </summary>
         /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
         /// <param name="apiHelper">Custom API helper implementation</param>
@@ -138,6 +140,43 @@ namespace Paubox
                 }
 
                 if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
+                {
+                    throw new SystemException(Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
+        /// Send Bulk Messages
+        /// </summary>
+        /// <param name="messages">Array of Message objects</param>
+        /// <returns>SendBulkMessagesResponse</returns>
+        public SendBulkMessagesResponse SendBulkMessages(Message[] messages)
+        {
+            SendBulkMessagesResponse apiResponse = new SendBulkMessagesResponse();
+            try
+            {
+                // Convert each message to JSON using LINQ Select (map function)
+                var serializedMessages = messages.Select(message => ConvertMessageObjectToJSON(message)).ToList();
+
+                JObject requestObject = JObject.FromObject(new
+                {
+                    data = new Dictionary<string, object>
+                    {
+                        { "messages", serializedMessages }
+                    }
+                });
+
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                apiResponse = JsonConvert.DeserializeObject<SendBulkMessagesResponse>(Response);
+
+                if (apiResponse.Messages == null)
                 {
                     throw new SystemException(Response);
                 }
