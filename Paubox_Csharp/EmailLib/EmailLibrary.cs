@@ -203,7 +203,7 @@ namespace Paubox
                 string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<GetDynamicTemplateResponse>(Response);
 
-                if (apiResponse.Error != null || apiResponse.Errors != null)
+                if (apiResponse.Error != null)
                 {
                     throw new SystemException(Response);
                 }
@@ -246,12 +246,12 @@ namespace Paubox
         /// <returns>DynamicTemplateResponse</returns>
         public DynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath)
         {
-            DynamicTemplateResponse apiResponse = new DynamicTemplateResponse();
             string requestURI = "dynamic_templates";
             string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "POST", templateName, templatePath);
-            apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
 
-            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            DynamicTemplateResponse apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
+
+            if (apiResponse.Error != null)
             {
                 throw new SystemException(Response);
             }
@@ -273,7 +273,7 @@ namespace Paubox
             string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "PATCH", templateName, templatePath);
             apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
 
-            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            if (apiResponse.Error != null)
             {
                 throw new SystemException(Response);
             }
@@ -293,7 +293,7 @@ namespace Paubox
             string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "DELETE");
             apiResponse = JsonConvert.DeserializeObject<DeleteDynamicTemplateResponse>(Response);
 
-            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            if (apiResponse.Error != null)
             {
                 throw new SystemException(Response);
             }

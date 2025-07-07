@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Paubox
 {
@@ -83,11 +84,15 @@ namespace Paubox
         public string Name { get; set; }
         public int ApiCustomerId { get; set; }
         public string Body { get; set; }
+
+        [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
+
+        [JsonProperty("updated_at")]
         public DateTime UpdatedAt { get; set; }
+
         public Dictionary<string, string> Metadata { get; set; }
         public string Error { get; set; }
-        public List<Error> Errors { get; set; }
     }
 
     public class DynamicTemplateSummary
@@ -102,7 +107,6 @@ namespace Paubox
         public string Message { get; set; }
         public DynamicTemplateParams Params { get; set; }
         public string Error { get; set; }
-        public List<Error> Errors { get; set; }
     }
 
     public class DynamicTemplateParams
@@ -114,16 +118,19 @@ namespace Paubox
     public class DynamicTemplateParamsBody
     {
         public string Tempfile { get; set; }
-        public string OriginalFilename { get; set; }
-        public string ContentType { get; set; }
         public string Headers { get; set; }
+
+        [JsonProperty("original_filename")]
+        public string OriginalFilename { get; set; }
+
+        [JsonProperty("content_type")]
+        public string ContentType { get; set; }
     }
 
     public class DeleteDynamicTemplateResponse
     {
         public string Message { get; set; }
         public string Error { get; set; }
-        public List<Error> Errors { get; set; }
     }
 
     public class Error
