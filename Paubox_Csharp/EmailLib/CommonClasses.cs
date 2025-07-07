@@ -119,6 +119,13 @@ namespace Paubox
         public string Headers { get; set; }
     }
 
+    public class DeleteDynamicTemplateResponse
+    {
+        public string Message { get; set; }
+        public string Error { get; set; }
+        public List<Error> Errors { get; set; }
+    }
+
     public class Error
     {
         public int Code { get; set; }

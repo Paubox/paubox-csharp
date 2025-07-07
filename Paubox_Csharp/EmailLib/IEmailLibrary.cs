@@ -13,6 +13,6 @@ namespace Paubox
         GetDynamicTemplateResponse GetDynamicTemplate(string templateId);
         DynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath);
         DynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath);
-        // DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId);
+        DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId);
     }
 }

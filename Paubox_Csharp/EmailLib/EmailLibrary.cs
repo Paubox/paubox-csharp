@@ -282,6 +282,26 @@ namespace Paubox
         }
 
         /// <summary>
+        /// Deletes a Dynamic Template identified by templateId.
+        /// </summary>
+        /// <param name="templateId"></param>
+        /// <returns>DeleteDynamicTemplateResponse</returns>
+        public DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId)
+        {
+            DeleteDynamicTemplateResponse apiResponse = new DeleteDynamicTemplateResponse();
+            string requestURI = string.Format("dynamic_templates/{0}", templateId);
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "DELETE");
+            apiResponse = JsonConvert.DeserializeObject<DeleteDynamicTemplateResponse>(Response);
+
+            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            {
+                throw new SystemException(Response);
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
         /// Gets Authorization Header
         /// </summary>
         /// <returns></returns>
