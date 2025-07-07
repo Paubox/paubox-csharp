@@ -1,14 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Paubox;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SampleConsoleApp
 {
     class Program
     {
         private static readonly IConfiguration Configuration;
+        private static readonly string templatePath;
 
         static Program()
         {
@@ -18,6 +22,13 @@ namespace SampleConsoleApp
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+
+            templatePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "Paubox_Csharp",
+                "SampleConsoleApp",
+                "ExampleTemplate.hbs"
+            );
         }
 
         static void Main(string[] args)
@@ -27,31 +38,80 @@ namespace SampleConsoleApp
             Console.WriteLine("🧰 Constructing the EmailLibrary...");
             EmailLibrary paubox = new EmailLibrary(Configuration);
 
-            Console.WriteLine("✉️ Creating a new valid Message object...");
-            Message message = CreateValidMessage("Send Message Test");
+            // -----------------------------------------------------------------------
+            // Send Message, Get Email Disposition, and Send Bulk Messages Tests
+            // -----------------------------------------------------------------------
 
-            Console.WriteLine("🧪 SendMessage Test");
-            SendMessageResponse response = paubox.SendMessage(message);
+            // Console.WriteLine("✉️ Creating a new valid Message object...");
+            // Message message = CreateValidMessage("Send Message Test");
 
-            string trackingId = response.SourceTrackingId;
-            Console.WriteLine("🔍 Tracking ID: " + trackingId);
+            // Console.WriteLine("🧪 SendMessage Test");
+            // SendMessageResponse response = paubox.SendMessage(message);
 
-            Console.WriteLine("ℹ️ Getting email disposition for tracking ID: " + trackingId);
-            GetEmailDispositionResponse dispositionResponse = paubox.GetEmailDisposition(trackingId);
+            // string trackingId = response.SourceTrackingId;
+            // Console.WriteLine("🔍 Tracking ID: " + trackingId);
 
-            Console.WriteLine("ℹ️ Status: " + dispositionResponse.Data.Message.Message_Deliveries[0].Status.DeliveryStatus);
+            // Console.WriteLine("ℹ️ Getting email disposition for tracking ID: " + trackingId);
+            // GetEmailDispositionResponse dispositionResponse = paubox.GetEmailDisposition(trackingId);
 
-            Console.WriteLine("✉️ Creating a list of 2 Messages to test the SendBulkMessages method...");
-            Message[] messages = new Message[] {
-                CreateValidMessage("Send Bulk Message Test (First Message)"),
-                CreateValidMessage("Send Bulk Message Test (Second Message)")
-            };
+            // Console.WriteLine("ℹ️ Status: " + dispositionResponse.Data.Message.Message_Deliveries[0].Status.DeliveryStatus);
 
-            Console.WriteLine("🧪 SendBulkMessages Test");
-            SendBulkMessagesResponse bulkResponse = paubox.SendBulkMessages(messages);
+            // Console.WriteLine("✉️ Creating a list of 2 Messages to test the SendBulkMessages method...");
+            // Message[] messages = new Message[] {
+            //     CreateValidMessage("Send Bulk Message Test (First Message)"),
+            //     CreateValidMessage("Send Bulk Message Test (Second Message)")
+            // };
 
-            Console.WriteLine("🔍 Tracking ID for first message: " + bulkResponse.Messages[0].SourceTrackingId);
-            Console.WriteLine("🔍 Tracking ID for second message: " + bulkResponse.Messages[1].SourceTrackingId);
+            // Console.WriteLine("🧪 SendBulkMessages Test");
+            // SendBulkMessagesResponse bulkResponse = paubox.SendBulkMessages(messages);
+
+            // Console.WriteLine("🔍 Tracking ID for first message: " + bulkResponse.Messages[0].SourceTrackingId);
+            // Console.WriteLine("🔍 Tracking ID for second message: " + bulkResponse.Messages[1].SourceTrackingId);
+
+            // -----------------------------------------------------------------------
+            // Dynamic Template Tests
+            // -----------------------------------------------------------------------
+
+            string templateName = "Example Template " + DateTime.Now.ToString("MMM dd HH:mm:ss");
+
+            Console.WriteLine("🧪 Creating a new Dynamic Template named " + templateName + "...");
+
+            DynamicTemplateResponse createResult = paubox.CreateDynamicTemplate(templateName, templatePath);
+
+            Console.WriteLine("🔍 Create Template Response:");
+            Console.WriteLine("\n\n" + JsonConvert.SerializeObject(createResult, Formatting.Indented) + "\n\n");
+
+            Console.WriteLine("🧪 Listing all Dynamic Templates...");
+            List<DynamicTemplateSummary> listResult = paubox.ListDynamicTemplates();
+            Console.WriteLine("🔍 List Template Response:");
+            Console.WriteLine("\n\n" + JsonConvert.SerializeObject(listResult, Formatting.Indented) + "\n\n");
+
+            int templateId = listResult.FirstOrDefault(t => t.Name == templateName)?.Id ?? 0;
+            if (templateId == 0)
+            {
+                Console.WriteLine("❌ Failed to find the new template in the list.");
+                return;
+            }
+
+            Console.WriteLine("🧪 Getting the '" + templateName + "' Template with ID " + templateId + "...");
+            GetDynamicTemplateResponse getResult = paubox.GetDynamicTemplate(templateId);
+
+            Console.WriteLine("🔍 Get Template Response:");
+            Console.WriteLine("\n\n" + JsonConvert.SerializeObject(getResult, Formatting.Indented) + "\n\n");
+
+            string newTemplateName = "Updated " + templateName;
+
+            Console.WriteLine("🧪 Updating the Template with ID " + templateId + "...");
+            DynamicTemplateResponse updateResult = paubox.UpdateDynamicTemplate(templateId, newTemplateName, templatePath);
+
+            Console.WriteLine("🔍 Update Template Response:");
+            Console.WriteLine("\n\n" + JsonConvert.SerializeObject(updateResult, Formatting.Indented) + "\n\n");
+
+            Console.WriteLine("🧪 Deleting the Template with ID " + templateId + "...");
+            DeleteDynamicTemplateResponse deleteResult = paubox.DeleteDynamicTemplate(templateId);
+
+            Console.WriteLine("🔍 Delete Template Response:");
+            Console.WriteLine("\n\n" + JsonConvert.SerializeObject(deleteResult, Formatting.Indented) + "\n\n");
         }
 
         static Message CreateValidMessage(string title)

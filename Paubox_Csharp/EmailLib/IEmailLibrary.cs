@@ -10,9 +10,9 @@ namespace Paubox
         GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId);
         SendBulkMessagesResponse SendBulkMessages(Message[] messages);
         List<DynamicTemplateSummary> ListDynamicTemplates();
-        GetDynamicTemplateResponse GetDynamicTemplate(string templateId);
+        GetDynamicTemplateResponse GetDynamicTemplate(int templateId);
         DynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath);
-        DynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath);
-        DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId);
+        DynamicTemplateResponse UpdateDynamicTemplate(int templateId, string templateName, string templatePath);
+        DeleteDynamicTemplateResponse DeleteDynamicTemplate(int templateId);
     }
 }

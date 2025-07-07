@@ -194,12 +194,12 @@ namespace Paubox
         /// </summary>
         /// <param name="templateId"></param>
         /// <returns>GetDynamicTemplateResponse</returns>
-        public GetDynamicTemplateResponse GetDynamicTemplate(string templateId)
+        public GetDynamicTemplateResponse GetDynamicTemplate(int templateId)
         {
             GetDynamicTemplateResponse apiResponse = new GetDynamicTemplateResponse();
             try
             {
-                string requestURI = string.Format("dynamic_templates/{0}", templateId);
+                string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
                 string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<GetDynamicTemplateResponse>(Response);
 
@@ -266,10 +266,10 @@ namespace Paubox
         /// <param name="templateName">This is the name of the template. It has to be supplied in this call</param>
         /// <param name="templatePath">This is the path to the Handlebars template file. It is optional and can be omitted if you are not updating the template file.</param>
         /// <returns>DynamicTemplateResponse</returns>
-        public DynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath)
+        public DynamicTemplateResponse UpdateDynamicTemplate(int templateId, string templateName, string templatePath)
         {
             DynamicTemplateResponse apiResponse = new DynamicTemplateResponse();
-            string requestURI = string.Format("dynamic_templates/{0}", templateId);
+            string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
             string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "PATCH", templateName, templatePath);
             apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
 
@@ -286,10 +286,10 @@ namespace Paubox
         /// </summary>
         /// <param name="templateId"></param>
         /// <returns>DeleteDynamicTemplateResponse</returns>
-        public DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId)
+        public DeleteDynamicTemplateResponse DeleteDynamicTemplate(int templateId)
         {
             DeleteDynamicTemplateResponse apiResponse = new DeleteDynamicTemplateResponse();
-            string requestURI = string.Format("dynamic_templates/{0}", templateId);
+            string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
             string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "DELETE");
             apiResponse = JsonConvert.DeserializeObject<DeleteDynamicTemplateResponse>(Response);
 
