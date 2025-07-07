@@ -291,6 +291,11 @@ namespace SampleConsoleApp
                 throw new Exception("❌ Unexpected template name: " + getResult.Name);
             }
 
+            if (getResult.ApiCustomerId == null || getResult.ApiCustomerId == 0)
+            {
+                throw new Exception("❌ Unexpected API customer ID: " + getResult.ApiCustomerId);
+            }
+
             if (getResult.Body != File.ReadAllText(templatePath))
             {
                 throw new Exception("❌ Unexpected template body: " + getResult.Body);

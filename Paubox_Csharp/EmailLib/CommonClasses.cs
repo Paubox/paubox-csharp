@@ -82,7 +82,10 @@ namespace Paubox
     {
         public int Id { get; set; }
         public string Name { get; set; }
+
+        [JsonProperty("api_customer_id")]
         public int ApiCustomerId { get; set; }
+
         public string Body { get; set; }
 
         [JsonProperty("created_at")]

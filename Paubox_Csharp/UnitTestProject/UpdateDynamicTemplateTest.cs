@@ -33,7 +33,7 @@ public class UpdateDynamicTemplateTest
         string apiResponse = SuccessUpdateFileAndNameResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "123";
+        int templateId = 123;
         string templateName = "Updated Example Template";
         string templatePath = Path.Combine(_projectDir, "Fixtures", "ExampleTemplate.hbs");
         DynamicTemplateResponse result = _emailLibrary.UpdateDynamicTemplate(templateId, templateName, templatePath);
@@ -52,7 +52,7 @@ public class UpdateDynamicTemplateTest
         string apiResponse = SuccessUpdateNameOnlyResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "123";
+        int templateId = 123;
         string templateName = "Updated Example Template";
 
         DynamicTemplateResponse result = _emailLibrary.UpdateDynamicTemplate(templateId, templateName, null);
@@ -69,7 +69,7 @@ public class UpdateDynamicTemplateTest
         string apiResponse = NotFoundErrorResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "-15";
+        int templateId = -15;
         string templateName = "Updated Example Template";
         string templatePath = Path.Combine(_projectDir, "Fixtures", "ExampleTemplate.hbs");
 
@@ -86,7 +86,7 @@ public class UpdateDynamicTemplateTest
         string apiResponse = ValidationErrorResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "123";
+        int templateId = 123;
         string templateName = "";
         string templatePath = Path.Combine(_projectDir, "Fixtures", "ExampleTemplate.hbs");
 

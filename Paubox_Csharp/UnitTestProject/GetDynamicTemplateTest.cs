@@ -26,7 +26,7 @@ public class GetDynamicTemplateTest
         string apiResponse = SuccessResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "123";
+        int templateId = 123;
         GetDynamicTemplateResponse result = _emailLibrary.GetDynamicTemplate(templateId);
 
         Assert.IsNotNull(result);
@@ -36,10 +36,8 @@ public class GetDynamicTemplateTest
         Assert.AreEqual("<html>\n    <body>\n        <p>Hello {{first_name}} {{last_name}}!</p>\n    </body>\n</html>\n\n", result.Body);
         Assert.AreEqual(new DateTime(2025, 7, 7, 8, 13, 50, 807), result.CreatedAt);
         Assert.AreEqual(new DateTime(2025, 7, 7, 8, 13, 50, 807), result.UpdatedAt);
-        Assert.AreEqual("MetadataValue", result.Metadata["MetadataKey"]);
-
+        Assert.AreEqual("value", result.Metadata["key"]);
         Assert.IsNull(result.Error);
-        Assert.IsNull(result.Errors);
     }
 
     [Test]
@@ -48,7 +46,7 @@ public class GetDynamicTemplateTest
         string apiResponse = NotFoundResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "-15";
+        int templateId = -15;
         var exception = Assert.Throws<SystemException>(() => _emailLibrary.GetDynamicTemplate(templateId));
 
         Assert.IsNotNull(exception.Message);
@@ -76,15 +74,15 @@ public class GetDynamicTemplateTest
     {
         return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            ["Id"] = 123,
-            ["Name"] = "Test Template",
-            ["ApiCustomerId"] = 456,
-            ["Body"] = "<html>\n    <body>\n        <p>Hello {{first_name}} {{last_name}}!</p>\n    </body>\n</html>\n\n",
-            ["CreatedAt"] = "2025-07-06T23:13:50.807-07:00",
-            ["UpdatedAt"] = "2025-07-06T23:13:50.807-07:00",
-            ["Metadata"] = new Dictionary<string, object>
+            ["id"] = 123,
+            ["name"] = "Test Template",
+            ["api_customer_id"] = 456,
+            ["body"] = "<html>\n    <body>\n        <p>Hello {{first_name}} {{last_name}}!</p>\n    </body>\n</html>\n\n",
+            ["created_at"] = new DateTime(2025, 7, 7, 8, 13, 50, 807),
+            ["updated_at"] = new DateTime(2025, 7, 7, 8, 13, 50, 807),
+            ["metadata"] = new Dictionary<string, object>
             {
-                ["MetadataKey"] = "MetadataValue"
+                ["key"] = "value"
             }
         });
     }

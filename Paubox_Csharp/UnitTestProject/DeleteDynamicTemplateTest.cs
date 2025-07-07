@@ -26,7 +26,7 @@ public class DeleteDynamicTemplateTest
         string apiResponse = SuccessResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "123";
+        int templateId = 123;
         DeleteDynamicTemplateResponse result = _emailLibrary.DeleteDynamicTemplate(templateId);
 
         Assert.IsNotNull(result);
@@ -39,7 +39,7 @@ public class DeleteDynamicTemplateTest
         string apiResponse = NotFoundResponse();
         MockApiResponse(apiResponse);
 
-        string templateId = "-15";
+        int templateId = -15;
 
         var exception = Assert.Throws<SystemException>(() => _emailLibrary.DeleteDynamicTemplate(templateId));
 
