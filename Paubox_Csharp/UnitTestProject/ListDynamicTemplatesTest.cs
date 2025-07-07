@@ -67,11 +67,11 @@ public class ListDynamicTemplatesTest
 
     private string SuccessResponse()
     {
-        return JsonConvert.SerializeObject(new List<DynamicTemplateSummary>
+        return JsonConvert.SerializeObject(new List<Dictionary<string, object>>
         {
-            new DynamicTemplateSummary { Id = 1, Name = "Template 1", ApiCustomerId = 56789 },
-            new DynamicTemplateSummary { Id = 2, Name = "Template 2", ApiCustomerId = 56789 },
-            new DynamicTemplateSummary { Id = 3, Name = "Template 3", ApiCustomerId = 56789 }
+            new Dictionary<string, object> { ["id"] = 1, ["name"] = "Template 1", ["api_customer_id"] = 56789 },
+            new Dictionary<string, object> { ["id"] = 2, ["name"] = "Template 2", ["api_customer_id"] = 56789 },
+            new Dictionary<string, object> { ["id"] = 3, ["name"] = "Template 3", ["api_customer_id"] = 56789 }
         });
     }
 

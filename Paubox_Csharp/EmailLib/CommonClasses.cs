@@ -27,9 +27,14 @@ namespace Paubox
 
     public class SendMessageResponse
     {
+        [JsonProperty("sourceTrackingId")] // SIC: This property is not snake_cased in the API response
         public string SourceTrackingId { get; set; }
+
         public string Data { get; set; }
+
+        [JsonProperty("customHeaders")] // SIC: This property is not snake_cased in the API response
         public Dictionary<string, string> CustomHeaders { get; set; }
+
         public List<Error> Errors { get; set; }
     }
 
@@ -40,15 +45,21 @@ namespace Paubox
 
     public class BulkMessageResponse
     {
+        [JsonProperty("sourceTrackingId")] // SIC: This property is not snake_cased in the API response
         public string SourceTrackingId { get; set; }
+
         public string Data { get; set; }
+
+        [JsonProperty("customHeaders")] // SIC: This property is not snake_cased in the API response
         public Dictionary<string, string> CustomHeaders { get; set; }
         public List<Error> Errors { get; set; }
     }
 
     public class GetEmailDispositionResponse
     {
+        [JsonProperty("sourceTrackingId")] // SIC: This property is not snake_cased in the API response
         public string SourceTrackingId { get; set; }
+
         public MessageData Data { get; set; }
         public List<Error> Errors { get; set; }
     }
@@ -72,9 +83,16 @@ namespace Paubox
 
     public class MessageStatus
     {
+        [JsonProperty("deliveryStatus")] // SIC: This property is not snake_cased in the API response
         public string DeliveryStatus { get; set; }
+
+        [JsonProperty("deliveryTime")] // SIC: This property is not snake_cased in the API response
         public DateTime? DeliveryTime { get; set; }
+
+        [JsonProperty("openedStatus")] // SIC: This property is not snake_cased in the API response
         public string OpenedStatus { get; set; }
+
+        [JsonProperty("openedTime")] // SIC: This property is not snake_cased in the API response
         public DateTime? OpenedTime { get; set; }
     }
 
@@ -102,6 +120,8 @@ namespace Paubox
     {
         public int Id { get; set; }
         public string Name { get; set; }
+
+        [JsonProperty("api_customer_id")]
         public int ApiCustomerId { get; set; }
     }
 

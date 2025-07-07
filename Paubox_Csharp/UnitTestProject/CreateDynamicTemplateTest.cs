@@ -76,17 +76,17 @@ public class CreateDynamicTemplateTest
 
     private string SuccessResponse()
     {
-        return JsonConvert.SerializeObject(new DynamicTemplateResponse
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            Message = "Template Example Template created!",
-            Params = new DynamicTemplateParams
+            ["message"] = "Template Example Template created!",
+            ["params"] = new Dictionary<string, object>
             {
-                Name = "Example Template",
-                Body = new DynamicTemplateParamsBody {
-                    Tempfile = "...",
-                    OriginalFilename = "ExampleTemplate.hbs",
-                    ContentType = "text/x-handlebars-template",
-                    Headers = "Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n"
+                ["name"] = "Example Template",
+                ["body"] = new Dictionary<string, object> {
+                    ["tempfile"] = "...",
+                    ["original_filename"] = "ExampleTemplate.hbs",
+                    ["content_type"] = "text/x-handlebars-template",
+                    ["headers"] = "Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n"
                 }
             }
         });
@@ -94,9 +94,9 @@ public class CreateDynamicTemplateTest
 
     private string ValidationErrorResponse()
     {
-        return JsonConvert.SerializeObject(new DynamicTemplateResponse
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            Error = "Validation failed: Name can't be blank",
+            ["error"] = "Validation failed: Name can't be blank",
         });
     }
 }

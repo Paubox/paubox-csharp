@@ -66,9 +66,9 @@ public class DeleteDynamicTemplateTest
 
     private string SuccessResponse()
     {
-        return JsonConvert.SerializeObject(new DeleteDynamicTemplateResponse
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            Message = "Template Example Template deleted!"
+            ["message"] = "Template Example Template deleted!"
         });
     }
 
@@ -76,7 +76,7 @@ public class DeleteDynamicTemplateTest
     {
         return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            ["Error"] = "Couldn't find DynamicTemplate with 'id'=-15 [WHERE \"dynamic_templates\".\"api_customer_id\" = $1]"
+            ["error"] = "Couldn't find DynamicTemplate with 'id'=-15 [WHERE \"dynamic_templates\".\"api_customer_id\" = $1]"
         });
     }
 }
