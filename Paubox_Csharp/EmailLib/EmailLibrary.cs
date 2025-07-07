@@ -226,13 +226,34 @@ namespace Paubox
             List<DynamicTemplateSummary> apiResponse = new List<DynamicTemplateSummary>();
             try
             {
-                string requestURI = string.Format("dynamic_templates");
+                string requestURI = "dynamic_templates";
                 string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
                 apiResponse = JsonConvert.DeserializeObject<List<DynamicTemplateSummary>>(Response);
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
+        /// Create a Dynamic Template by passing in the template name and the path to the Handlebars template file
+        /// </summary>
+        /// <param name="templateName"></param>
+        /// <param name="templatePath"></param>
+        /// <returns>CreateDynamicTemplateResponse</returns>
+        public CreateDynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath)
+        {
+            CreateDynamicTemplateResponse apiResponse = new CreateDynamicTemplateResponse();
+            string requestURI = "dynamic_templates";
+            string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "POST", templateName, templatePath);
+            apiResponse = JsonConvert.DeserializeObject<CreateDynamicTemplateResponse>(Response);
+
+            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            {
+                throw new SystemException(Response);
             }
 
             return apiResponse;

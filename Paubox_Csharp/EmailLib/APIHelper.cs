@@ -49,5 +49,10 @@ namespace Paubox
 
             return apiResponse.Result.ToString();
         }
+
+        public string UploadTemplate(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string templateName, string templatePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
