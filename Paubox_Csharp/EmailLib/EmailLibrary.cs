@@ -190,6 +190,55 @@ namespace Paubox
         }
 
         /// <summary>
+        /// Get a Dynamic Template by templateId
+        /// </summary>
+        /// <param name="templateId"></param>
+        /// <returns>GetDynamicTemplateResponse</returns>
+        public GetDynamicTemplateResponse GetDynamicTemplate(string templateId)
+        {
+            GetDynamicTemplateResponse apiResponse = new GetDynamicTemplateResponse();
+            try
+            {
+                string requestURI = string.Format("dynamic_templates/{0}", templateId);
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                apiResponse = JsonConvert.DeserializeObject<GetDynamicTemplateResponse>(Response);
+
+                if (apiResponse.Error != null || apiResponse.Errors != null)
+                {
+                    throw new SystemException(Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+            return apiResponse;
+        }
+
+        /// <summary>
+        /// List Dynamic Templates
+        /// </summary>
+        /// <returns>List<DynamicTemplateSummary></returns>
+        public List<DynamicTemplateSummary> ListDynamicTemplates()
+        {
+            List<DynamicTemplateSummary> apiResponse = new List<DynamicTemplateSummary>();
+            try
+            {
+                string requestURI = string.Format("dynamic_templates");
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+                apiResponse = JsonConvert.DeserializeObject<List<DynamicTemplateSummary>>(Response);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
         /// Gets Authorization Header
         /// </summary>
         /// <returns></returns>

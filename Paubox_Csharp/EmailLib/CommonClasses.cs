@@ -77,6 +77,26 @@ namespace Paubox
         public DateTime? OpenedTime { get; set; }
     }
 
+    public class GetDynamicTemplateResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ApiCustomerId { get; set; }
+        public string Body { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
+        public string Error { get; set; }
+        public List<Error> Errors { get; set; }
+    }
+
+    public class DynamicTemplateSummary
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ApiCustomerId { get; set; }
+    }
+
     public class Error
     {
         public int Code { get; set; }
