@@ -97,21 +97,21 @@ namespace Paubox
         public int ApiCustomerId { get; set; }
     }
 
-    public class CreateDynamicTemplateResponse
+    public class DynamicTemplateResponse
     {
         public string Message { get; set; }
-        public CreateDynamicTemplateParams Params { get; set; }
+        public DynamicTemplateParams Params { get; set; }
         public string Error { get; set; }
         public List<Error> Errors { get; set; }
     }
 
-    public class CreateDynamicTemplateParams
+    public class DynamicTemplateParams
     {
         public string Name { get; set; }
-        public CreateDynamicTemplateParamsBody Body { get; set; }
+        public DynamicTemplateParamsBody Body { get; set; }
     }
 
-    public class CreateDynamicTemplateParamsBody
+    public class DynamicTemplateParamsBody
     {
         public string Tempfile { get; set; }
         public string OriginalFilename { get; set; }

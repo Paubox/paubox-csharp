@@ -243,13 +243,35 @@ namespace Paubox
         /// </summary>
         /// <param name="templateName"></param>
         /// <param name="templatePath"></param>
-        /// <returns>CreateDynamicTemplateResponse</returns>
-        public CreateDynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath)
+        /// <returns>DynamicTemplateResponse</returns>
+        public DynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath)
         {
-            CreateDynamicTemplateResponse apiResponse = new CreateDynamicTemplateResponse();
+            DynamicTemplateResponse apiResponse = new DynamicTemplateResponse();
             string requestURI = "dynamic_templates";
             string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "POST", templateName, templatePath);
-            apiResponse = JsonConvert.DeserializeObject<CreateDynamicTemplateResponse>(Response);
+            apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
+
+            if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
+            {
+                throw new SystemException(Response);
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
+        /// Updates a Dynamic Template identified by templateId.
+        /// </summary>
+        /// <param name="templateId"></param>
+        /// <param name="templateName">This is the name of the template. It has to be supplied in this call</param>
+        /// <param name="templatePath">This is the path to the Handlebars template file. It is optional and can be omitted if you are not updating the template file.</param>
+        /// <returns>DynamicTemplateResponse</returns>
+        public DynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath)
+        {
+            DynamicTemplateResponse apiResponse = new DynamicTemplateResponse();
+            string requestURI = string.Format("dynamic_templates/{0}", templateId);
+            string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "PATCH", templateName, templatePath);
+            apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
 
             if (apiResponse.Error != null || (apiResponse.Errors != null && apiResponse.Errors.Count > 0))
             {

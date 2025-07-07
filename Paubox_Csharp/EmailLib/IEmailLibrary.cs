@@ -11,8 +11,8 @@ namespace Paubox
         SendBulkMessagesResponse SendBulkMessages(Message[] messages);
         List<DynamicTemplateSummary> ListDynamicTemplates();
         GetDynamicTemplateResponse GetDynamicTemplate(string templateId);
+        DynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath);
+        DynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath);
         // DeleteDynamicTemplateResponse DeleteDynamicTemplate(string templateId);
-        CreateDynamicTemplateResponse CreateDynamicTemplate(string templateName, string templatePath);
-        // UpdateDynamicTemplateResponse UpdateDynamicTemplate(string templateId, string templateName, string templatePath);
     }
 }

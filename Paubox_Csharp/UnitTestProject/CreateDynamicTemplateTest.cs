@@ -35,14 +35,14 @@ public class CreateDynamicTemplateTest
 
         string templateName = "Example Template";
         string templatePath = Path.Combine(_projectDir, "Fixtures", "ExampleTemplate.hbs");
-        CreateDynamicTemplateResponse result = _emailLibrary.CreateDynamicTemplate(templateName, templatePath);
+        DynamicTemplateResponse result = _emailLibrary.CreateDynamicTemplate(templateName, templatePath);
 
         Assert.IsNotNull(result);
         Assert.AreEqual("Template Example Template created!", result.Message);
         Assert.AreEqual("Example Template", result.Params.Name);
         Assert.AreEqual("ExampleTemplate.hbs", result.Params.Body.OriginalFilename);
         Assert.AreEqual("text/x-handlebars-template", result.Params.Body.ContentType);
-        Assert.AreEqual("Content-Disposition: form-data; name=\"data[body]\"; filename=\"Example Template.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n", result.Params.Body.Headers);
+        Assert.AreEqual("Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n", result.Params.Body.Headers);
     }
 
     [Test]
@@ -76,17 +76,17 @@ public class CreateDynamicTemplateTest
 
     private string SuccessResponse()
     {
-        return JsonConvert.SerializeObject(new CreateDynamicTemplateResponse
+        return JsonConvert.SerializeObject(new DynamicTemplateResponse
         {
             Message = "Template Example Template created!",
-            Params = new CreateDynamicTemplateParams
+            Params = new DynamicTemplateParams
             {
                 Name = "Example Template",
-                Body = new CreateDynamicTemplateParamsBody {
+                Body = new DynamicTemplateParamsBody {
                     Tempfile = "...",
                     OriginalFilename = "ExampleTemplate.hbs",
                     ContentType = "text/x-handlebars-template",
-                    Headers = "Content-Disposition: form-data; name=\"data[body]\"; filename=\"Example Template.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n"
+                    Headers = "Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n"
                 }
             }
         });
@@ -94,7 +94,7 @@ public class CreateDynamicTemplateTest
 
     private string ValidationErrorResponse()
     {
-        return JsonConvert.SerializeObject(new CreateDynamicTemplateResponse
+        return JsonConvert.SerializeObject(new DynamicTemplateResponse
         {
             Error = "Validation failed: Name can't be blank",
         });
