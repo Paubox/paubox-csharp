@@ -160,7 +160,7 @@ namespace Paubox
         }
 
         /// <summary>
-        /// Convert Message object to JSON , as required for the Send Message API
+        /// Convert Message object to JSON, as required for the Send Message API
         /// </summary>
         /// <param name="message"></param>
         /// <returns>JObject</returns>
@@ -185,6 +185,14 @@ namespace Paubox
                      { "from" , message.Header.From},
                      { "reply-to" , message.Header.ReplyTo}
                      });
+
+                    if (message.Header.CustomHeaders != null && message.Header.CustomHeaders.Count > 0)
+                    {
+                        foreach (var header in message.Header.CustomHeaders)
+                        {
+                            headerJSON.Add(header.Key, header.Value);
+                        }
+                    }
                 }
                 else
                 {
