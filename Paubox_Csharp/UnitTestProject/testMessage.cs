@@ -70,7 +70,7 @@ public class TestMessage
     [Test]
     public void TestCanSuccessfullyCreateMessageByUsingObjectInitializer()
     {
-        Message message = CreateValidNonTemplatedMessage();
+        Message message = CreateValidMessage();
 
         Assert.IsNotNull(message);
         Assert.AreEqual(2, message.Recipients.Length);
@@ -91,7 +91,7 @@ public class TestMessage
     [Test]
     public void ToJsonReturnsTheExpectedJsonForANonTemplatedMessage()
     {
-        Message message = CreateValidNonTemplatedMessage();
+        Message message = CreateValidMessage();
         JObject messageJSON = message.ToJson();
 
         JObject expectedJSON = new JObject
@@ -133,10 +133,11 @@ public class TestMessage
             "JSON objects are not equal. Actual: " + messageJSON.ToString() + "\nExpected: " + expectedJSON.ToString()
         );
     }
+
     // ------------------------------------------------------------
     // Helper methods
     //
-    private Message CreateValidNonTemplatedMessage()
+    private Message CreateValidMessage()
     {
         return new Message() {
             Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },

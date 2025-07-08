@@ -12,6 +12,8 @@ namespace Paubox
         public Dictionary<string, string> CustomHeaders { get; set; } = new Dictionary<string, string>();
     }
 
+    // Content for a normal message (one that does not use a Dynamic Template).
+    // These messages are sent using the SendMessage method.
     public class Content
     {
         public string PlainText { get; set; }
