@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace Paubox
 {
@@ -50,6 +51,7 @@ namespace Paubox
 
         /// <summary>
         /// Constructor for EmailLibrary with Configuration and custom API helper
+        /// (used for dependency injection in unit tests)
         /// </summary>
         /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
         /// <param name="apiHelper">Custom API helper implementation</param>
@@ -126,7 +128,9 @@ namespace Paubox
                 //Prepare JSON request for passing it to Send Message API
                 JObject requestObject = JObject.FromObject(new
                 {
-                    data = ConvertMessageObjectToJSON(message) // Convert i/p Message object to JSON , as per the API
+                    data = new Dictionary<string, object> {
+                        ["message"] = message.ToJson()
+                    }
                 });
 
                 string Response = _apiHelper.CallToAPI(_apiBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
@@ -151,149 +155,47 @@ namespace Paubox
         }
 
         /// <summary>
+        /// Send Bulk Messages
+        /// </summary>
+        /// <param name="messages">Array of Message objects</param>
+        /// <returns>SendBulkMessagesResponse</returns>
+        public SendBulkMessagesResponse SendBulkMessages(Message[] messages)
+        {
+            SendBulkMessagesResponse apiResponse = new SendBulkMessagesResponse();
+            try
+            {
+                // Convert each message to JSON using LINQ Select (map function)
+                JObject requestObject = JObject.FromObject(new
+                {
+                    data = new Dictionary<string, object>
+                    {
+                        { "messages", messages.Select(message => message.ToJson()).ToList() }
+                    }
+                });
+
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, "bulk_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                apiResponse = JsonConvert.DeserializeObject<SendBulkMessagesResponse>(Response);
+
+                if (apiResponse.Messages == null)
+                {
+                    throw new SystemException(Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
         /// Gets Authorization Header
         /// </summary>
         /// <returns></returns>
         private string GetAuthorizationHeader()
         {
             return string.Format("Token token={0}", _apiKey);
-        }
-
-        /// <summary>
-        /// Convert Message object to JSON, as required for the Send Message API
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns>JObject</returns>
-        private static JObject ConvertMessageObjectToJSON(Message message)
-        {
-            JObject attachmentJSON = new JObject();
-            JArray attachmentJSONArray = null;
-            JObject contentJSON = null;
-            JObject headerJSON = null;
-            JObject requestJSON = null;
-            JObject MessageJSON = null;
-            string base64EncodedHtmlText = null;
-
-            if (message != null)
-            {
-
-                if (message.Header != null)
-                {
-                    headerJSON = JObject.FromObject(new
-                        Dictionary<string, string>() {
-                     { "subject" , message.Header.Subject},
-                     { "from" , message.Header.From},
-                     { "reply-to" , message.Header.ReplyTo}
-                     });
-
-                    if (message.Header.CustomHeaders != null && message.Header.CustomHeaders.Count > 0)
-                    {
-                        foreach (var header in message.Header.CustomHeaders)
-                        {
-                            headerJSON.Add(header.Key, header.Value);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new ArgumentNullException("Message Header cannot be null.");
-                }
-
-                if (!string.IsNullOrWhiteSpace(message.Content.HtmlText)) // Converting the html text to a base 64 string
-                {
-                    byte[] htmlTextByteArray = System.Text.Encoding.UTF8.GetBytes(message.Content.HtmlText);
-                    // convert the byte array to a Base64 string
-                    base64EncodedHtmlText = Convert.ToBase64String(htmlTextByteArray);
-                }
-
-                if (message.Content != null)
-                {
-                    contentJSON = JObject.FromObject(new
-                    Dictionary<string, string>() {
-                         { "text/plain" , message.Content.PlainText},
-                         { "text/html" , base64EncodedHtmlText}
-                    });
-                }
-                else
-                {
-                    throw new ArgumentNullException("Message Content cannot be null.");
-                }
-
-                //If there are attachments, then prepare attachment array JSON
-                if (message.Attachments != null && message.Attachments.Count > 0)
-                {
-                    attachmentJSONArray = new JArray();
-
-                    foreach (var attachment in message.Attachments)
-                    {
-                        attachmentJSON = JObject.FromObject(new
-                        {
-                            fileName = attachment.FileName,
-                            contentType = attachment.ContentType,
-                            content = attachment.Content
-                        });
-                        attachmentJSONArray.Add(attachmentJSON);
-                    }
-                }
-
-                MessageJSON = JObject.FromObject(new
-                {
-                    recipients = message.Recipients,
-                    bcc = message.Bcc,
-                    cc = message.Cc,
-                    headers = headerJSON,
-                    allowNonTLS = message.AllowNonTLS,
-                    content = contentJSON,
-                    attachments = attachmentJSONArray
-                });
-
-                bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(message.ForceSecureNotification);
-                if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null
-                {
-                    MessageJSON.Add("forceSecureNotification", forceSecureNotificationValue);
-                }
-
-                requestJSON = JObject.FromObject(new
-                {
-                    message = MessageJSON
-                });
-            }
-            else
-            {
-                throw new ArgumentNullException("Message argument cannot be null.");
-            }
-
-            return requestJSON;
-        }
-
-        /// <summary>
-        /// Returns valid nullable bool ForceSecureNotification value
-        /// </summary>
-        /// <param name="forceSecureNotification"></param>
-        /// <returns></returns>
-        private static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
-        {
-            string forceSecureNotificationValue = null;
-            if (string.IsNullOrWhiteSpace(forceSecureNotification))
-            {
-                return null;
-            }
-            else
-            {
-                forceSecureNotificationValue = forceSecureNotification.Trim().ToLower();
-                if (forceSecureNotificationValue.Equals("true"))
-                {
-                    return true;
-                }
-                else if (forceSecureNotificationValue.Equals("false"))
-                {
-                    return false;
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
     }
 }

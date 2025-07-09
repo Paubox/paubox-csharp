@@ -176,6 +176,38 @@ message.Content = content;
 SendMessageResponse response = paubox.SendMessage(message);
 ```
 
+Alternatively, you can use an object initializer to create the message:
+
+```csharp
+Message message = new Message() {
+    Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
+    Cc = new string[] { "cc-recipient@domain.com" },
+    Bcc = new string[] { "bcc-recipient@domain.com" },
+    Header = new Header() {
+        Subject = "Testing!",
+        From = "you@yourdomain.com",
+        ReplyTo = "reply-to@yourdomain.com",
+        CustomHeaders = new Dictionary<string, string> {
+            { "X-Custom-Header", "Custom Value" },
+            { "X-Another-Header", "Another Value" }
+        }
+    },
+    Content = new Content() {
+        PlainText = "Hello World!",
+        HtmlText = "<html><body><h1>Hello World!</h1></body></html>"
+    },
+    Attachments = new List<Attachment>() {
+        new Attachment() {
+            FileName = "hello_world.txt",
+            ContentType = "text/plain",
+            Content = "SGVsbG8gV29ybGQh\n"
+        }
+    }
+};
+
+SendMessageResponse response = paubox.SendMessage(message);
+```
+
 #### Allowing non-TLS message delivery
 
 If you want to send non-PHI mail that does not need to be HIPAA-compliant, you can
@@ -267,7 +299,26 @@ GetEmailDispositionResponse response = paubox.GetEmailDisposition("2a3c048485aa4
 
 ### Send Bulk Messages
 
-Coming soon.
+Please see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#send-bulk-messages) for more
+details. Specifically:
+
+> We recommend batches of 50 (fifty) or less.
+
+Simply construct an array of `Message` objects and call `EmailLibrary.SendBulkMessages`:
+
+```csharp
+Message message1 = new Message(...);
+Message message2 = new Message(...);
+Message message3 = new Message(...);
+
+Message[] messages = new Message[] {
+    message1,
+    message2,
+    message3
+};
+
+SendBulkMessagesResponse response = paubox.SendBulkMessages(messages);
+```
 
 ### Dynamic Templates
 
