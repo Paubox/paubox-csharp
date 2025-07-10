@@ -322,25 +322,82 @@ SendBulkMessagesResponse response = paubox.SendBulkMessages(messages);
 
 ### Dynamic Templates
 
+Please refer to the [related API documentation](https://docs.paubox.com/docs/paubox_email_api/dynamic_templates) for
+more details.
+
 #### Create Dynamic Template
 
-Coming soon.
+To create a dynamic template, call the `EmailLibrary.CreateDynamicTemplate` method with the template name and the path
+to the Handlebars template file:
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+string templateName = "Example Template";
+string templatePath = "path/to/ExampleTemplate.hbs";
+
+DynamicTemplateResponse result = paubox.CreateDynamicTemplate(templateName, templatePath);
+```
 
 #### Update Dynamic Template
 
-Coming soon.
+To update a dynamic template, call the `EmailLibrary.UpdateDynamicTemplate` method with the template id (integer), the template
+name, and the path to the Handlebars template file:
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+int templateId = 123;
+string templateName = "Updated Example Template";
+string templatePath = "path/to/UpdatedExampleTemplate.hbs";
+
+DynamicTemplateResponse result = paubox.UpdateDynamicTemplate(templateId, templateName, templatePath);
+```
+
+It is also possible to update only the template name by passing `null` as the template path:
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+int templateId = 123;
+string templateName = "Updated Example Template";
+
+DynamicTemplateResponse result = paubox.UpdateDynamicTemplate(templateId, templateName, null);
+```
 
 #### Delete Dynamic Template
 
-Coming soon.
+To delete a dynamic template, call the `EmailLibrary.DeleteDynamicTemplate` method with the template id (integer):
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+int templateId = 123;
+
+DeleteDynamicTemplateResponse result = paubox.DeleteDynamicTemplate(templateId);
+```
 
 #### Get Dynamic Template
 
-Coming soon.
+To get a single dynamic template, call the `EmailLibrary.GetDynamicTemplate` method with the template id (integer):
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+int templateId = 123;
+
+DynamicTemplateResponse result = paubox.GetDynamicTemplate(templateId);
+```
 
 #### List Dynamic Templates
 
-Coming soon.
+To list all dynamic templates, call the `EmailLibrary.ListDynamicTemplates` method:
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+List<DynamicTemplateSummary> result = paubox.ListDynamicTemplates();
+```
 
 #### Send a Dynamically Templated Message
 

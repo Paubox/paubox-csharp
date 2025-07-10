@@ -84,23 +84,23 @@ public class GetEmailDispositionTest
     {
         return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
-            ["SourceTrackingId"] = "6e1cf9a4-7bde-4834-8200-ed424b50c8a7",
-            ["Data"] = new Dictionary<string, object>
+            ["sourceTrackingId"] = "6e1cf9a4-7bde-4834-8200-ed424b50c8a7",
+            ["data"] = new Dictionary<string, object>
             {
-                ["Message"] = new Dictionary<string, object>
+                ["message"] = new Dictionary<string, object>
                 {
-                    ["Id"] = "<6e1cf9a4-7bde-4834-8200-ed424b50c8a7@authorized_domain.com>",
-                    ["MessageDeliveries"] = new List<Dictionary<string, object>>
+                    ["id"] = "<6e1cf9a4-7bde-4834-8200-ed424b50c8a7@authorized_domain.com>",
+                    ["message_deliveries"] = new List<Dictionary<string, object>>
                     {
                         new Dictionary<string, object>
                         {
-                            ["Recipient"] = "recipient@host.com",
-                            ["Status"] = new Dictionary<string, object>
+                            ["recipient"] = "recipient@host.com",
+                            ["status"] = new Dictionary<string, object>
                             {
-                                ["DeliveryStatus"] = "delivered",
-                                ["DeliveryTime"] = "Mon, 23 Apr 2018 13:27:34 -0700",
-                                ["OpenedStatus"] = "opened",
-                                ["OpenedTime"] = "Mon, 23 Apr 2018 13:27:51 -0700"
+                                ["deliveryStatus"] = "delivered",
+                                ["deliveryTime"] = "Mon, 23 Apr 2018 13:27:34 -0700",
+                                ["openedStatus"] = "opened",
+                                ["openedTime"] = "Mon, 23 Apr 2018 13:27:51 -0700"
                             }
                         }
                     }
