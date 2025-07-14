@@ -402,12 +402,22 @@ List<DynamicTemplateSummary> result = paubox.ListDynamicTemplates();
 #### Send a Dynamically Templated Message
 
 To [send a dynamically templated message](https://docs.paubox.com/docs/paubox_email_api/dynamic_templates#send-a-dynamically-templated-message),
-firstly construct a new `Message` object, and set its `Content` property to a new `TemplatedContent` object:
+firstly construct a new `TemplatedMessage` object:
 
 ```csharp
 var paubox = new EmailLibrary(configuration);
 
-Message message = new Message();
+TemplatedMessage message = new TemplatedMessage();
+
+// Note that instead of setting the `Content` property as with a non-templated message,
+// we set the `TemplateName` and `TemplateData` properties:
+message.TemplateName = "Example Template";
+message.TemplateData = new Dictionary<string, string> {
+    { "first_name", "John" },
+    { "last_name", "Doe" }
+};
+
+// Set the other properties as above:
 message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
 message.Cc = new string[] { "cc-recipient@domain.com" };
 message.Bcc = new string[] { "bcc-recipient@domain.com" };
@@ -416,21 +426,22 @@ Header header = new Header();
 header.From = "you@yourdomain.com";
 header.ReplyTo = "reply-to@yourdomain.com";
 header.Subject = "Testing!";
-message.Header = header;
-
-TemplatedContent content = new TemplatedContent(); // Note that we use `TemplatedContent` here, instead of `Content`
-content.TemplateName = "Example Template";
-content.TemplateData = new Dictionary<string, string> {
-    { "first_name", "John" },
-    { "last_name", "Doe" }
+header.CustomHeaders = new Dictionary<string, string> {
+    { "X-Custom-Header", "Custom Value" },
+    { "X-Another-Header", "Another Value" }
 };
-message.Content = content;
+message.Header = header;
 ```
 
 Alternatively, you can use an object initializer to create the message:
 
 ```csharp
-Message message = new Message() {
+TemplatedMessage message = new TemplatedMessage() {
+    TemplateName = "Example Template",
+    TemplateData = new Dictionary<string, string> {
+        { "first_name", "John" },
+        { "last_name", "Doe" }
+    },
     Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
     Cc = new string[] { "cc-recipient@domain.com" },
     Bcc = new string[] { "bcc-recipient@domain.com" },
@@ -441,13 +452,6 @@ Message message = new Message() {
         CustomHeaders = new Dictionary<string, string> {
             { "X-Custom-Header", "Custom Value" },
             { "X-Another-Header", "Another Value" }
-        }
-    },
-    Content = new TemplatedContent() {
-        TemplateName = "Example Template",
-        TemplateData = new Dictionary<string, string> {
-            { "first_name", "John" },
-            { "last_name", "Doe" }
         }
     },
     Attachments = new List<Attachment>() {
