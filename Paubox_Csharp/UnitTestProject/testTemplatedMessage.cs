@@ -11,25 +11,25 @@ using System.Linq;
 
 
 [TestFixture]
-public class TestMessage
+public class TestTemplatedMessage
 {
     [Test]
-    public void TestCanSuccessfullyCreateMessageBySettingProperties()
+    public void TestCanSuccessfullyCreateTemplatedMessageBySettingProperties()
     {
-        Message message = new Message();
+        TemplatedMessage message = new TemplatedMessage();
 
         // Set some root-level properties:
+        message.TemplateName = "Example Template";
+        message.TemplateData = new Dictionary<string, string> {
+            { "first_name", "John" },
+            { "last_name", "Doe" }
+        };
+
         message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
         message.Cc = new string[] { "cc-recipient@domain.com" };
         message.Bcc = new string[] { "bcc-recipient@domain.com" };
         message.AllowNonTLS = true;
         message.ForceSecureNotification = "true";
-
-        // Set the content:
-        Content content = new Content();
-        content.HtmlText = "<p>Hello, world!</p>";
-        content.PlainText = "Hello, world!";
-        message.Content = content;
 
         // Set the header:
         Header header = new Header();
@@ -52,12 +52,15 @@ public class TestMessage
         message.Attachments = attachments;
 
         Assert.IsNotNull(message);
+        Assert.AreEqual("Example Template", message.TemplateName);
+        Assert.AreEqual(2, message.TemplateData.Count);
+        Assert.AreEqual("John", message.TemplateData["first_name"]);
+        Assert.AreEqual("Doe", message.TemplateData["last_name"]);
         Assert.AreEqual(2, message.Recipients.Length);
         Assert.AreEqual("cc-recipient@domain.com", message.Cc[0]);
         Assert.AreEqual("bcc-recipient@domain.com", message.Bcc[0]);
         Assert.IsTrue(message.AllowNonTLS);
         Assert.AreEqual("true", message.ForceSecureNotification);
-        Assert.IsNotNull(message.Content);
         Assert.IsNotNull(message.Header);
         Assert.AreEqual("Test Email", message.Header.Subject);
         Assert.AreEqual("you@yourdomain.com", message.Header.From);
@@ -68,17 +71,20 @@ public class TestMessage
     }
 
     [Test]
-    public void TestCanSuccessfullyCreateMessageByUsingObjectInitializer()
+    public void TestCanSuccessfullyCreateTemplatedMessageByUsingObjectInitializer()
     {
-        Message message = CreateValidMessage();
+        TemplatedMessage message = CreateValidMessage();
 
         Assert.IsNotNull(message);
+        Assert.AreEqual("Example Template", message.TemplateName);
+        Assert.AreEqual(2, message.TemplateData.Count);
+        Assert.AreEqual("John", message.TemplateData["first_name"]);
+        Assert.AreEqual("Doe", message.TemplateData["last_name"]);
         Assert.AreEqual(2, message.Recipients.Length);
         Assert.AreEqual("cc-recipient@domain.com", message.Cc[0]);
         Assert.AreEqual("bcc-recipient@domain.com", message.Bcc[0]);
         Assert.IsTrue(message.AllowNonTLS);
         Assert.AreEqual("true", message.ForceSecureNotification);
-        Assert.IsNotNull(message.Content);
         Assert.IsNotNull(message.Header);
         Assert.AreEqual("Test Email", message.Header.Subject);
         Assert.AreEqual("you@yourdomain.com", message.Header.From);
@@ -89,9 +95,9 @@ public class TestMessage
     }
 
     [Test]
-    public void ToJsonReturnsTheExpectedJsonForANonTemplatedMessage()
+    public void ToJsonReturnsTheExpectedJson()
     {
-        Message message = CreateValidMessage();
+        TemplatedMessage message = CreateValidMessage();
         JObject messageJSON = message.ToJson();
 
         JObject expectedJSON = new JObject
@@ -109,11 +115,6 @@ public class TestMessage
                 ["X-Custom-Header"] = "Custom Value",
                 ["X-Another-Header"] = "Another Value"
             },
-            ["content"] = new JObject
-            {
-                ["text/plain"] = "Hello, world!",
-                ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<p>Hello, world!</p>"))
-            },
             ["attachments"] = new JArray
             {
                 new JObject
@@ -125,9 +126,6 @@ public class TestMessage
             }
         };
 
-        Console.WriteLine(messageJSON.ToString());
-        Console.WriteLine(expectedJSON.ToString());
-
         Assert.IsTrue(
             JToken.DeepEquals(messageJSON, expectedJSON),
             "JSON objects are not equal. Actual: " + messageJSON.ToString() + "\nExpected: " + expectedJSON.ToString()
@@ -137,18 +135,19 @@ public class TestMessage
     // ------------------------------------------------------------
     // Helper methods
     //
-    private Message CreateValidMessage()
+    private TemplatedMessage CreateValidMessage()
     {
-        return new Message() {
+        return new TemplatedMessage() {
+            TemplateName = "Example Template",
+            TemplateData = new Dictionary<string, string> {
+                { "first_name", "John" },
+                { "last_name", "Doe" }
+            },
             Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
             Cc = new string[] { "cc-recipient@domain.com" },
             Bcc = new string[] { "bcc-recipient@domain.com" },
             AllowNonTLS = true,
             ForceSecureNotification = "true",
-            Content = new Content() {
-                HtmlText = "<p>Hello, world!</p>",
-                PlainText = "Hello, world!"
-            },
             Header = new Header() {
                 Subject = "Test Email",
                 From = "you@yourdomain.com",

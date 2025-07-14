@@ -89,7 +89,7 @@ public class TestMessage
     }
 
     [Test]
-    public void ToJsonReturnsTheExpectedJsonForANonTemplatedMessage()
+    public void ToJsonReturnsTheExpectedJson()
     {
         Message message = CreateValidMessage();
         JObject messageJSON = message.ToJson();
@@ -124,9 +124,6 @@ public class TestMessage
                 }
             }
         };
-
-        Console.WriteLine(messageJSON.ToString());
-        Console.WriteLine(expectedJSON.ToString());
 
         Assert.IsTrue(
             JToken.DeepEquals(messageJSON, expectedJSON),
