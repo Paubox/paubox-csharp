@@ -27,14 +27,26 @@ namespace Paubox
         public List<Attachment> Attachments { get; set; }
 
         /// <summary>
+        /// Validate the message object
+        /// </summary>
+        /// <remarks>
+        /// This method throws an exception if the message object is invalid. This method can be overridden by the child
+        /// classes to add additional validation specific to that message type.
+        /// </remarks>
+        public virtual void Validate()
+        {
+            if (this.Header == null) {
+                throw new ArgumentNullException("Header cannot be null.");
+            }
+        }
+
+        /// <summary>
         /// Convert the message object to a JSON object
         /// </summary>
         /// <returns>JObject</returns>
         public virtual JObject ToJson()
         {
-            if (this.Header == null) {
-                throw new ArgumentNullException("Header cannot be null.");
-            }
+            this.Validate();
 
             JObject headerJSON = JObject.FromObject(new Dictionary<string, string>() {
                 { "subject" , this.Header.Subject},

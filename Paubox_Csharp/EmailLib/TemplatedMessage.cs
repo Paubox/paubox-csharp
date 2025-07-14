@@ -12,5 +12,14 @@ namespace Paubox
     {
         public string TemplateName { get; set; }
         public Dictionary<string, string> TemplateData { get; set; }
+
+        public override void Validate()
+        {
+            base.Validate();
+
+            if (string.IsNullOrWhiteSpace(this.TemplateName)) {
+                throw new ArgumentNullException("TemplateName cannot be null.");
+            }
+        }
     }
 }

@@ -12,6 +12,15 @@ namespace Paubox
     {
         public Content Content { get; set; }
 
+        public override void Validate()
+        {
+            base.Validate();
+
+            if (this.Content == null) {
+                throw new ArgumentNullException("Content cannot be null.");
+            }
+        }
+
         /// <summary>
         /// Convert the Message object to a JSON object, including the Content
         /// </summary>
