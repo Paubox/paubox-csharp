@@ -16,19 +16,63 @@ namespace SampleConsoleApp
 
         static Program()
         {
-            string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string sourceDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            // Try to find the template file in various locations
+            templatePath = FindOrCreateTemplateFile(sourceDirectory);
+
             Configuration = new ConfigurationBuilder()
-                .SetBasePath(exeDirectory)
+                .SetBasePath(Path.GetDirectoryName(templatePath))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+        }
 
-            templatePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "Paubox_Csharp",
-                "SampleConsoleApp",
-                "ExampleTemplate.hbs"
-            );
+        static string FindOrCreateTemplateFile(string startDirectory)
+        {
+            string templateFileName = "ExampleTemplate.hbs";
+            string templateContent = @"<html>
+    <body>
+        <p>Hello {{first_name}} {{last_name}},</p>
+        <p>This is an example template.</p>
+        <p>Thank you for using Paubox.</p>
+    </body>
+</html>";
+
+            // Search in the current directory and parent directories
+            string currentDir = startDirectory;
+            while (currentDir != null)
+            {
+                string potentialPath = Path.Combine(currentDir, templateFileName);
+                if (File.Exists(potentialPath))
+                {
+                    return potentialPath;
+                }
+
+                // Also check in SampleConsoleApp subdirectory
+                string sampleConsoleAppPath = Path.Combine(currentDir, "SampleConsoleApp", templateFileName);
+                if (File.Exists(sampleConsoleAppPath))
+                {
+                    return sampleConsoleAppPath;
+                }
+
+                currentDir = Path.GetDirectoryName(currentDir);
+            }
+
+            // If not found, create it in the executable directory
+            string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string newTemplatePath = Path.Combine(exeDirectory, templateFileName);
+
+            try
+            {
+                File.WriteAllText(newTemplatePath, templateContent);
+                Console.WriteLine($"📝 Created template file at: {newTemplatePath}");
+                return newTemplatePath;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create template file at {newTemplatePath}: {ex.Message}");
+            }
         }
 
         static void Main(string[] args)
@@ -291,7 +335,7 @@ namespace SampleConsoleApp
                 throw new Exception("❌ Unexpected template name: " + getResult.Name);
             }
 
-            if (getResult.ApiCustomerId == null || getResult.ApiCustomerId == 0)
+            if (getResult.ApiCustomerId <= 0)
             {
                 throw new Exception("❌ Unexpected API customer ID: " + getResult.ApiCustomerId);
             }
@@ -301,12 +345,12 @@ namespace SampleConsoleApp
                 throw new Exception("❌ Unexpected template body: " + getResult.Body);
             }
 
-            if (getResult.CreatedAt == null)
+            if (getResult.CreatedAt == default(DateTime))
             {
                 throw new Exception("❌ Unexpected CreatedAt: " + getResult.CreatedAt);
             }
 
-            if (getResult.UpdatedAt == null)
+            if (getResult.UpdatedAt == default(DateTime))
             {
                 throw new Exception("❌ Unexpected UpdatedAt: " + getResult.UpdatedAt);
             }
