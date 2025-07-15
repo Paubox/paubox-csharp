@@ -11,7 +11,7 @@ using System.Linq;
 
 
 [TestFixture]
-public class TestTemplatedMessage
+public class TemplatedMessageTest
 {
     [Test]
     public void TestCanSuccessfullyCreateTemplatedMessageBySettingProperties()

@@ -11,7 +11,7 @@ using System.Linq;
 
 
 [TestFixture]
-public class TestMessage
+public class MessageTest
 {
     [Test]
     public void TestCanSuccessfullyCreateMessageBySettingProperties()
