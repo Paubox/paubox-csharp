@@ -37,6 +37,33 @@ public class SendTemplatedMessageTest
     }
 
     [Test]
+    public void TestSendTemplatedMessageForBadRequestThrowsSystemException()
+    {
+        string apiResponse = BadRequestResponse();
+        MockApiResponse(apiResponse);
+
+        TemplatedMessage message = CreateTestMessage();
+        var exception = Assert.Throws<SystemException>(() => _emailLibrary.SendTemplatedMessage(message));
+
+        Assert.IsNotNull(exception.Message);
+        Assert.IsTrue(exception.Message.Length > 0);
+        StringAssert.Contains("Error Title", exception.Message);
+        StringAssert.Contains("Description of error", exception.Message);
+    }
+
+    [Test]
+    public void TestSendTemplatedMessageWithEmptyResponseThrowsSystemException()
+    {
+        string apiResponse = EmptyResponse();
+        MockApiResponse(apiResponse);
+
+        TemplatedMessage message = CreateTestMessage();
+        var exception = Assert.Throws<SystemException>(() => _emailLibrary.SendTemplatedMessage(message));
+
+        Assert.IsNotNull(exception);
+    }
+
+    [Test]
     public void TestSendTemplatedMessageSendsTheCorrectPayloadToThePauboxAPI()
     {
         string apiResponse = SuccessResponse();
@@ -135,6 +162,34 @@ public class SendTemplatedMessageTest
         {
             ["SourceTrackingId"] = "3d38ab13-0af8-4028-bd45-52e882e0d584",
             ["Data"] = "Service OK",
+            ["Errors"] = null
+        });
+    }
+
+    private string BadRequestResponse()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            ["SourceTrackingId"] = null,
+            ["Data"] = null,
+            ["Errors"] = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    ["code"] = 400,
+                    ["title"] = "Error Title",
+                    ["details"] = "Description of error"
+                }
+            }
+        });
+    }
+
+    private string EmptyResponse()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            ["SourceTrackingId"] = null,
+            ["Data"] = null,
             ["Errors"] = null
         });
     }
