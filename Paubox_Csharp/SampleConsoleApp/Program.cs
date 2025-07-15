@@ -98,6 +98,7 @@ namespace SampleConsoleApp
             int templateId = TestListTemplates(paubox, templateName);
             TestGetTemplate(paubox, templateId, templateName);
             string updatedTemplateName = TestUpdateTemplate(paubox, templateId, templateName);
+            TestSendTemplatedMessage(paubox, updatedTemplateName);
             TestDeleteTemplate(paubox, templateId, updatedTemplateName);
             CleanUpTemplates(paubox);
 
@@ -422,6 +423,58 @@ namespace SampleConsoleApp
             }
 
             Console.WriteLine("✅ Template deleted successfully.");
+        }
+
+        static void TestSendTemplatedMessage(EmailLibrary paubox, string templateName)
+        {
+            Console.WriteLine("🧪 Sending a templated message with this template...");
+
+            Dictionary<string, object> templateValues = new Dictionary<string, object> {
+                { "first_name", "John" },
+                { "last_name", "Doe" }
+            };
+
+            TemplatedMessage message = CreateValidTemplatedMessage(templateName, templateValues, "Send Templated Message Test");
+            SendMessageResponse response = paubox.SendTemplatedMessage(message);
+
+            if (response.Errors != null)
+            {
+                throw new Exception("❌ Errors when sending the templated message: " + response.Errors);
+            }
+
+            if (response.SourceTrackingId == null)
+            {
+                throw new Exception("❌ No tracking ID returned when sending the message.");
+            }
+
+            Console.WriteLine("✅ TemplatedMessage sent successfully.");
+        }
+
+        static TemplatedMessage CreateValidTemplatedMessage(string templateName, Dictionary<string, object> templateValues, string title)
+        {
+            return new TemplatedMessage() {
+                TemplateName = templateName,
+                TemplateValues = templateValues,
+                Recipients = new string[] { Configuration["ToEmail"] },
+                Cc = new string[] { },
+                Bcc = new string[] { },
+                Header = new Header() {
+                    Subject = $"{title} - {DateTime.Now:MMM dd HH:mm:ss}",
+                    From = Configuration["FromEmail"],
+                    ReplyTo = Configuration["ReplyToEmail"],
+                    CustomHeaders = new Dictionary<string, string> {
+                        { "X-Custom-Header", "Custom Value" },
+                        { "X-Another-Header", "Another Value" }
+                    }
+                },
+                Attachments = new List<Attachment>() {
+                    new Attachment() {
+                        FileName = "hello_world.txt",
+                        ContentType = "text/plain",
+                        Content = "SGVsbG8gV29ybGQh\n"
+                    }
+                }
+            };
         }
 
         static void CleanUpTemplates(EmailLibrary paubox)
