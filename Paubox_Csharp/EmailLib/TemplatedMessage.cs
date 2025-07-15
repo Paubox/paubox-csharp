@@ -11,7 +11,7 @@ namespace Paubox
     public class TemplatedMessage : BaseMessage
     {
         public string TemplateName { get; set; }
-        public Dictionary<string, string> TemplateValues { get; set; }
+        public Dictionary<string, object> TemplateValues { get; set; }
 
         public override void Validate()
         {

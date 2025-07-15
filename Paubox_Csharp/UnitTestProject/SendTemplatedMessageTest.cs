@@ -89,7 +89,7 @@ public class SendTemplatedMessageTest
                 ["data"] = new JObject
                 {
                     ["template_name"] = "Example Template",
-                    ["template_values"] = "{\"first_name\":\"John\",\"last_name\":\"Doe\"}",
+                    ["template_values"] = "{\"first_name\":\"John\",\"last_name\":\"Doe\",\"item_names\":[\"Medical Item 1\",\"Medical Item 2\"],\"address\":{\"city\":\"San Francisco\",\"zip\":94105}}",
                     ["message"] = new JObject
                     {
                         ["recipients"] = new JArray { "someone@domain.com", "someoneelse@domain.com" },
@@ -127,9 +127,14 @@ public class SendTemplatedMessageTest
     {
         return new TemplatedMessage() {
             TemplateName = "Example Template",
-            TemplateValues = new Dictionary<string, string> {
+            TemplateValues = new Dictionary<string, object> {
                 { "first_name", "John" },
-                { "last_name", "Doe" }
+                { "last_name", "Doe" },
+                { "item_names", new string[] { "Medical Item 1", "Medical Item 2" } },
+                { "address", new Dictionary<string, object> {
+                    { "city", "San Francisco" },
+                    { "zip", 94105 }
+                }}
             },
             Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
             Cc = new string[] { "cc-recipient@domain.com" },

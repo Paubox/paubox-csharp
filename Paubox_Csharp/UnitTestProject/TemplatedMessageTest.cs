@@ -20,7 +20,7 @@ public class TemplatedMessageTest
 
         // Set some root-level properties:
         message.TemplateName = "Example Template";
-        message.TemplateValues = new Dictionary<string, string> {
+        message.TemplateValues = new Dictionary<string, object> {
             { "first_name", "John" },
             { "last_name", "Doe" }
         };
@@ -95,6 +95,28 @@ public class TemplatedMessageTest
     }
 
     [Test]
+    public void TestCanSetArbitraryTemplateValues()
+    {
+        TemplatedMessage message = new TemplatedMessage();
+        message.TemplateName = "Example Template";
+        message.TemplateValues = new Dictionary<string, object> {
+            { "first_name", "John" },
+            { "last_name", "Doe" },
+            { "item_names", new string[] { "Medical Item 1", "Medical Item 2" } },
+            { "address", new Dictionary<string, object> {
+                { "city", "San Francisco" },
+                { "zip", 94105 }
+            }}
+        };
+
+        Assert.AreEqual("John", message.TemplateValues["first_name"]);
+        CollectionAssert.AreEqual(new string[] { "Medical Item 1", "Medical Item 2" }, (string[])message.TemplateValues["item_names"]);
+        var address = message.TemplateValues["address"] as Dictionary<string, object>;
+        Assert.AreEqual("San Francisco", address["city"]);
+        Assert.AreEqual(94105, address["zip"]);
+    }
+
+    [Test]
     public void ToJsonReturnsTheExpectedJson()
     {
         TemplatedMessage message = CreateValidMessage();
@@ -139,7 +161,7 @@ public class TemplatedMessageTest
     {
         return new TemplatedMessage() {
             TemplateName = "Example Template",
-            TemplateValues = new Dictionary<string, string> {
+            TemplateValues = new Dictionary<string, object> {
                 { "first_name", "John" },
                 { "last_name", "Doe" }
             },
