@@ -410,9 +410,9 @@ var paubox = new EmailLibrary(configuration);
 TemplatedMessage message = new TemplatedMessage();
 
 // Note that instead of setting the `Content` property as with a non-templated message,
-// we set the `TemplateName` and `TemplateData` properties:
+// we set the `TemplateName` and `TemplateValues` properties:
 message.TemplateName = "Example Template";
-message.TemplateData = new Dictionary<string, string> {
+message.TemplateValues = new Dictionary<string, string> {
     { "first_name", "John" },
     { "last_name", "Doe" }
 };
@@ -438,7 +438,7 @@ Alternatively, you can use an object initializer to create the message:
 ```csharp
 TemplatedMessage message = new TemplatedMessage() {
     TemplateName = "Example Template",
-    TemplateData = new Dictionary<string, string> {
+    TemplateValues = new Dictionary<string, string> {
         { "first_name", "John" },
         { "last_name", "Doe" }
     },

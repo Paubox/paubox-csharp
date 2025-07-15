@@ -20,7 +20,7 @@ public class TemplatedMessageTest
 
         // Set some root-level properties:
         message.TemplateName = "Example Template";
-        message.TemplateData = new Dictionary<string, string> {
+        message.TemplateValues = new Dictionary<string, string> {
             { "first_name", "John" },
             { "last_name", "Doe" }
         };
@@ -53,9 +53,9 @@ public class TemplatedMessageTest
 
         Assert.IsNotNull(message);
         Assert.AreEqual("Example Template", message.TemplateName);
-        Assert.AreEqual(2, message.TemplateData.Count);
-        Assert.AreEqual("John", message.TemplateData["first_name"]);
-        Assert.AreEqual("Doe", message.TemplateData["last_name"]);
+        Assert.AreEqual(2, message.TemplateValues.Count);
+        Assert.AreEqual("John", message.TemplateValues["first_name"]);
+        Assert.AreEqual("Doe", message.TemplateValues["last_name"]);
         Assert.AreEqual(2, message.Recipients.Length);
         Assert.AreEqual("cc-recipient@domain.com", message.Cc[0]);
         Assert.AreEqual("bcc-recipient@domain.com", message.Bcc[0]);
@@ -77,9 +77,9 @@ public class TemplatedMessageTest
 
         Assert.IsNotNull(message);
         Assert.AreEqual("Example Template", message.TemplateName);
-        Assert.AreEqual(2, message.TemplateData.Count);
-        Assert.AreEqual("John", message.TemplateData["first_name"]);
-        Assert.AreEqual("Doe", message.TemplateData["last_name"]);
+        Assert.AreEqual(2, message.TemplateValues.Count);
+        Assert.AreEqual("John", message.TemplateValues["first_name"]);
+        Assert.AreEqual("Doe", message.TemplateValues["last_name"]);
         Assert.AreEqual(2, message.Recipients.Length);
         Assert.AreEqual("cc-recipient@domain.com", message.Cc[0]);
         Assert.AreEqual("bcc-recipient@domain.com", message.Bcc[0]);
@@ -139,7 +139,7 @@ public class TemplatedMessageTest
     {
         return new TemplatedMessage() {
             TemplateName = "Example Template",
-            TemplateData = new Dictionary<string, string> {
+            TemplateValues = new Dictionary<string, string> {
                 { "first_name", "John" },
                 { "last_name", "Doe" }
             },
