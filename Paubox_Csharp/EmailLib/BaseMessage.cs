@@ -23,7 +23,26 @@ namespace Paubox
         public string[] Cc { get; set; }
         public Header Header { get; set; }
         public bool AllowNonTLS { get; set; } = false;
-        public string ForceSecureNotification { get; set; }
+
+        private bool? _forceSecureNotificationValue;
+        private string? _forceSecureNotification;
+        public string? ForceSecureNotification
+        {
+            get => _forceSecureNotification;
+            set
+            {
+                _forceSecureNotification = value;
+                _forceSecureNotificationValue = string.IsNullOrWhiteSpace(value)
+                    ? null
+                    : value.Trim().ToLower() switch
+                    {
+                        "true" => true,
+                        "false" => false,
+                        _ => null
+                    };
+            }
+        }
+
         public List<Attachment> Attachments { get; set; }
 
         /// <summary>
@@ -89,43 +108,12 @@ namespace Paubox
                 attachments = attachmentJSONArray
             });
 
-            bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(this.ForceSecureNotification);
-            if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null
+            if (_forceSecureNotificationValue.HasValue) // Add forceSecureNotificationValue to Request, only if it is not null
             {
-                MessageJSON.Add("forceSecureNotification", forceSecureNotificationValue);
+                MessageJSON.Add("forceSecureNotification", _forceSecureNotificationValue.Value);
             }
 
             return MessageJSON;
-        }
-
-        /// <summary>
-        /// Returns valid nullable bool ForceSecureNotification value
-        /// </summary>
-        /// <param name="forceSecureNotification"></param>
-        /// <returns></returns>
-        protected static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
-        {
-            string forceSecureNotificationValue = null;
-            if (string.IsNullOrWhiteSpace(forceSecureNotification))
-            {
-                return null;
-            }
-            else
-            {
-                forceSecureNotificationValue = forceSecureNotification.Trim().ToLower();
-                if (forceSecureNotificationValue.Equals("true"))
-                {
-                    return true;
-                }
-                else if (forceSecureNotificationValue.Equals("false"))
-                {
-                    return false;
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
     }
 }
