@@ -100,7 +100,6 @@ namespace SampleConsoleApp
             string updatedTemplateName = TestUpdateTemplate(paubox, templateId, templateName);
             TestSendTemplatedMessage(paubox, updatedTemplateName);
             TestDeleteTemplate(paubox, templateId, updatedTemplateName);
-            CleanUpTemplates(paubox);
 
             Console.WriteLine("\n----------------------------------------------------------------");
             Console.WriteLine("💚 All QA Tests completed successfully! 💚");
@@ -475,27 +474,6 @@ namespace SampleConsoleApp
                     }
                 }
             };
-        }
-
-        static void CleanUpTemplates(EmailLibrary paubox)
-        {
-            Console.WriteLine("🧹 Cleaning up all templates...");
-            List<DynamicTemplateSummary> listResult = paubox.ListDynamicTemplates();
-
-            foreach (DynamicTemplateSummary template in listResult)
-            {
-                DeleteDynamicTemplateResponse deleteResult = paubox.DeleteDynamicTemplate(template.Id);
-
-                if (deleteResult.Error != null)
-                {
-                    throw new Exception("❌ Error when deleting the template: " + deleteResult.Error);
-                }
-                else {
-                    Console.WriteLine("✅ Template " + template.Name + " deleted successfully.");
-                }
-            }
-
-            Console.WriteLine("✅ All templates cleaned up.");
         }
     }
 }
