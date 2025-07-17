@@ -190,6 +190,47 @@ namespace Paubox
         }
 
         /// <summary>
+        /// Send Templated Message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>SendMessageResponse</returns>
+        public SendMessageResponse SendTemplatedMessage(TemplatedMessage message)
+        {
+            SendMessageResponse apiResponse = new SendMessageResponse();
+            try
+            {
+                //Prepare JSON request for passing it to Send Templated Message API
+                JObject requestObject = JObject.FromObject(new
+                {
+                    data = new Dictionary<string, object> {
+                        ["template_name"] = message.TemplateName,
+                        ["template_values"] = JsonConvert.SerializeObject(message.TemplateValues),
+                        ["message"] = message.ToJson()
+                    }
+                });
+
+                string Response = _apiHelper.CallToAPI(_apiBaseURL, "templated_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+                apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
+
+                if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
+                {
+                    throw new SystemException(Response);
+                }
+
+                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
+                {
+                    throw new SystemException(Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return apiResponse;
+        }
+
+        /// <summary>
         /// Get a Dynamic Template by templateId
         /// </summary>
         /// <param name="templateId"></param>

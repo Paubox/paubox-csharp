@@ -73,12 +73,12 @@ public class SendMessageTest
                             ["reply-to"] = "reply-to@yourdomain.com"
                         },
                         ["allowNonTLS"] = false,
+                        ["attachments"] = null,
                         ["content"] = new JObject
                         {
                             ["text/plain"] = "This is a test email.",
                             ["text/html"] = null
-                        },
-                        ["attachments"] = null
+                        }
                     }
                 }
             }
@@ -140,12 +140,12 @@ public class SendMessageTest
                             ["X-Another-Header"] = "Another Value"
                         },
                         ["allowNonTLS"] = false,
+                        ["attachments"] = null,
                         ["content"] = new JObject
                         {
                             ["text/plain"] = "This is a test email.",
                             ["text/html"] = null
-                        },
-                        ["attachments"] = null
+                        }
                     }
                 }
             }

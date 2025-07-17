@@ -83,12 +83,12 @@ public class SendBulkMessagesTest
                                 ["X-Another-Header"] = "Another Value"
                             },
                             ["allowNonTLS"] = false,
+                            ["attachments"] = null,
                             ["content"] = new JObject
                             {
                                 ["text/plain"] = "Email 1 Content",
                                 ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<html><body><h1>Email 1 Content</h1></body></html>"))
-                            },
-                            ["attachments"] = null
+                            }
                         },
                         new JObject
                         {
@@ -102,11 +102,6 @@ public class SendBulkMessagesTest
                                 ["reply-to"] = "reply-to2@yourdomain.com"
                             },
                             ["allowNonTLS"] = false,
-                            ["content"] = new JObject
-                            {
-                                ["text/plain"] = "Email 2 Content",
-                                ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<html><body><h1>Email 2 Content</h1></body></html>"))
-                            },
                             ["attachments"] = new JArray
                             {
                                 new JObject
@@ -115,6 +110,11 @@ public class SendBulkMessagesTest
                                     ["contentType"] = "text/plain",
                                     ["content"] = "Attachment 1 Content"
                                 }
+                            },
+                            ["content"] = new JObject
+                            {
+                                ["text/plain"] = "Email 2 Content",
+                                ["text/html"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("<html><body><h1>Email 2 Content</h1></body></html>"))
                             }
                         }
                     }

@@ -8,7 +8,15 @@ using System.Linq;
 
 namespace Paubox
 {
-    public class Message
+    /// <summary>
+    /// Base class for all message types
+    /// </summary>
+    /// <remarks>
+    /// Inherited by:
+    ///     1. Message
+    ///     2. TemplatedMessage
+    /// </remarks>
+    public class BaseMessage
     {
         public string[] Recipients { get; set; }
         public string[] Bcc { get; set; }
@@ -16,21 +24,29 @@ namespace Paubox
         public Header Header { get; set; }
         public bool AllowNonTLS { get; set; } = false;
         public string ForceSecureNotification { get; set; }
-        public Content Content { get; set; }
         public List<Attachment> Attachments { get; set; }
 
         /// <summary>
-        /// Convert the Message object to a JSON object
+        /// Validate the message object
         /// </summary>
-        /// <returns>JObject</returns>
-        public JObject ToJson()
+        /// <remarks>
+        /// This method throws an exception if the message object is invalid. This method can be overridden by the child
+        /// classes to add additional validation specific to that message type.
+        /// </remarks>
+        public virtual void Validate()
         {
             if (this.Header == null) {
-                throw new ArgumentNullException("Message Header cannot be null.");
+                throw new ArgumentNullException("Header cannot be null.");
             }
-            if (this.Content == null) {
-                throw new ArgumentNullException("Message Content cannot be null.");
-            }
+        }
+
+        /// <summary>
+        /// Convert the message object to a JSON object
+        /// </summary>
+        /// <returns>JObject</returns>
+        public virtual JObject ToJson()
+        {
+            this.Validate();
 
             JObject headerJSON = JObject.FromObject(new Dictionary<string, string>() {
                 { "subject" , this.Header.Subject},
@@ -46,21 +62,7 @@ namespace Paubox
                 }
             }
 
-            // Converting the html text to a base 64 string
-            string base64EncodedHtmlText = null;
-            if (!string.IsNullOrWhiteSpace(this.Content.HtmlText))
-            {
-                byte[] htmlTextByteArray = System.Text.Encoding.UTF8.GetBytes(this.Content.HtmlText);
-                base64EncodedHtmlText = Convert.ToBase64String(htmlTextByteArray);
-            }
-
-            JObject contentJSON = JObject.FromObject(new
-            Dictionary<string, string>() {
-                { "text/plain" , this.Content.PlainText},
-                { "text/html" , base64EncodedHtmlText}
-            });
-
-            //If there are attachments, then prepare attachment array JSON
+            // If there are attachments, then prepare attachment array JSON
             JArray attachmentJSONArray = null;
             if (this.Attachments != null && this.Attachments.Count > 0)
             {
@@ -84,7 +86,6 @@ namespace Paubox
                 cc = this.Cc,
                 headers = headerJSON,
                 allowNonTLS = this.AllowNonTLS,
-                content = contentJSON,
                 attachments = attachmentJSONArray
             });
 
@@ -102,7 +103,7 @@ namespace Paubox
         /// </summary>
         /// <param name="forceSecureNotification"></param>
         /// <returns></returns>
-        private static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
+        protected static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
         {
             string forceSecureNotificationValue = null;
             if (string.IsNullOrWhiteSpace(forceSecureNotification))

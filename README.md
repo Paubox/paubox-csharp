@@ -401,7 +401,74 @@ List<DynamicTemplateSummary> result = paubox.ListDynamicTemplates();
 
 #### Send a Dynamically Templated Message
 
-Coming soon.
+To [send a dynamically templated message](https://docs.paubox.com/docs/paubox_email_api/dynamic_templates#send-a-dynamically-templated-message),
+firstly construct a new `TemplatedMessage` object:
+
+```csharp
+var paubox = new EmailLibrary(configuration);
+
+TemplatedMessage message = new TemplatedMessage();
+
+// Note that instead of setting the `Content` property as with a non-templated message,
+// we set the `TemplateName` and `TemplateValues` properties:
+message.TemplateName = "Example Template";
+message.TemplateValues = new Dictionary<string, string> {
+    { "first_name", "John" },
+    { "last_name", "Doe" }
+};
+
+// Set the other properties as above:
+message.Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" };
+message.Cc = new string[] { "cc-recipient@domain.com" };
+message.Bcc = new string[] { "bcc-recipient@domain.com" };
+
+Header header = new Header();
+header.From = "you@yourdomain.com";
+header.ReplyTo = "reply-to@yourdomain.com";
+header.Subject = "Testing!";
+header.CustomHeaders = new Dictionary<string, string> {
+    { "X-Custom-Header", "Custom Value" },
+    { "X-Another-Header", "Another Value" }
+};
+message.Header = header;
+```
+
+Alternatively, you can use an object initializer to create the message:
+
+```csharp
+TemplatedMessage message = new TemplatedMessage() {
+    TemplateName = "Example Template",
+    TemplateValues = new Dictionary<string, string> {
+        { "first_name", "John" },
+        { "last_name", "Doe" }
+    },
+    Recipients = new string[] { "someone@domain.com", "someoneelse@domain.com" },
+    Cc = new string[] { "cc-recipient@domain.com" },
+    Bcc = new string[] { "bcc-recipient@domain.com" },
+    Header = new Header() {
+        Subject = "Testing!",
+        From = "you@yourdomain.com",
+        ReplyTo = "reply-to@yourdomain.com",
+        CustomHeaders = new Dictionary<string, string> {
+            { "X-Custom-Header", "Custom Value" },
+            { "X-Another-Header", "Another Value" }
+        }
+    },
+    Attachments = new List<Attachment>() {
+        new Attachment() {
+            FileName = "hello_world.txt",
+            ContentType = "text/plain",
+            Content = "SGVsbG8gV29ybGQh\n"
+        }
+    }
+};
+```
+
+Then, call the `EmailLibrary.SendTemplatedMessage` method to send the message:
+
+```csharp
+SendTemplatedMessageResponse response = paubox.SendTemplatedMessage(message);
+```
 
 ## Contributing
 
