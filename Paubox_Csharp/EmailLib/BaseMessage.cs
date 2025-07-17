@@ -25,8 +25,8 @@ namespace Paubox
         public bool AllowNonTLS { get; set; } = false;
 
         private bool? _forceSecureNotificationValue;
-        private string? _forceSecureNotification;
-        public string? ForceSecureNotification
+        private string _forceSecureNotification;
+        public string ForceSecureNotification
         {
             get => _forceSecureNotification;
             set
