@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 [TestFixture]
 public class CreateDynamicTemplateTest
 {
-    private Mock<IAPIHelper> _mockApiHelper;
-    private EmailLibrary _emailLibrary;
-    private string _projectDir;
+    private Mock<IAPIHelper>? _mockApiHelper;
+    private EmailLibrary? _emailLibrary;
+    private string? _projectDir;
 
     [SetUp]
     public void Setup()
