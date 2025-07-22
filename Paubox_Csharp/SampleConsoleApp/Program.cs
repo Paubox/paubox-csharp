@@ -18,13 +18,17 @@ namespace SampleConsoleApp
 
         static Program()
         {
-            string sourceDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string? sourceDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (sourceDirectory == null)
+            {
+                throw new InvalidOperationException("Could not determine assembly location directory");
+            }
 
             // Try to find the template file in various locations
             templatePath = FindOrCreateTemplateFile(sourceDirectory);
 
             Configuration = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(templatePath))
+                .SetBasePath(Path.GetDirectoryName(templatePath)!)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
@@ -42,7 +46,7 @@ namespace SampleConsoleApp
 </html>";
 
             // Search in the current directory and parent directories
-            string currentDir = startDirectory;
+            string? currentDir = startDirectory;
             while (currentDir != null)
             {
                 string potentialPath = Path.Combine(currentDir, templateFileName);
@@ -62,7 +66,11 @@ namespace SampleConsoleApp
             }
 
             // If not found, create it in the executable directory
-            string exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string? exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            if (exeDirectory == null)
+            {
+                throw new InvalidOperationException("Could not determine executable directory");
+            }
             string newTemplatePath = Path.Combine(exeDirectory, templateFileName);
 
             try
@@ -229,12 +237,12 @@ namespace SampleConsoleApp
         static Message CreateValidMessage(string title)
         {
             return new Message() {
-                Recipients = new string[] { Configuration["ToEmail"] },
+                Recipients = new string[] { Configuration["ToEmail"]! },
                 Cc = new string[] { },
                 Bcc = new string[] { },
                 Header = new Header() {
                     Subject = $"{title} - {DateTime.Now:MMM dd HH:mm:ss}",
-                    From = Configuration["FromEmail"],
+                    From = Configuration["FromEmail"]!,
                     CustomHeaders = new Dictionary<string, string> {
                         { "X-Custom-Header", "Custom Value" },
                         { "X-Another-Header", "Another Value" }
@@ -457,13 +465,13 @@ namespace SampleConsoleApp
             return new TemplatedMessage() {
                 TemplateName = templateName,
                 TemplateValues = templateValues,
-                Recipients = new string[] { Configuration["ToEmail"] },
+                Recipients = new string[] { Configuration["ToEmail"]! },
                 Cc = new string[] { },
                 Bcc = new string[] { },
                 Header = new Header() {
                     Subject = $"{title} - {DateTime.Now:MMM dd HH:mm:ss}",
-                    From = Configuration["FromEmail"],
-                    ReplyTo = Configuration["ReplyToEmail"],
+                    From = Configuration["FromEmail"]!,
+                    ReplyTo = Configuration["ReplyToEmail"]!,
                     CustomHeaders = new Dictionary<string, string> {
                         { "X-Custom-Header", "Custom Value" },
                         { "X-Another-Header", "Another Value" }
