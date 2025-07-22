@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;

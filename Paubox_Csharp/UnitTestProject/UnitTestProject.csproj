@@ -6,6 +6,7 @@
     <AssemblyName>UnitTestProject</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

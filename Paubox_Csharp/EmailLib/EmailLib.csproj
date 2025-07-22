@@ -5,6 +5,7 @@
     <RootNamespace>Paubox</RootNamespace>
     <AssemblyName>Paubox.Email.API</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
