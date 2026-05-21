@@ -125,7 +125,7 @@ Each `MessageDeliveries` entry:
 
 ## Forms API
 
-**Base URL:** `https://next.paubox.com/`
+**Base URL:** `https://apx.paubox.com/forms/`
 
 **Authentication:** None — these are public endpoints intended for form embed usage.
 

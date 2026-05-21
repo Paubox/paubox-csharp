@@ -6,7 +6,7 @@ namespace Paubox
 {
     public class FormsLibrary : IFormsLibrary
     {
-        private const string FormsBaseUrl = "https://next.paubox.com/";
+        private const string FormsBaseUrl = "https://apx.paubox.com/forms/";
         private readonly IAPIHelper _apiHelper;
 
         public FormsLibrary() : this(new APIHelper())

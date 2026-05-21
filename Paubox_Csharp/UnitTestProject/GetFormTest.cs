@@ -93,7 +93,7 @@ public class GetFormTest
 
         _formsLibrary.GetForm("550e8400-e29b-41d4-a716-446655440000");
 
-        Assert.AreEqual("https://next.paubox.com/", capturedBaseUrl);
+        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual("public/form_data/550e8400-e29b-41d4-a716-446655440000", capturedRequestUri);
     }
 
