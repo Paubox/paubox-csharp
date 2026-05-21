@@ -9,7 +9,7 @@ This is the official Paubox C# SDK. It wraps two Paubox APIs:
 | Library | Class | Base URL | Auth |
 |---|---|---|---|
 | Email API | `EmailLibrary` | `https://api.paubox.net/v1/{apiUser}/` | `Token token={apiKey}` header |
-| Forms API | `FormsLibrary` | `https://next.paubox.com/` | None (public endpoints) |
+| Forms API | `FormsLibrary` | `https://apx.paubox.com/forms/` | None (public endpoints) |
 
 ## Repository Structure
 
