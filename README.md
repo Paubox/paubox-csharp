@@ -44,7 +44,7 @@ option within the Project – References node.
 
 ### Getting Paubox API Credentials
 
-You will need to have a Paubox account. You can [sign up here](https://www.paubox.com/join/see-pricing?unit=messages).
+You will need to have a Paubox account. You can [sign up here](https://www.paubox.com/pricing/paubox-email-api).
 
 Once you have an account, follow the instructions on the Rest API dashboard to verify domain ownership and generate API
 credentials.
@@ -153,7 +153,7 @@ var paubox = new EmailLibrary(configuration);
 
 ### Send Message
 
-Please also see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#send-message).
+Please also see the [API Documentation](https://docs.paubox.com/email-api/messages).
 
 To send an email, prepare a `Message` object with `Header` and `Content` and call `EmailLibrary.SendMessage`:
 
@@ -264,7 +264,7 @@ SendMessageResponse response = paubox.SendMessage(message);
 
 #### Custom Headers
 
-Please see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#data-parameters) for more
+Please see the [API Documentation](https://docs.paubox.com/email-api/messages) for more
 information on custom headers. You can add custom headers to your message by adding them as a Dictionary to the `Header`
 object:
 
@@ -288,7 +288,7 @@ SendMessageResponse response = paubox.SendMessage(message);
 
 ### Get Email Disposition
 
-Please also see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#get-email-disposition).
+Please also see the [API Documentation](https://docs.paubox.com/email-api/message-receipt).
 
 To get email status for any source tracking id, call the `EmailLibrary.GetEmailDisposition` method with the source
 tracking id of the message:
@@ -299,7 +299,7 @@ GetEmailDispositionResponse response = paubox.GetEmailDisposition("2a3c048485aa4
 
 ### Send Bulk Messages
 
-Please see the [API Documentation](https://docs.paubox.com/docs/paubox_email_api/messages#send-bulk-messages) for more
+Please see the [API Documentation](https://docs.paubox.com/email-api/bulk-messages) for more
 details. Specifically:
 
 > We recommend batches of 50 (fifty) or less.
@@ -322,7 +322,7 @@ SendBulkMessagesResponse response = paubox.SendBulkMessages(messages);
 
 ### Dynamic Templates
 
-Please refer to the [related API documentation](https://docs.paubox.com/docs/paubox_email_api/dynamic_templates) for
+Please refer to the [related API documentation](https://docs.paubox.com/email-api/dynamic-templates) for
 more details.
 
 #### Create Dynamic Template
@@ -401,7 +401,7 @@ List<DynamicTemplateSummary> result = paubox.ListDynamicTemplates();
 
 #### Send a Dynamically Templated Message
 
-To [send a dynamically templated message](https://docs.paubox.com/docs/paubox_email_api/dynamic_templates#send-a-dynamically-templated-message),
+To [send a dynamically templated message](https://docs.paubox.com/email-api/templated-messages),
 firstly construct a new `TemplatedMessage` object:
 
 ```csharp
