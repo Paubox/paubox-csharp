@@ -2,12 +2,14 @@
 
 # Paubox C# SDK <!-- omit in toc -->
 
-This is the official C# wrapper/SDK for the Paubox Email API.
+This is the official C# wrapper/SDK for the Paubox Email API and Paubox Forms.
 
 The Paubox Email API allows your application to send secure, HIPAA compliant email via Paubox and track deliveries and
 opens.
 
-The API wrapper allows you to construct and send messages.
+The Paubox Forms API allows your application to retrieve form definitions and submit form responses.
+
+The API wrapper allows you to construct and send messages, and interact with Paubox Forms.
 
 - [Installation](#installation)
   - [Getting Paubox API Credentials](#getting-paubox-api-credentials)
@@ -33,6 +35,11 @@ The API wrapper allows you to construct and send messages.
     - [Get Dynamic Template](#get-dynamic-template)
     - [List Dynamic Templates](#list-dynamic-templates)
     - [Send a Dynamically Templated Message](#send-a-dynamically-templated-message)
+- [Paubox Forms](#paubox-forms)
+  - [Initializing the FormsLibrary](#initializing-the-formslibrary)
+  - [Get Form](#get-form)
+  - [Submit Form](#submit-form)
+    - [Submitting with file attachments](#submitting-with-file-attachments)
 - [Contributing](#contributing)
 - [License](#license)
 - [Copyright](#copyright)
@@ -468,6 +475,97 @@ Then, call the `EmailLibrary.SendTemplatedMessage` method to send the message:
 
 ```csharp
 SendTemplatedMessageResponse response = paubox.SendTemplatedMessage(message);
+```
+
+## Paubox Forms
+
+The Paubox Forms integration provides two public endpoints for retrieving form definitions and
+submitting responses. **No API key is required** — these endpoints are intended for use by form
+respondents.
+
+Please also see the [API Documentation](https://docs.paubox.com/forms/get-form).
+
+### Initializing the FormsLibrary
+
+`FormsLibrary` requires no credentials:
+
+```csharp
+var forms = new FormsLibrary();
+```
+
+### Get Form
+
+Retrieves the full definition (HTML, JSON schema, CSS) for a given form UUID:
+
+```csharp
+string formId = "550e8400-e29b-41d4-a716-446655440000";
+Form form = forms.GetForm(formId);
+
+Console.WriteLine(form.Title);
+Console.WriteLine(form.FormHtml);
+Console.WriteLine(form.SubmissionCount);
+```
+
+The returned `Form` object includes:
+
+| Property | Type | Description |
+|---|---|---|
+| `Id` | `string` | Form UUID |
+| `Title` | `string` | Form display title |
+| `Description` | `string` | Optional description |
+| `FormHtml` | `string` | Rendered form HTML |
+| `FormJson` | `object` | JSON schema of form fields |
+| `FormCss` | `string` | Associated CSS |
+| `Active` | `bool` | Whether the form accepts submissions |
+| `Signable` | `bool` | Whether the form supports e-signatures |
+| `SubmissionCount` | `int` | Total submissions received |
+| `CreatedAt` | `DateTime` | Creation timestamp |
+| `UpdatedAt` | `DateTime` | Last update timestamp |
+
+### Submit Form
+
+Submits a respondent's answers. The keys in `formData` should match the field names defined in
+the form's schema (`FormJson`):
+
+```csharp
+string formId = "550e8400-e29b-41d4-a716-446655440000";
+
+forms.SubmitForm(formId, new Dictionary<string, object>
+{
+    { "first_name", "Jane" },
+    { "last_name", "Smith" },
+    { "email", "jane@example.com" }
+});
+```
+
+#### Submitting with file attachments
+
+File attachments are passed as `FormAttachment` objects with a filename and base64-encoded content.
+The maximum total request size is **250 MB**.
+
+```csharp
+string formId = "550e8400-e29b-41d4-a716-446655440000";
+
+// Read and base64-encode the file
+byte[] fileBytes = File.ReadAllBytes("path/to/consent.pdf");
+string base64Content = Convert.ToBase64String(fileBytes);
+
+forms.SubmitForm(
+    formId,
+    formData: new Dictionary<string, object>
+    {
+        { "first_name", "Jane" },
+        { "signature", "{signature_field}" }
+    },
+    attachments: new FormAttachment[]
+    {
+        new FormAttachment
+        {
+            Name = "consent.pdf",
+            Content = base64Content
+        }
+    }
+);
 ```
 
 ## Contributing
