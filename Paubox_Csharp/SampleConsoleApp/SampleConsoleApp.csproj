@@ -6,6 +6,7 @@
     <RootNamespace>SampleConsoleApp</RootNamespace>
     <AssemblyName>SampleConsoleApp</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

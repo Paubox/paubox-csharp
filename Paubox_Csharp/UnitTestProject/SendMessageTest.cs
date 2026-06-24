@@ -11,8 +11,8 @@ using Newtonsoft.Json.Linq;
 [TestFixture]
 public class SendMessageTest
 {
-    private Mock<IAPIHelper> _mockApiHelper;
-    private EmailLibrary _emailLibrary;
+    private Mock<IAPIHelper>? _mockApiHelper;
+    private EmailLibrary? _emailLibrary;
 
     [SetUp]
     public void Setup()
