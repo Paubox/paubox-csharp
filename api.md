@@ -6,7 +6,9 @@
   - [Authentication](#authentication)
   - [EmailLibrary Methods](#emaillibrary-methods)
 - [Forms API](#forms-api)
-  - [FormsLibrary Methods](#formslibrary-methods)
+  - [Authentication (Forms)](#authentication-forms)
+  - [FormsLibrary Methods (Public)](#formslibrary-methods-public)
+  - [FormsLibrary Methods (Management)](#formslibrary-methods-management)
 - [Error Handling](#error-handling)
 
 ---
@@ -127,9 +129,32 @@ Each `MessageDeliveries` entry:
 
 **Base URL:** `https://apx.paubox.com/forms/`
 
-**Authentication:** None — these are public endpoints intended for form embed usage.
+### Authentication (Forms)
 
-### FormsLibrary Methods
+The Forms API has two tiers of endpoints:
+
+- **Public endpoints** (`GetForm`, `SubmitForm`) require no authentication — they are intended
+  for form embed usage.
+- **Management endpoints** (all other methods) require a **scoped API key** sent as a Bearer
+  token. The key must carry the `forms` scope:
+
+```
+Authorization: Bearer {apiKey}
+```
+
+Pass the scoped API key when constructing `FormsLibrary`:
+
+```csharp
+var forms = new FormsLibrary();          // public endpoints only
+var forms = new FormsLibrary(apiKey);    // public + management endpoints
+```
+
+Calling a management method on an instance constructed without an API key throws
+`InvalidOperationException` before any HTTP request is made.
+
+### FormsLibrary Methods (Public)
+
+These methods require no authentication.
 
 #### `GetForm(string formId) → Form`
 
@@ -161,6 +186,9 @@ Retrieves the full definition of a form (HTML, JSON schema, CSS) by its UUID.
 | `SignatureConfirmationLabel` | `string` | Label shown on signature confirmation |
 | `SubmissionCount` | `int` | Total submissions received |
 | `Type` | `string` | Form type |
+| `Recipient` | `string` | Address notified on submission |
+| `OldFormId` | `int?` | Legacy form ID, if migrated |
+| `SubscriptionListId` | `string` | Associated subscription list ID |
 | `Deleted` | `bool` | Soft-delete flag |
 | `Archived` | `bool` | Archive flag |
 | `CreatedAt` | `DateTime` | Creation timestamp |
@@ -198,6 +226,301 @@ Maximum request size: **250 MB** (to support file attachments).
 - Throws `ArgumentNullException` if `formData` is null
 - Throws `ArgumentException` if `formId` is null or empty
 - Throws `SystemException` if the API returns an error response (400 form not found, 404 invalid form data, etc.)
+
+---
+
+### FormsLibrary Methods (Management)
+
+All methods below require a `FormsLibrary` constructed with a scoped API key carrying the
+`forms` scope (see [Authentication (Forms)](#authentication-forms)). Each throws
+`InvalidOperationException` if no API key was provided, and `SystemException` with the raw
+response body if the API returns an unexpected response.
+
+#### `ListForms(FormsListParams parameters = null) → FormsListResponse`
+
+Lists forms, with optional filtering and pagination.
+
+**Path:** `GET /api/forms`
+
+**Query parameters (via `FormsListParams`, all optional):**
+
+| Property | Type | Query param | Description |
+|---|---|---|---|
+| `CustomerId` | `int?` | `customer_id` | Filter by owning customer |
+| `FormId` | `string` | `form_id` | Filter to a specific form UUID |
+| `Search` | `string` | `search` | Free-text search on title/description |
+| `Order` | `string` | `order` | Sort direction (`asc` / `desc`) |
+| `OrderBy` | `string` | `order_by` | Field to sort by |
+| `Archived` | `bool?` | `archived` | Filter by archive flag |
+| `Active` | `bool?` | `active` | Filter by active flag |
+| `Page` | `int?` | `page` | Page number |
+| `Items` | `int?` | `items` | Items per page |
+
+**Response:** `FormsListResponse`
+
+| Field | Type | Description |
+|---|---|---|
+| `Results` | `List<Form>` | Forms on this page |
+| `PageInfo` | `PageInfo` | Pagination metadata |
+
+`PageInfo` fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `Count` | `long` | Total matching forms |
+| `Pages` | `int` | Total pages |
+| `Page` | `int` | Current page |
+| `Items` | `int` | Items per page |
+
+---
+
+#### `CreateForm(CreateFormRequest request) → CreateFormResponse`
+
+Creates a new form.
+
+**Path:** `POST /api/forms`
+
+**Request body fields (via `CreateFormRequest`):**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `Title` | `string` | Yes | Form display title |
+| `FormJson` | `object` | Yes | JSON schema of form fields |
+| `Description` | `string` | No | Optional description |
+| `FormHtml` | `string` | No | Rendered form HTML |
+| `FormCss` | `string` | No | Associated CSS |
+| `CustomerId` | `int` | No | Owning customer ID |
+| `Recipient` | `string` | No | Address notified on submission |
+| `Signable` | `bool` | No | Whether the form supports e-signatures |
+| `SignatureConfirmationLabel` | `string` | No | Label shown on signature confirmation |
+| `SubscriptionListId` | `string` | No | Associated subscription list ID |
+| `Type` | `string` | No | Form type |
+| `Active` | `bool` | No | Whether the form accepts submissions |
+| `Version` | `int` | No | Schema version |
+| `SubmissionCount` | `int` | No | Initial submission count |
+
+**Response:** `CreateFormResponse`
+
+| Field | Type | Description |
+|---|---|---|
+| `Id` | `string` | UUID of the created form |
+
+**Errors:**
+- Throws `ArgumentNullException` if `request` is null
+- Throws `ArgumentException` if `Title` is null/empty or `FormJson` is null
+
+---
+
+#### `GetFormById(string formId) → Form`
+
+Retrieves a form by UUID via the authenticated management endpoint. Distinct from the public
+`GetForm` — this endpoint returns forms regardless of embed visibility.
+
+**Path:** `GET /api/forms/{form_id}`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+
+**Response:** `Form` (same fields as [`GetForm`](#getformstring-formid--form); unwrapped from
+the API's `{"data": {...}}` envelope).
+
+---
+
+#### `UpdateForm(string formId, UpdateFormRequest request) → UpdateFormResponse`
+
+Updates a form. Update semantics are partial: every field of `UpdateFormRequest` is optional,
+and fields left `null` are omitted from the request body and left unchanged by the backend.
+
+**Path:** `PUT /api/forms/{form_id}`
+
+**Request body fields (via `UpdateFormRequest`, all optional):**
+
+| Field | Type | Description |
+|---|---|---|
+| `Title` | `string` | Form display title |
+| `Description` | `string` | Description |
+| `FormJson` | `object` | JSON schema of form fields |
+| `VanityUrl` | `string` | Custom URL slug |
+| `Recipient` | `string` | Address notified on submission |
+| `Active` | `bool?` | Whether the form accepts submissions |
+| `SubscriptionListId` | `string` | Associated subscription list ID |
+
+**Response:** `UpdateFormResponse`
+
+| Field | Type | Description |
+|---|---|---|
+| `Detail` | `string` | Human-readable result message |
+| `FormId` | `string` | UUID of the updated form |
+
+**Errors:**
+- Throws `ArgumentException` if `formId` is null or empty
+- Throws `ArgumentNullException` if `request` is null
+
+---
+
+#### `ArchiveForm(string formId) → string`
+
+Archives a form. Returns the API's detail message (e.g. `"Form archived."`).
+
+**Path:** `POST /api/forms/{form_id}/archive`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+
+---
+
+#### `UnarchiveForm(string formId) → string`
+
+Restores an archived form. Returns the API's detail message.
+
+**Path:** `POST /api/forms/{form_id}/unarchive`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+
+---
+
+#### `CopyForm(string formId, string newTitle) → Form`
+
+Duplicates an existing form under a new title and returns the newly created `Form`.
+
+**Path:** `POST /api/forms/copy`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | UUID of the form to copy |
+| `newTitle` | `string` | Yes | Title for the copy |
+
+**Request body:**
+
+| Field | Type | Description |
+|---|---|---|
+| `form_id` | `string` | UUID of the form to copy |
+| `title` | `string` | Title for the copy |
+
+**Response:** the new `Form` object (same fields as [`GetForm`](#getformstring-formid--form)).
+
+---
+
+#### `GetFormStats(int? customerId = null) → FormStats`
+
+Returns aggregate form statistics, optionally scoped to a customer.
+
+**Path:** `GET /api/forms/stats` (with `?customer_id={customerId}` when provided)
+
+**Response:** `FormStats`
+
+| Field | Type | Description |
+|---|---|---|
+| `ActiveFormCount` | `long` | Number of active forms |
+| `TotalSubmissionCount` | `long` | Total submissions across forms |
+| `SubmissionsLast7Days` | `long` | Submissions received in the last 7 days |
+
+---
+
+#### `ListFormSubmissions(string formId, SubmissionListParams parameters = null) → FormSubmissionListResponse`
+
+Lists submissions for a form, with optional filtering and pagination.
+
+**Path:** `GET /api/forms/{form_id}/submissions`
+
+**Query parameters (via `SubmissionListParams`, all optional):**
+
+| Property | Type | Query param | Description |
+|---|---|---|---|
+| `SubmissionId` | `string` | `submission_id` | Filter to a specific submission |
+| `OrderBy` | `string` | `order_by` | Field to sort by |
+| `Order` | `string` | `order` | Sort direction (`asc` / `desc`) |
+| `Page` | `int?` | `page` | Page number |
+| `Items` | `int?` | `items` | Items per page |
+
+**Response:** `FormSubmissionListResponse`
+
+| Field | Type | Description |
+|---|---|---|
+| `Data` | `List<FormSubmission>` | Submissions on this page |
+| `Total` | `long` | Total matching submissions |
+| `Page` | `int` | Current page |
+| `Items` | `int` | Items per page |
+
+`FormSubmission` fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `Id` | `string` | Submission UUID |
+| `FormId` | `string` | Parent form UUID |
+| `FormData` | `string` | Submitted field values (JSON string) |
+| `StorageType` | `string` | Where the submission payload is stored |
+| `StorageUrl` | `string` | Storage location URL |
+| `SubmitterEmail` | `string` | Respondent's email address |
+| `Recipients` | `string` | Notification recipients |
+| `Attachment` | `string` | Attachment payload reference |
+| `AttachmentName` | `string` | Attachment filename |
+| `AttachmentUrl` | `string` | Attachment download URL |
+| `AttachmentType` | `string` | Attachment MIME type |
+| `CreatedAt` | `DateTime` | Submission timestamp |
+
+---
+
+#### `ExportSubmissionsCsv(string formId) → string`
+
+Exports all submissions for a form as CSV text.
+
+**Path:** `GET /api/forms/{form_id}/submissions/submission-csv`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+
+**Response:** raw CSV as a `string`. Throws `SystemException` if the response is empty.
+
+---
+
+#### `ExportSubmissionCsv(string formId, string submissionId) → string`
+
+Exports a single submission as CSV text.
+
+**Path:** `GET /api/forms/{form_id}/submissions/submission-csv/{submission_id}`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+| `submissionId` | `string` (UUID) | Yes | The submission's unique identifier |
+
+**Response:** raw CSV as a `string`. Throws `SystemException` if the response is empty.
+
+---
+
+#### `ExportSubmissionPdf(string formId, string submissionId) → byte[]`
+
+Exports a single submission as a PDF document.
+
+**Path:** `GET /api/forms/{form_id}/submissions/{submission_id}/submission-pdf`
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `formId` | `string` (UUID) | Yes | The form's unique identifier |
+| `submissionId` | `string` (UUID) | Yes | The submission's unique identifier |
+
+**Response:** raw PDF bytes as `byte[]`. Throws `SystemException` with the message
+`"Empty response from PDF export"` if the response is null or empty.
 
 ---
 

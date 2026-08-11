@@ -40,6 +40,16 @@ The API wrapper allows you to construct and send messages, and interact with Pau
   - [Get Form](#get-form)
   - [Submit Form](#submit-form)
     - [Submitting with file attachments](#submitting-with-file-attachments)
+  - [Managing forms with a scoped API key](#managing-forms-with-a-scoped-api-key)
+    - [List Forms](#list-forms)
+    - [Create Form](#create-form)
+    - [Get Form by ID](#get-form-by-id)
+    - [Update Form](#update-form)
+    - [Archive and Unarchive](#archive-and-unarchive)
+    - [Copy Form](#copy-form)
+    - [Form Stats](#form-stats)
+    - [List Form Submissions](#list-form-submissions)
+    - [Export Submissions (CSV / PDF)](#export-submissions-csv--pdf)
 - [Contributing](#contributing)
 - [License](#license)
 - [Copyright](#copyright)
@@ -480,18 +490,28 @@ SendTemplatedMessageResponse response = paubox.SendTemplatedMessage(message);
 ## Paubox Forms
 
 The Paubox Forms integration provides two public endpoints for retrieving form definitions and
-submitting responses. **No API key is required** — these endpoints are intended for use by form
-respondents.
+submitting responses (**no API key required** — these are intended for use by form respondents),
+plus a set of authenticated management endpoints for listing, creating, updating, archiving,
+and copying forms and for working with submissions.
 
 Please also see the [API Documentation](https://docs.paubox.com/forms/get-form).
 
 ### Initializing the FormsLibrary
 
-`FormsLibrary` requires no credentials:
+For the public endpoints (`GetForm`, `SubmitForm`), `FormsLibrary` requires no credentials:
 
 ```csharp
 var forms = new FormsLibrary();
 ```
+
+For the management endpoints, construct `FormsLibrary` with a **scoped API key** that has the
+`forms` scope. The key is sent as `Authorization: Bearer {apiKey}`:
+
+```csharp
+var forms = new FormsLibrary("your-scoped-api-key");
+```
+
+Calling a management method without an API key throws `InvalidOperationException`.
 
 ### Get Form
 
@@ -566,6 +586,131 @@ forms.SubmitForm(
         }
     }
 );
+```
+
+### Managing forms with a scoped API key
+
+All of the following methods require a `FormsLibrary` constructed with a scoped API key
+carrying the `forms` scope:
+
+```csharp
+var forms = new FormsLibrary("your-scoped-api-key");
+```
+
+See [api.md](api.md) for full request/response field tables.
+
+#### List Forms
+
+All filter parameters are optional:
+
+```csharp
+FormsListResponse list = forms.ListForms(new FormsListParams
+{
+    Search = "intake",
+    Active = true,
+    Page = 1,
+    Items = 25
+});
+
+foreach (Form f in list.Results)
+    Console.WriteLine($"{f.Id}: {f.Title}");
+
+Console.WriteLine($"Total: {list.PageInfo.Count} across {list.PageInfo.Pages} pages");
+```
+
+#### Create Form
+
+`Title` and `FormJson` are required:
+
+```csharp
+CreateFormResponse created = forms.CreateForm(new CreateFormRequest
+{
+    Title = "Patient Intake",
+    FormJson = new { fields = new[] { new { name = "first_name", type = "text" } } },
+    Recipient = "intake@yourdomain.com",
+    Active = true
+});
+
+Console.WriteLine(created.Id);   // UUID of the new form
+```
+
+#### Get Form by ID
+
+The authenticated counterpart to the public `GetForm`:
+
+```csharp
+Form form = forms.GetFormById("550e8400-e29b-41d4-a716-446655440000");
+```
+
+#### Update Form
+
+Updates are partial — only set the properties you want to change; `null` properties are
+omitted from the request and left unchanged:
+
+```csharp
+UpdateFormResponse updated = forms.UpdateForm(formId, new UpdateFormRequest
+{
+    Title = "Patient Intake (v2)",
+    Active = false
+});
+
+Console.WriteLine(updated.Detail);
+```
+
+#### Archive and Unarchive
+
+Both return the API's detail message:
+
+```csharp
+string detail = forms.ArchiveForm(formId);     // "Form archived."
+detail = forms.UnarchiveForm(formId);
+```
+
+#### Copy Form
+
+Duplicates a form under a new title and returns the new `Form`:
+
+```csharp
+Form copy = forms.CopyForm(formId, "Patient Intake (copy)");
+Console.WriteLine(copy.Id);
+```
+
+#### Form Stats
+
+Aggregate statistics, optionally scoped to a customer:
+
+```csharp
+FormStats stats = forms.GetFormStats();              // all forms
+FormStats customerStats = forms.GetFormStats(1234);  // one customer
+
+Console.WriteLine(stats.ActiveFormCount);
+Console.WriteLine(stats.TotalSubmissionCount);
+Console.WriteLine(stats.SubmissionsLast7Days);
+```
+
+#### List Form Submissions
+
+```csharp
+FormSubmissionListResponse submissions = forms.ListFormSubmissions(formId,
+    new SubmissionListParams { Page = 1, Items = 50, Order = "desc" });
+
+foreach (FormSubmission s in submissions.Data)
+    Console.WriteLine($"{s.Id} from {s.SubmitterEmail} at {s.CreatedAt}");
+```
+
+#### Export Submissions (CSV / PDF)
+
+```csharp
+// All submissions for a form, as CSV text
+string csv = forms.ExportSubmissionsCsv(formId);
+File.WriteAllText("submissions.csv", csv);
+
+// A single submission, as CSV text
+string oneCsv = forms.ExportSubmissionCsv(formId, submissionId);
+
+// A single submission, as a PDF document
+byte[] pdf = forms.ExportSubmissionPdf(formId, submissionId);
+File.WriteAllBytes("submission.pdf", pdf);
 ```
 
 ## Contributing

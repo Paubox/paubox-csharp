@@ -55,6 +55,10 @@ namespace Paubox
                 {
                     response = client.PatchAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
                 }
+                else if (APIVerb == "PUT")
+                {
+                    response = client.PutAsync(requestURI, new StringContent(requestBody, Encoding.UTF8, "application/json")).Result;
+                }
                 else
                 {
                     throw new ArgumentException("Invalid API verb: " + APIVerb);
@@ -64,6 +68,37 @@ namespace Paubox
             }
 
             return apiResponse.Result.ToString();
+        }
+
+        /// <summary>
+        /// This method calls an API and returns the raw response bytes (e.g. for PDF downloads).
+        /// GET only.
+        /// </summary>
+        /// <param name="BaseAPIUrl"></param>
+        /// <param name="requestURI"></param>
+        /// <param name="authHeader"></param>
+        /// <param name="APIVerb"></param>
+        /// <returns>Raw response body bytes</returns>
+        public byte[] CallToAPIBytes(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb)
+        {
+            if (APIVerb != "GET")
+            {
+                throw new ArgumentException("Invalid API verb: " + APIVerb);
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseAPIUrl);
+
+                if (!string.IsNullOrEmpty(authHeader))
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", authHeader);  // Adds Authorization Header
+                }
+
+                HttpResponseMessage response = client.GetAsync(requestURI).Result;
+
+                return response.Content.ReadAsByteArrayAsync().Result;
+            }
         }
 
         public string UploadTemplate(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb, string templateName, string templatePath)
