@@ -39,22 +39,22 @@ public class GetFormTest
     }
 
     [Test]
-    public void TestGetFormNotFoundThrowsSystemException()
+    public void TestGetFormNotFoundThrowsPauboxApiException()
     {
         MockApiResponse(NotFoundResponse());
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.GetForm("550e8400-e29b-41d4-a716-446655440000"));
 
         Assert.IsNotNull(exception.Message);
     }
 
     [Test]
-    public void TestGetFormEmptyResponseThrowsSystemException()
+    public void TestGetFormEmptyResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(
+        Assert.Throws<PauboxApiException>(
             () => _formsLibrary.GetForm("550e8400-e29b-41d4-a716-446655440000"));
     }
 

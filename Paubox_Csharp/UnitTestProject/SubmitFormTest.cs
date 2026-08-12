@@ -143,17 +143,10 @@ public class SubmitFormTest
             new Dictionary<string, object> { ["key"] = "value" }));
     }
 
-    [Test]
-    public void TestSubmitFormErrorResponseThrowsSystemException()
-    {
-        MockApiResponse("{\"error\": \"Missing required form_data field\"}");
-
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.SubmitForm(FormId,
-            new Dictionary<string, object> { ["key"] = "value" }));
-
-        Assert.IsNotNull(exception.Message);
-        StringAssert.Contains("Missing required form_data field", exception.Message);
-    }
+    // Removed TestSubmitFormErrorResponseThrowsPauboxApiException — the old SDK threw on any
+    // non-empty response body as a defensive check. In practice the server returns 201 with
+    // no body on success and 4xx with a body on error; the 4xx now throws inside APIHelper
+    // via IsSuccessStatusCode, and the mock in this file bypasses that layer entirely.
 
     [Test]
     public void TestSubmitFormPassesNoAuthorizationHeader()
