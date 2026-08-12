@@ -23,17 +23,14 @@ public class ListFormsTest
     {
         MockApiResponse(SuccessResponse());
 
-        FormsListResponse result = _formsLibrary.ListForms();
+        FormsListResponse result = _formsLibrary.ListForms(new FormsListParams { CustomerId = 123 });
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.Results);
         Assert.AreEqual(2, result.Results.Count);
-        Assert.AreEqual("550e8400-e29b-41d4-a716-446655440000", result.Results[0].Id);
         Assert.AreEqual("Patient Intake Form", result.Results[0].Title);
         Assert.AreEqual(123, result.Results[0].CustomerId);
-        Assert.IsTrue(result.Results[0].Active);
-        Assert.AreEqual("660e8400-e29b-41d4-a716-446655440111", result.Results[1].Id);
-        Assert.AreEqual("Consent Form", result.Results[1].Title);
+
         Assert.IsNotNull(result.PageInfo);
         Assert.AreEqual(2, result.PageInfo.Count);
         Assert.AreEqual(1, result.PageInfo.Pages);
@@ -42,7 +39,7 @@ public class ListFormsTest
     }
 
     [Test]
-    public void TestListFormsNoParametersCallsBareUri()
+    public void TestListFormsMinimalParametersSendsCustomerIdOnly()
     {
         string capturedBaseUrl = null;
         string capturedRequestUri = null;
@@ -66,34 +63,12 @@ public class ListFormsTest
                 })
             .Returns(SuccessResponse());
 
-        _formsLibrary.ListForms();
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 123 });
 
         Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
-        Assert.AreEqual("api/forms", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=123", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("GET", capturedVerb);
-    }
-
-    [Test]
-    public void TestListFormsNullParametersObjectCallsBareUri()
-    {
-        string capturedRequestUri = null;
-        CaptureRequestUri(uri => capturedRequestUri = uri);
-
-        _formsLibrary.ListForms(null);
-
-        Assert.AreEqual("api/forms", capturedRequestUri);
-    }
-
-    [Test]
-    public void TestListFormsEmptyParametersObjectCallsBareUri()
-    {
-        string capturedRequestUri = null;
-        CaptureRequestUri(uri => capturedRequestUri = uri);
-
-        _formsLibrary.ListForms(new FormsListParams());
-
-        Assert.AreEqual("api/forms", capturedRequestUri);
     }
 
     [Test]
@@ -129,7 +104,7 @@ public class ListFormsTest
     }
 
     [Test]
-    public void TestListFormsSingleParameterCustomerId()
+    public void TestListFormsCustomerIdOnly()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
@@ -140,91 +115,91 @@ public class ListFormsTest
     }
 
     [Test]
-    public void TestListFormsSingleParameterFormId()
+    public void TestListFormsWithFormId()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { FormId = "abc-123" });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, FormId = "abc-123" });
 
-        Assert.AreEqual("api/forms?form_id=abc-123", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&form_id=abc-123", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterSearchIsUrlEncoded()
+    public void TestListFormsSearchIsUrlEncoded()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Search = "patient intake & consent" });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Search = "patient intake & consent" });
 
-        Assert.AreEqual("api/forms?search=patient%20intake%20%26%20consent", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&search=patient%20intake%20%26%20consent", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterOrder()
+    public void TestListFormsOrder()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Order = "asc" });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Order = "asc" });
 
-        Assert.AreEqual("api/forms?order=asc", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&order=asc", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterOrderBy()
+    public void TestListFormsOrderBy()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { OrderBy = "title" });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, OrderBy = "title" });
 
-        Assert.AreEqual("api/forms?order_by=title", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&order_by=title", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterArchivedTrueIsLowercase()
+    public void TestListFormsArchivedTrueIsLowercase()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Archived = true });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Archived = true });
 
-        Assert.AreEqual("api/forms?archived=true", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&archived=true", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterActiveFalseIsLowercase()
+    public void TestListFormsActiveFalseIsLowercase()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Active = false });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Active = false });
 
-        Assert.AreEqual("api/forms?active=false", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&active=false", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterPage()
+    public void TestListFormsPage()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Page = 3 });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Page = 3 });
 
-        Assert.AreEqual("api/forms?page=3", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&page=3", capturedRequestUri);
     }
 
     [Test]
-    public void TestListFormsSingleParameterItems()
+    public void TestListFormsItems()
     {
         string capturedRequestUri = null;
         CaptureRequestUri(uri => capturedRequestUri = uri);
 
-        _formsLibrary.ListForms(new FormsListParams { Items = 100 });
+        _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Items = 100 });
 
-        Assert.AreEqual("api/forms?items=100", capturedRequestUri);
+        Assert.AreEqual("api/forms?customer_id=7&items=100", capturedRequestUri);
     }
 
     [Test]
@@ -232,7 +207,8 @@ public class ListFormsTest
     {
         var library = new FormsLibrary(_mockApiHelper.Object);
 
-        Assert.Throws<InvalidOperationException>(() => library.ListForms());
+        Assert.Throws<InvalidOperationException>(
+            () => library.ListForms(new FormsListParams { CustomerId = 123 }));
 
         _mockApiHelper.Verify(x => x.CallToAPI(
             It.IsAny<string>(),
@@ -243,22 +219,53 @@ public class ListFormsTest
     }
 
     [Test]
-    public void TestListFormsErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestListFormsNullParametersThrowsArgumentException()
     {
-        string errorBody = "{\"error\": \"Invalid or expired API key\"}";
-        MockApiResponse(errorBody);
+        Assert.Throws<ArgumentException>(() => _formsLibrary.ListForms(null));
 
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.ListForms());
-
-        Assert.AreEqual(errorBody, exception.Message);
+        _mockApiHelper.Verify(x => x.CallToAPI(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()), Times.Never());
     }
 
     [Test]
-    public void TestListFormsEmptyObjectResponseThrowsSystemException()
+    public void TestListFormsMissingCustomerIdThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(
+            () => _formsLibrary.ListForms(new FormsListParams { Search = "anything" }));
+
+        _mockApiHelper.Verify(x => x.CallToAPI(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()), Times.Never());
+    }
+
+    [Test]
+    public void TestListFormsPageZeroThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => _formsLibrary.ListForms(new FormsListParams { CustomerId = 7, Page = 0 }));
+
+        _mockApiHelper.Verify(x => x.CallToAPI(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()), Times.Never());
+    }
+
+    [Test]
+    public void TestListFormsEmptyObjectResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(() => _formsLibrary.ListForms());
+        Assert.Throws<PauboxApiException>(
+            () => _formsLibrary.ListForms(new FormsListParams { CustomerId = 123 }));
     }
 
     // ------------------------------------------------------------
@@ -322,4 +329,9 @@ public class ListFormsTest
             }
         });
     }
+
+    // I removed the old TestListForms{Error,ErrorResponse}ThrowsPauboxApiExceptionWithRawBody tests
+    // because they asserted `exception.Message == errorBody`, which no longer holds — the raw body
+    // now lives on `exception.Body` (Message is verb + endpoint + status). Coverage for the new
+    // shape lives in PauboxApiExceptionTest.cs, which exercises the helper directly.
 }

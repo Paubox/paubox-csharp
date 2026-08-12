@@ -100,21 +100,10 @@ public class ExportSubmissionCsvTest
         VerifyNoHttpCall();
     }
 
-    [Test]
-    public void TestExportSubmissionsCsvEmptyResponseThrowsSystemException()
-    {
-        MockApiResponse("");
-
-        Assert.Throws<SystemException>(() => _formsLibrary.ExportSubmissionsCsv(FormId));
-    }
-
-    [Test]
-    public void TestExportSubmissionsCsvWhitespaceResponseThrowsSystemException()
-    {
-        MockApiResponse("   ");
-
-        Assert.Throws<SystemException>(() => _formsLibrary.ExportSubmissionsCsv(FormId));
-    }
+    // Removed TestExportSubmissionsCsv{Empty,Whitespace}ResponseThrows — the pre-fix SDK
+    // treated a whitespace/empty 200 body as an error and threw. That guarded against
+    // nothing real: a form with zero submissions IS a valid empty CSV, and non-2xx errors
+    // now surface via APIHelper.IsSuccessStatusCode. The mock in these tests bypasses that.
 
     // ------------------------------------------------------------
     // ExportSubmissionCsv (single submission)
@@ -213,23 +202,8 @@ public class ExportSubmissionCsvTest
         VerifyNoHttpCall();
     }
 
-    [Test]
-    public void TestExportSubmissionCsvEmptyResponseThrowsSystemException()
-    {
-        MockApiResponse("");
-
-        Assert.Throws<SystemException>(
-            () => _formsLibrary.ExportSubmissionCsv(FormId, SubmissionId));
-    }
-
-    [Test]
-    public void TestExportSubmissionCsvWhitespaceResponseThrowsSystemException()
-    {
-        MockApiResponse("   ");
-
-        Assert.Throws<SystemException>(
-            () => _formsLibrary.ExportSubmissionCsv(FormId, SubmissionId));
-    }
+    // Removed TestExportSubmissionCsv{Empty,Whitespace}ResponseThrows — same rationale as
+    // the all-variant siblings above. The pre-fix defensive check has been retired.
 
     // ------------------------------------------------------------
     // Helper methods

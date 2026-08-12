@@ -100,35 +100,35 @@ public class GetFormByIdTest
     }
 
     [Test]
-    public void TestGetFormByIdErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestGetFormByIdErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorBody = "{\"error\": \"Form not found\"}";
         MockApiResponse(errorBody);
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.GetFormById(FormId));
 
-        Assert.AreEqual(errorBody, exception.Message);
+        Assert.AreEqual(errorBody, exception.Body);
     }
 
     [Test]
-    public void TestGetFormByIdEmptyDataEnvelopeThrowsSystemException()
+    public void TestGetFormByIdEmptyDataEnvelopeThrowsPauboxApiException()
     {
         MockApiResponse("{\"data\": {}}");
 
-        Assert.Throws<SystemException>(() => _formsLibrary.GetFormById(FormId));
+        Assert.Throws<PauboxApiException>(() => _formsLibrary.GetFormById(FormId));
     }
 
     [Test]
-    public void TestGetFormByIdNonJsonResponseThrowsSystemExceptionWithRawBody()
+    public void TestGetFormByIdNonJsonResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string rawBody = "Internal Server Error";
         MockApiResponse(rawBody);
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.GetFormById(FormId));
 
-        Assert.AreEqual(rawBody, exception.Message);
+        Assert.AreEqual(rawBody, exception.Body);
     }
 
     // ------------------------------------------------------------

@@ -221,23 +221,23 @@ public class ListFormSubmissionsTest
     }
 
     [Test]
-    public void TestListFormSubmissionsErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestListFormSubmissionsErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorBody = "{\"error\":\"Form not found\"}";
         MockApiResponse(errorBody);
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.ListFormSubmissions(FormId));
 
-        Assert.AreEqual(errorBody, exception.Message);
+        Assert.AreEqual(errorBody, exception.Body);
     }
 
     [Test]
-    public void TestListFormSubmissionsEmptyResponseThrowsSystemException()
+    public void TestListFormSubmissionsEmptyResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(() => _formsLibrary.ListFormSubmissions(FormId));
+        Assert.Throws<PauboxApiException>(() => _formsLibrary.ListFormSubmissions(FormId));
     }
 
     // ------------------------------------------------------------

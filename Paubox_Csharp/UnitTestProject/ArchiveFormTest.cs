@@ -97,14 +97,14 @@ public class ArchiveFormTest
     }
 
     [Test]
-    public void TestArchiveFormErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestArchiveFormErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorResponse = "{\"error\": \"Form not found\"}";
         MockApiResponse(errorResponse);
 
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.ArchiveForm(FormId));
+        var exception = Assert.Throws<PauboxApiException>(() => _formsLibrary.ArchiveForm(FormId));
 
-        Assert.AreEqual(errorResponse, exception.Message);
+        Assert.AreEqual(errorResponse, exception.Body);
     }
 
     // ------------------------------------------------------------

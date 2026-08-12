@@ -104,8 +104,9 @@ namespace Paubox
     }
 
     /// <summary>
-    /// Query-string parameters for listing forms. No JSON attributes — these are
-    /// used to build the request query string, not a JSON body.
+    /// Query-string parameters for listing forms. CustomerId is required — the
+    /// server compares its value against the customer that owns the API key and
+    /// rejects any request that omits it (or sends the wrong one) with 403.
     /// </summary>
     public class FormsListParams
     {
@@ -120,6 +121,12 @@ namespace Paubox
         public int? Items { get; set; }
     }
 
+    /// <summary>
+    /// Request body for creating a new form. Only the fields the caller sets are
+    /// serialized — unset primitives (Active, Version, SubmissionCount) are omitted
+    /// rather than sent as their zero defaults. CustomerId is required.
+    /// </summary>
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CreateFormRequest
     {
         [JsonProperty("title")]
@@ -138,13 +145,13 @@ namespace Paubox
         public string FormCss { get; set; }
 
         [JsonProperty("customer_id")]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
 
         [JsonProperty("recipient")]
         public string Recipient { get; set; }
 
         [JsonProperty("signable")]
-        public bool Signable { get; set; }
+        public bool? Signable { get; set; }
 
         [JsonProperty("signature_confirmation_label")]
         public string SignatureConfirmationLabel { get; set; }
@@ -156,13 +163,13 @@ namespace Paubox
         public string Type { get; set; }
 
         [JsonProperty("active")]
-        public bool Active { get; set; }
+        public bool? Active { get; set; }
 
         [JsonProperty("version")]
-        public int Version { get; set; }
+        public int? Version { get; set; }
 
         [JsonProperty("submission_count")]
-        public int SubmissionCount { get; set; }
+        public int? SubmissionCount { get; set; }
     }
 
     public class CreateFormResponse

@@ -149,8 +149,17 @@ var forms = new FormsLibrary();          // public endpoints only
 var forms = new FormsLibrary(apiKey);    // public + management endpoints
 ```
 
+Or load it from `IConfiguration` under the `FormsAPIKey` key (optionally with `FormsBaseURL`
+for staging/regional endpoints):
+
+```csharp
+var forms = new FormsLibrary(config);
+```
+
 Calling a management method on an instance constructed without an API key throws
-`InvalidOperationException` before any HTTP request is made.
+`InvalidOperationException` before any HTTP request is made. Scope enforcement is server-side —
+the SDK only checks that a non-empty key was supplied; a key without the `forms` scope
+returns 401/403 from the API.
 
 ### FormsLibrary Methods (Public)
 
@@ -194,7 +203,7 @@ Retrieves the full definition of a form (HTML, JSON schema, CSS) by its UUID.
 | `CreatedAt` | `DateTime` | Creation timestamp |
 | `UpdatedAt` | `DateTime` | Last update timestamp |
 
-**Errors:** Throws `SystemException` if the form is not found or the response is invalid.
+**Errors:** Throws `PauboxApiException` if the form is not found or the response is invalid.
 
 ---
 
@@ -225,7 +234,7 @@ Maximum request size: **250 MB** (to support file attachments).
 **Errors:**
 - Throws `ArgumentNullException` if `formData` is null
 - Throws `ArgumentException` if `formId` is null or empty
-- Throws `SystemException` if the API returns an error response (400 form not found, 404 invalid form data, etc.)
+- Throws `PauboxApiException` if the API returns an error response (400 form not found, 404 invalid form data, etc.)
 
 ---
 
@@ -233,28 +242,28 @@ Maximum request size: **250 MB** (to support file attachments).
 
 All methods below require a `FormsLibrary` constructed with a scoped API key carrying the
 `forms` scope (see [Authentication (Forms)](#authentication-forms)). Each throws
-`InvalidOperationException` if no API key was provided, and `SystemException` with the raw
+`InvalidOperationException` if no API key was provided, and `PauboxApiException` with the raw
 response body if the API returns an unexpected response.
 
 #### `ListForms(FormsListParams parameters = null) → FormsListResponse`
 
-Lists forms, with optional filtering and pagination.
+Lists forms, with pagination and optional filtering.
 
 **Path:** `GET /api/forms`
 
-**Query parameters (via `FormsListParams`, all optional):**
+**Query parameters (via `FormsListParams`):**
 
-| Property | Type | Query param | Description |
-|---|---|---|---|
-| `CustomerId` | `int?` | `customer_id` | Filter by owning customer |
-| `FormId` | `string` | `form_id` | Filter to a specific form UUID |
-| `Search` | `string` | `search` | Free-text search on title/description |
-| `Order` | `string` | `order` | Sort direction (`asc` / `desc`) |
-| `OrderBy` | `string` | `order_by` | Field to sort by |
-| `Archived` | `bool?` | `archived` | Filter by archive flag |
-| `Active` | `bool?` | `active` | Filter by active flag |
-| `Page` | `int?` | `page` | Page number |
-| `Items` | `int?` | `items` | Items per page |
+| Property | Type | Query param | Required | Description |
+|---|---|---|---|---|
+| `CustomerId` | `int?` | `customer_id` | **Yes** | Owning customer — the server compares this against the API key's owner and returns 403 if it's missing or wrong. |
+| `FormId` | `string` | `form_id` | No | Filter to a specific form UUID |
+| `Search` | `string` | `search` | No | Free-text search on title/description |
+| `Order` | `string` | `order` | No | Sort direction (`asc` / `desc`) |
+| `OrderBy` | `string` | `order_by` | No | Field to sort by; server silently falls back to a default when given an unrecognized column |
+| `Archived` | `bool?` | `archived` | No | Filter by archive flag |
+| `Active` | `bool?` | `active` | No | Filter by active flag |
+| `Page` | `int?` | `page` | No | Page number, 1-indexed; the SDK rejects `Page < 1` with `ArgumentOutOfRangeException` |
+| `Items` | `int?` | `items` | No | Items per page; server caps at 100 |
 
 **Response:** `FormsListResponse`
 
@@ -289,7 +298,7 @@ Creates a new form.
 | `Description` | `string` | No | Optional description |
 | `FormHtml` | `string` | No | Rendered form HTML |
 | `FormCss` | `string` | No | Associated CSS |
-| `CustomerId` | `int` | No | Owning customer ID |
+| `CustomerId` | `int?` | **Yes** | Owning customer ID — server rejects create with 403 when this is missing |
 | `Recipient` | `string` | No | Address notified on submission |
 | `Signable` | `bool` | No | Whether the form supports e-signatures |
 | `SignatureConfirmationLabel` | `string` | No | Label shown on signature confirmation |
@@ -485,7 +494,8 @@ Exports all submissions for a form as CSV text.
 |---|---|---|---|
 | `formId` | `string` (UUID) | Yes | The form's unique identifier |
 
-**Response:** raw CSV as a `string`. Throws `SystemException` if the response is empty.
+**Response:** raw CSV as a `string`. An empty CSV is a valid response for a form with no
+submissions. On a non-2xx response, throws `PauboxApiException`.
 
 ---
 
@@ -502,7 +512,7 @@ Exports a single submission as CSV text.
 | `formId` | `string` (UUID) | Yes | The form's unique identifier |
 | `submissionId` | `string` (UUID) | Yes | The submission's unique identifier |
 
-**Response:** raw CSV as a `string`. Throws `SystemException` if the response is empty.
+**Response:** raw CSV as a `string`. Throws `PauboxApiException` on a non-2xx response.
 
 ---
 
@@ -512,6 +522,10 @@ Exports a single submission as a PDF document.
 
 **Path:** `GET /api/forms/{form_id}/submissions/{submission_id}/submission-pdf`
 
+The SDK sends `Accept: application/pdf` and validates that the response Content-Type matches
+and the first four bytes are the `%PDF` magic sequence — otherwise it throws
+`PauboxApiException` so callers never write a broken "PDF" file to disk.
+
 **Parameters:**
 
 | Parameter | Type | Required | Description |
@@ -519,15 +533,39 @@ Exports a single submission as a PDF document.
 | `formId` | `string` (UUID) | Yes | The form's unique identifier |
 | `submissionId` | `string` (UUID) | Yes | The submission's unique identifier |
 
-**Response:** raw PDF bytes as `byte[]`. Throws `SystemException` with the message
-`"Empty response from PDF export"` if the response is null or empty.
+**Response:** raw PDF bytes as `byte[]`.
 
 ---
 
 ## Error Handling
 
-Both libraries throw `SystemException` when the API returns an error, with the raw API response
-string as the exception message. Parse the message as JSON to extract structured error details.
+Every management method throws `PauboxApiException` on a non-2xx HTTP response. The exception's
+`Message` property carries only `{verb} {endpoint} -> {status}` — the raw response body is on
+the `Body` property so structured loggers (Sentry, Application Insights, most .NET logging
+sinks) that record `Exception.Message` by default don't pick up submitter-supplied content.
+
+```csharp
+try
+{
+    forms.GetFormById(formId);
+}
+catch (PauboxApiException ex)
+{
+    // ex.StatusCode, ex.Verb, ex.Endpoint are always safe to log
+    logger.LogWarning("Forms API {Status}: {Verb} {Endpoint}", ex.StatusCode, ex.Verb, ex.Endpoint);
+
+    // ex.Body carries the raw response — opt in when you know the endpoint's contract
+    if (ex.StatusCode == 404) { /* handle */ }
+}
+```
+
+Client-side validation errors surface as `ArgumentException` (or `ArgumentNullException`,
+`ArgumentOutOfRangeException`) before any HTTP request is made:
+
+- `ArgumentException` on missing / non-UUID / hostile-shape form or submission ids
+- `ArgumentException` when required parameters (e.g. `CustomerId` on list/create) are unset
+- `ArgumentOutOfRangeException` on `Page < 1`
+- `InvalidOperationException` when a management method is called without an API key
 
 Example error response shape from the Email API:
 

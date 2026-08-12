@@ -118,22 +118,22 @@ public class CopyFormTest
     }
 
     [Test]
-    public void TestCopyFormErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestCopyFormErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorResponse = "{\"error\": \"Form not found\"}";
         MockApiResponse(errorResponse);
 
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.CopyForm(FormId, NewTitle));
+        var exception = Assert.Throws<PauboxApiException>(() => _formsLibrary.CopyForm(FormId, NewTitle));
 
-        Assert.AreEqual(errorResponse, exception.Message);
+        Assert.AreEqual(errorResponse, exception.Body);
     }
 
     [Test]
-    public void TestCopyFormEmptyObjectResponseThrowsSystemException()
+    public void TestCopyFormEmptyObjectResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(() => _formsLibrary.CopyForm(FormId, NewTitle));
+        Assert.Throws<PauboxApiException>(() => _formsLibrary.CopyForm(FormId, NewTitle));
     }
 
     // ------------------------------------------------------------

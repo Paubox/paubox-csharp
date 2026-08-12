@@ -97,14 +97,14 @@ public class UnarchiveFormTest
     }
 
     [Test]
-    public void TestUnarchiveFormErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestUnarchiveFormErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorResponse = "{\"error\": \"Form not found\"}";
         MockApiResponse(errorResponse);
 
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.UnarchiveForm(FormId));
+        var exception = Assert.Throws<PauboxApiException>(() => _formsLibrary.UnarchiveForm(FormId));
 
-        Assert.AreEqual(errorResponse, exception.Message);
+        Assert.AreEqual(errorResponse, exception.Body);
     }
 
     // ------------------------------------------------------------

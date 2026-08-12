@@ -129,15 +129,15 @@ public class GetFormStatsTest
     }
 
     [Test]
-    public void TestGetFormStatsErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestGetFormStatsErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         // A response that does not deserialize to a FormStats object (JSON null)
         string errorResponse = "null";
         MockApiResponse(errorResponse);
 
-        var exception = Assert.Throws<SystemException>(() => _formsLibrary.GetFormStats());
+        var exception = Assert.Throws<PauboxApiException>(() => _formsLibrary.GetFormStats());
 
-        Assert.AreEqual(errorResponse, exception.Message);
+        Assert.AreEqual(errorResponse, exception.Body);
     }
 
     // ------------------------------------------------------------

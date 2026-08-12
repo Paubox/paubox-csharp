@@ -505,12 +505,32 @@ var forms = new FormsLibrary();
 ```
 
 For the management endpoints, construct `FormsLibrary` with a **scoped API key** that has the
-`forms` scope. The key is sent as `Authorization: Bearer {apiKey}`:
+`forms` scope. The key is sent as `Authorization: Bearer {apiKey}`. The SDK enforces only
+that a key was provided; scope enforcement is server-side — the API returns 401/403 for
+keys without the `forms` scope.
 
 ```csharp
 var forms = new FormsLibrary("your-scoped-api-key");
 ```
 
+For dependency injection or non-production endpoints (staging, regional), the key and base
+URL can be read from `IConfiguration` under the `FormsAPIKey` and `FormsBaseURL` keys:
+
+```csharp
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .Build();
+var forms = new FormsLibrary(config);
+```
+
+Or supply the base URL explicitly:
+
+```csharp
+var forms = new FormsLibrary(new APIHelper(), "your-scoped-api-key",
+    "https://apx.staging.paubox.com/forms/");
+```
+
+Store keys in a config file or environment variable rather than committing string literals.
 Calling a management method without an API key throws `InvalidOperationException`.
 
 ### Get Form
@@ -601,11 +621,15 @@ See [api.md](api.md) for full request/response field tables.
 
 #### List Forms
 
-All filter parameters are optional:
+`CustomerId` is required — the server compares its value against the customer the API key
+belongs to and returns 403 if it's missing. All other filter parameters are optional. The
+server caps `Items` at 100 and silently falls back to a default `OrderBy` if given an
+unrecognized column name.
 
 ```csharp
 FormsListResponse list = forms.ListForms(new FormsListParams
 {
+    CustomerId = 20147,
     Search = "intake",
     Active = true,
     Page = 1,
@@ -620,13 +644,14 @@ Console.WriteLine($"Total: {list.PageInfo.Count} across {list.PageInfo.Pages} pa
 
 #### Create Form
 
-`Title` and `FormJson` are required:
+`Title`, `FormJson`, and `CustomerId` are required:
 
 ```csharp
 CreateFormResponse created = forms.CreateForm(new CreateFormRequest
 {
     Title = "Patient Intake",
     FormJson = new { fields = new[] { new { name = "first_name", type = "text" } } },
+    CustomerId = 20147,
     Recipient = "intake@yourdomain.com",
     Active = true
 });
@@ -711,6 +736,25 @@ string oneCsv = forms.ExportSubmissionCsv(formId, submissionId);
 // A single submission, as a PDF document
 byte[] pdf = forms.ExportSubmissionPdf(formId, submissionId);
 File.WriteAllBytes("submission.pdf", pdf);
+```
+
+#### Error handling
+
+Every management method throws `PauboxApiException` on a non-2xx response. The exception's
+`Message` property carries only `{verb} {endpoint} -> {status}` — the raw response body is on
+the `Body` property so structured loggers don't pick it up by default (submission responses
+can carry submitter-supplied content).
+
+```csharp
+try
+{
+    forms.GetFormById(formId);
+}
+catch (PauboxApiException ex)
+{
+    Console.WriteLine($"HTTP {ex.StatusCode}: {ex.Verb} {ex.Endpoint}");
+    // ex.Body is the raw response — opt in when you know the endpoint's contract
+}
 ```
 
 ## Contributing

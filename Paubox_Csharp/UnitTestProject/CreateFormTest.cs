@@ -170,23 +170,23 @@ public class CreateFormTest
     }
 
     [Test]
-    public void TestCreateFormErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestCreateFormErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorBody = "{\"error\": \"customer_id does not exist\"}";
         MockApiResponse(errorBody);
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.CreateForm(ValidRequest()));
 
-        Assert.AreEqual(errorBody, exception.Message);
+        Assert.AreEqual(errorBody, exception.Body);
     }
 
     [Test]
-    public void TestCreateFormEmptyObjectResponseThrowsSystemException()
+    public void TestCreateFormEmptyObjectResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(() => _formsLibrary.CreateForm(ValidRequest()));
+        Assert.Throws<PauboxApiException>(() => _formsLibrary.CreateForm(ValidRequest()));
     }
 
     // ------------------------------------------------------------

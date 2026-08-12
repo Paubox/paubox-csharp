@@ -168,23 +168,23 @@ public class UpdateFormTest
     }
 
     [Test]
-    public void TestUpdateFormErrorResponseThrowsSystemExceptionWithRawBody()
+    public void TestUpdateFormErrorResponseThrowsPauboxApiExceptionWithRawBody()
     {
         string errorBody = "{\"error\": \"Form not found\"}";
         MockApiResponse(errorBody);
 
-        var exception = Assert.Throws<SystemException>(
+        var exception = Assert.Throws<PauboxApiException>(
             () => _formsLibrary.UpdateForm(FormId, new UpdateFormRequest { Title = "x" }));
 
-        Assert.AreEqual(errorBody, exception.Message);
+        Assert.AreEqual(errorBody, exception.Body);
     }
 
     [Test]
-    public void TestUpdateFormEmptyObjectResponseThrowsSystemException()
+    public void TestUpdateFormEmptyObjectResponseThrowsPauboxApiException()
     {
         MockApiResponse("{}");
 
-        Assert.Throws<SystemException>(
+        Assert.Throws<PauboxApiException>(
             () => _formsLibrary.UpdateForm(FormId, new UpdateFormRequest { Title = "x" }));
     }
 
