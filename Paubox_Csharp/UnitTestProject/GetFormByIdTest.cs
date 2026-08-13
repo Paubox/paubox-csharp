@@ -67,7 +67,7 @@ public class GetFormByIdTest
 
         _formsLibrary.GetFormById(FormId);
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("GET", capturedVerb);

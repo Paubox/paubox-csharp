@@ -18,7 +18,7 @@ public class CreateDynamicTemplateTest
     public void Setup()
     {
         _mockApiHelper = new Mock<IAPIHelper>();
-        _emailLibrary = new EmailLibrary("testApiKey", "testApiUser", _mockApiHelper.Object);
+        _emailLibrary = new EmailLibrary("testApiKey", _mockApiHelper.Object);
 
         _projectDir = Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory);
         while (_projectDir != null && !Directory.Exists(Path.Combine(_projectDir, "Fixtures")))

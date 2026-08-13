@@ -15,7 +15,7 @@
 
 ## Email API
 
-**Base URL:** `https://api.paubox.net/v1/{apiUser}/`
+**Base URL:** `https://api.paubox.com/v1/`
 
 ### Authentication
 
@@ -25,7 +25,11 @@ All Email API requests require an `Authorization` header:
 Authorization: Token token={apiKey}
 ```
 
-Pass your `apiKey` and `apiUser` (your Paubox username/domain) when constructing `EmailLibrary`.
+Pass your `apiKey` when constructing `EmailLibrary` — a Paubox username is no longer required:
+
+```csharp
+var paubox = new EmailLibrary(apiKey);
+```
 
 ### EmailLibrary Methods
 
@@ -127,7 +131,7 @@ Each `MessageDeliveries` entry:
 
 ## Forms API
 
-**Base URL:** `https://apx.paubox.com/forms/`
+**Base URL:** `https://api.paubox.com/forms/`
 
 ### Authentication (Forms)
 

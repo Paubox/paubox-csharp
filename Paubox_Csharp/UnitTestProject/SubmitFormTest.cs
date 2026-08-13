@@ -119,7 +119,7 @@ public class SubmitFormTest
 
         _formsLibrary.SubmitForm(FormId, new Dictionary<string, object> { ["key"] = "value" });
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/submissions", capturedRequestUri);
     }
 

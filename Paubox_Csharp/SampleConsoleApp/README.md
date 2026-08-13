@@ -11,7 +11,7 @@ This is a sample console application demonstrating how to use the Paubox C# SDK.
    cp appsettings.example.json appsettings.json
 
    # Edit the file with your actual credentials
-   # Replace the placeholder values with your real API key and username
+   # Replace the placeholder values with your real API key
    ```
 
 2. **Build and run:**
@@ -26,7 +26,6 @@ This is a sample console application demonstrating how to use the Paubox C# SDK.
 The application uses `appsettings.json` for configuration. The file contains:
 
 - `APIKey`: Your Paubox API key
-- `APIUser`: Your Paubox username/domain
 - `FromEmail`: The email address that will appear as the sender
 - `ToEmail`: The email address that will receive the test message
 

@@ -77,7 +77,7 @@ public class ListFormSubmissionsTest
 
         _formsLibrary.ListFormSubmissions(FormId);
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/submissions", capturedRequestUri);
         Assert.AreEqual("GET", capturedVerb);
         Assert.AreEqual("", capturedBody);
