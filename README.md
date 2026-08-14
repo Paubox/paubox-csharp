@@ -78,8 +78,7 @@ several ways:
 
     ```json
     {
-        "APIKey": "Your-API-Key-Here",
-        "APIUser": "Your-Username-Here"
+        "APIKey": "Your-API-Key-Here"
     }
     ```
 
@@ -101,16 +100,14 @@ a template.
 **Configuration Fields:**
 
 - `APIKey`: Your Paubox API key (required)
-- `APIUser`: Your Paubox username/domain (required)
 
 #### For Legacy .NET Framework Projects
 
-Add two app settings keys with their values in App.Config (For Desktop App,
+Add the following app settings key with its value in App.Config (For Desktop App,
 Windows Service) or Web.Config (For ASP.NET projects):
 
 ```xml
 <add key="APIKey" value="Your-API-Key-Here"/>
-<add key="APIUser" value="Your-Username-Here"/>
 ```
 
 ### Supported .NET Versions
@@ -151,7 +148,7 @@ Before using the EmailLibrary, you must create an instance with your API credent
 #### Option 1: Initialize with direct parameters
 
 ```csharp
-var paubox = new EmailLibrary("your-api-key", "your-username");
+var paubox = new EmailLibrary("your-api-key");
 ```
 
 #### Option 2: Initialize with configuration (recommended for .NET Core/.NET 5+)
@@ -527,7 +524,7 @@ Or supply the base URL explicitly:
 
 ```csharp
 var forms = new FormsLibrary(new APIHelper(), "your-scoped-api-key",
-    "https://apx.staging.paubox.com/forms/");
+    "https://api.staging.paubox.com/forms/");
 ```
 
 Store keys in a config file or environment variable rather than committing string literals.

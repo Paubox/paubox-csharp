@@ -59,7 +59,7 @@ public class ArchiveFormTest
 
         _formsLibrary.ArchiveForm(FormId);
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/archive", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("POST", capturedVerb);

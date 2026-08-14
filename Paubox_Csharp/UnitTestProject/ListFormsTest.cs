@@ -65,7 +65,7 @@ public class ListFormsTest
 
         _formsLibrary.ListForms(new FormsListParams { CustomerId = 123 });
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual("api/forms?customer_id=123", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("GET", capturedVerb);

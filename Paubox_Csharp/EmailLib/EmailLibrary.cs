@@ -18,8 +18,7 @@ namespace Paubox
         /// Constructor for EmailLibrary with API credentials
         /// </summary>
         /// <param name="apiKey">Your Paubox API key</param>
-        /// <param name="apiUser">Your Paubox username/domain</param>
-        public EmailLibrary(string apiKey, string apiUser) : this(apiKey, apiUser, new APIHelper())
+        public EmailLibrary(string apiKey) : this(apiKey, new APIHelper())
         {
         }
 
@@ -27,24 +26,42 @@ namespace Paubox
         /// Constructor for EmailLibrary with API credentials and custom API helper (useful for testing)
         /// </summary>
         /// <param name="apiKey">Your Paubox API key</param>
-        /// <param name="apiUser">Your Paubox username/domain</param>
         /// <param name="apiHelper">Custom API helper implementation</param>
-        public EmailLibrary(string apiKey, string apiUser, IAPIHelper apiHelper)
+        public EmailLibrary(string apiKey, IAPIHelper apiHelper)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
-            if (string.IsNullOrWhiteSpace(apiUser))
-                throw new ArgumentException("API user cannot be null or empty", nameof(apiUser));
 
             _apiKey = apiKey;
-            _apiBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+            _apiBaseURL = "https://api.paubox.com/v1/";
             _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
+        }
+
+        /// <summary>
+        /// Constructor for EmailLibrary with API credentials
+        /// </summary>
+        /// <param name="apiKey">Your Paubox API key</param>
+        /// <param name="apiUser">Ignored; a Paubox username is no longer required</param>
+        [Obsolete("A Paubox username is no longer required; use EmailLibrary(string apiKey) instead. The apiUser argument is ignored.")]
+        public EmailLibrary(string apiKey, string apiUser) : this(apiKey)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for EmailLibrary with API credentials and custom API helper (useful for testing)
+        /// </summary>
+        /// <param name="apiKey">Your Paubox API key</param>
+        /// <param name="apiUser">Ignored; a Paubox username is no longer required</param>
+        /// <param name="apiHelper">Custom API helper implementation</param>
+        [Obsolete("A Paubox username is no longer required; use EmailLibrary(string apiKey) instead. The apiUser argument is ignored.")]
+        public EmailLibrary(string apiKey, string apiUser, IAPIHelper apiHelper) : this(apiKey, apiHelper)
+        {
         }
 
         /// <summary>
         /// Constructor for EmailLibrary with Configuration
         /// </summary>
-        /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
+        /// <param name="configuration">IConfiguration instance containing APIKey</param>
         public EmailLibrary(IConfiguration configuration) : this(configuration, new APIHelper())
         {
         }
@@ -53,7 +70,7 @@ namespace Paubox
         /// Constructor for EmailLibrary with Configuration and custom API helper
         /// (used for dependency injection in unit tests)
         /// </summary>
-        /// <param name="configuration">IConfiguration instance containing APIKey and APIUser</param>
+        /// <param name="configuration">IConfiguration instance containing APIKey</param>
         /// <param name="apiHelper">Custom API helper implementation</param>
         public EmailLibrary(IConfiguration configuration, IAPIHelper apiHelper)
         {
@@ -61,15 +78,12 @@ namespace Paubox
                 throw new ArgumentNullException(nameof(configuration));
 
             var apiKey = configuration["APIKey"];
-            var apiUser = configuration["APIUser"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("APIKey not found in configuration", nameof(configuration));
-            if (string.IsNullOrWhiteSpace(apiUser))
-                throw new ArgumentException("APIUser not found in configuration", nameof(configuration));
 
             _apiKey = apiKey;
-            _apiBaseURL = $"https://api.paubox.net/v1/{apiUser}/";
+            _apiBaseURL = "https://api.paubox.com/v1/";
             _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
         }
 

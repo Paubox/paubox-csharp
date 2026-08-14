@@ -17,7 +17,7 @@ public class GetEmailDispositionTest
     public void Setup()
     {
         _mockApiHelper = new Mock<IAPIHelper>();
-        _emailLibrary = new EmailLibrary("testApiKey", "testApiUser", _mockApiHelper.Object);
+        _emailLibrary = new EmailLibrary("testApiKey", _mockApiHelper.Object);
     }
 
     [Test]

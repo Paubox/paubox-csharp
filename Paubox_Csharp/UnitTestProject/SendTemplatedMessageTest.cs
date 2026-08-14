@@ -18,7 +18,7 @@ public class SendTemplatedMessageTest
     public void Setup()
     {
         _mockApiHelper = new Mock<IAPIHelper>();
-        _emailLibrary = new EmailLibrary("testApiKey", "testApiUser", _mockApiHelper.Object);
+        _emailLibrary = new EmailLibrary("testApiKey", _mockApiHelper.Object);
     }
 
     [Test]
@@ -110,7 +110,7 @@ public class SendTemplatedMessageTest
 
         _mockApiHelper.Verify(
             x => x.CallToAPI(
-                It.Is<string>(url => url == "https://api.paubox.net/v1/testApiUser/"),
+                It.Is<string>(url => url == "https://api.paubox.com/v1/"),
                 It.Is<string>(uri => uri == "templated_messages"),
                 It.Is<string>(auth => auth == "Token token=testApiKey"),
                 It.Is<string>(verb => verb == "POST"),

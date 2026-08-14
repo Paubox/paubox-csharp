@@ -59,7 +59,7 @@ public class CreateFormTest
 
         _formsLibrary.CreateForm(ValidRequest());
 
-        Assert.AreEqual("https://apx.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
         Assert.AreEqual("api/forms", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("POST", capturedVerb);
