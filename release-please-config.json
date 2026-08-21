@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "paubox-csharp",
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": [
+        "Paubox_Csharp/EmailLib/Properties/AssemblyInfo.cs"
+      ]
+    }
+  }
+}

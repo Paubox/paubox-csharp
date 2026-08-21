@@ -33,3 +33,12 @@ jobs:
 
       - name: Test
         run: dotnet test Paubox_Csharp/UnitTestProject/UnitTestProject.csproj --configuration Release --verbosity normal
+
+      - name: Assert the release artifact path
+        # The release workflow attaches this exact file, and that job only runs
+        # after a tag exists — so a path change would surface with the release
+        # already cut. Checking it here makes that a normal CI failure instead.
+        run: |
+          dll=Paubox_Csharp/EmailLib/bin/Release/net8.0/Paubox.Email.API.dll
+          test -f "$dll" || { echo "FAIL: $dll was not produced; update release-please.yml if the path moved" >&2; exit 1; }
+          echo "OK: $dll ($(stat -c%s "$dll") bytes)"
