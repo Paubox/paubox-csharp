@@ -32,5 +32,11 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+// These two lines are rewritten by release-please on every release. The
+// x-release-please-version annotations are what it looks for; removing them
+// silently stops the assembly version tracking the release.
+//
+// GenerateAssemblyInfo is false in EmailLib.csproj, so these attributes — not
+// any MSBuild property — are what the built Paubox.Email.API.dll reports.
+[assembly: AssemblyVersion("1.1.0.0")] // x-release-please-version
+[assembly: AssemblyFileVersion("1.1.0.0")] // x-release-please-version
