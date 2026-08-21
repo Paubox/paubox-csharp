@@ -1,0 +1,89 @@
+name: release-please
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      # Maintains a release PR that bumps version.txt and the AssemblyVersion /
+      # AssemblyFileVersion attributes, and writes CHANGELOG.md. Merging that PR
+      # creates the tag and the GitHub release, which gates the build below.
+      #
+      # The manifest starts at 0.0.0 because nothing has ever been released:
+      # this SDK is not on NuGet and had no git tags. AssemblyInfo.cs said
+      # 1.1.0.0, but no artifact was ever published under it.
+      #
+      # AssemblyInfo.cs is updated as a plain extra-file: release-please
+      # rewrites the version on any line carrying an x-release-please-version
+      # annotation. Those annotations are load-bearing — delete them and the
+      # assembly version silently stops tracking releases. The csproj sets
+      # GenerateAssemblyInfo to false, so those attributes are what the built
+      # DLL actually reports.
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  attach-dll:
+    name: Attach DLL to ${{ needs.release-please.outputs.tag_name }}
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Verify the tag and AssemblyInfo agree
+        env:
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          asm=Paubox_Csharp/EmailLib/Properties/AssemblyInfo.cs
+          declared=$(grep -oP 'AssemblyVersion\("\K[0-9]+\.[0-9]+\.[0-9]+' "$asm")
+          if [ "v${declared}" != "${RELEASE_TAG}" ]; then
+            echo "::error::AssemblyVersion is ${declared} but the tag is ${RELEASE_TAG}"
+            echo "::error::If it was not bumped at all, check that the x-release-please-version annotations are still on those lines"
+            exit 1
+          fi
+          echo "AssemblyVersion ${declared} matches ${RELEASE_TAG}"
+
+      - name: Build the library
+        run: dotnet build Paubox_Csharp/EmailLib/EmailLib.csproj --configuration Release
+
+      - name: Name the artifact after the release
+        env:
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          dll=Paubox_Csharp/EmailLib/bin/Release/net8.0/Paubox.Email.API.dll
+          test -f "$dll"
+          cp "$dll" "Paubox.Email.API-${RELEASE_TAG}.dll"
+          ls -l "Paubox.Email.API-${RELEASE_TAG}.dll"
+
+      # There is no NuGet publish. Attaching the DLL is what makes a tag useful
+      # here: the DLL committed under lib/ dates from 2019 and is 36 source
+      # commits behind, so this is the only current build a consumer can get
+      # without cloning and running dotnet.
+      - name: Attach the DLL to the GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release upload "${RELEASE_TAG}" "Paubox.Email.API-${RELEASE_TAG}.dll" --clobber

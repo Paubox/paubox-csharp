@@ -102,3 +102,23 @@ Active feature work: `claude/paubox-forms-api-support-hAB2b`
 3. Implement in `EmailLibrary.cs` or `FormsLibrary.cs`
 4. Add a `*Test.cs` file in `UnitTestProject/` covering happy path, error cases, and payload shape
 5. Update `README.md` and `api.md`
+
+## Releases
+
+Releases are automated with [release-please](https://github.com/googleapis/release-please). Merging to `master` refreshes a standing release PR; merging *that* PR bumps `version.txt` and the assembly version attributes, writes `CHANGELOG.md`, creates a bare `vX.Y.Z` tag and a GitHub release, and **attaches a freshly built DLL to that release**.
+
+Do **not** hand-edit the assembly version, `version.txt`, or `CHANGELOG.md` — release-please owns all three.
+
+The next version comes from PR titles: `feat:` gives a minor bump, `fix:` a patch, and a `!` suffix or a `BREAKING CHANGE:` footer gives a major. `.github/workflows/pr-title.yml` rejects titles release-please cannot parse.
+
+### Where the version actually lives
+
+`EmailLib.csproj` sets `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>`, so the version comes from `Properties/AssemblyInfo.cs`, **not** from any MSBuild property. Adding a `<Version>` to the csproj would have no effect on the built assembly.
+
+Those two attribute lines carry `// x-release-please-version` annotations. They are load-bearing: delete them and the assembly version silently stops tracking releases while everything still appears to work.
+
+### Not published to a registry
+
+This SDK is **not on NuGet**, and publishing is deliberately out of scope. Until that changes the GitHub release is the distribution channel, and the DLL committed under `lib/` was last rebuilt in **July 2019** — 36 source commits behind, predating the Forms API, dynamic templates and the auth change. Prefer the DLL attached to the latest release.
+
+`CHANGELOG.md` must keep a heading matching `/\n###? v?[0-9[]/`, which is why the staging heading is the bracketed `## [Unreleased]`. Without a match release-please prepends a second `# Changelog` title and demotes every existing heading.
