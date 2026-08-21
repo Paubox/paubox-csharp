@@ -4,17 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## 1.0.0 (2026-08-21)
 
-
-### Features
-
-* first tagged release ([d0428e3](https://github.com/Paubox/paubox-csharp/commit/d0428e314933f066f0bf0d962773d8838fd2a88b))
-
-## [Unreleased]
-
-This SDK has never been published to NuGet and has never carried a git tag.
-`1.0.0` will be the first tagged release. The notes below describe the state of
-the source at that release, not a diff against a previously shipped artifact —
-there isn't one.
+First tagged release. This SDK had never been published to NuGet and had never
+carried a git tag, so the notes below describe the state of the source at
+`1.0.0` rather than a diff against a previously shipped artifact — there isn't
+one.
 
 ### 🚀 Features
 
