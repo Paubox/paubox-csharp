@@ -15,7 +15,7 @@
 
 ## Email API
 
-**Base URL:** `https://api.paubox.com/v1/`
+**Base URL:** `https://api.paubox.com/v1/email/`
 
 ### Authentication
 
@@ -131,7 +131,7 @@ Each `MessageDeliveries` entry:
 
 ## Forms API
 
-**Base URL:** `https://api.paubox.com/forms/`
+**Base URL:** `https://api.paubox.com/v1/forms/`
 
 ### Authentication (Forms)
 

@@ -86,7 +86,7 @@ public class SendMessageTest
 
         _mockApiHelper.Verify(
             x => x.CallToAPI(
-                It.Is<string>(url => url == "https://api.paubox.com/v1/"),
+                It.Is<string>(url => url == "https://api.paubox.com/v1/email/"),
                 It.Is<string>(uri => uri == "messages"),
                 It.Is<string>(auth => auth == "Token token=testApiKey"),
                 It.Is<string>(verb => verb == "POST"),
@@ -153,7 +153,7 @@ public class SendMessageTest
 
         _mockApiHelper.Verify(
             x => x.CallToAPI(
-                It.Is<string>(url => url == "https://api.paubox.com/v1/"),
+                It.Is<string>(url => url == "https://api.paubox.com/v1/email/"),
                 It.Is<string>(uri => uri == "messages"),
                 It.Is<string>(auth => auth == "Token token=testApiKey"),
                 It.Is<string>(verb => verb == "POST"),

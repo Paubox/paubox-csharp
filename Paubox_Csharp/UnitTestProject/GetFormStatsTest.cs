@@ -73,7 +73,7 @@ public class GetFormStatsTest
 
         _formsLibrary.GetFormStats();
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual("api/forms/stats", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("GET", capturedVerb);

@@ -8,7 +8,7 @@ namespace Paubox
 {
     public class FormsLibrary : IFormsLibrary
     {
-        internal const string DefaultFormsBaseUrl = "https://api.paubox.com/forms/";
+        internal const string DefaultFormsBaseUrl = "https://api.paubox.com/v1/forms/";
 
         /// <summary>
         /// Serializer settings scoped to this library — the parameterless

@@ -62,7 +62,7 @@ public class UpdateFormTest
 
         _formsLibrary.UpdateForm(FormId, new UpdateFormRequest { Title = "Updated Title" });
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("PUT", capturedVerb);

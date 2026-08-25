@@ -60,7 +60,7 @@ public class FormsLibraryBaseUrlTest
         var library = new FormsLibrary(mock.Object, "test-key");
         library.ListForms(new FormsListParams { CustomerId = 20147 });
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
     }
 
     private static string EmptyResults()
