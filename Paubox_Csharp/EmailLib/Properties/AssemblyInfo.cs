@@ -38,5 +38,5 @@ using System.Runtime.InteropServices;
 //
 // GenerateAssemblyInfo is false in EmailLib.csproj, so these attributes — not
 // any MSBuild property — are what the built Paubox.Email.API.dll reports.
-[assembly: AssemblyVersion("1.0.0.0")] // x-release-please-version
-[assembly: AssemblyFileVersion("1.0.0.0")] // x-release-please-version
+[assembly: AssemblyVersion("1.0.1.0")] // x-release-please-version
+[assembly: AssemblyFileVersion("1.0.1.0")] // x-release-please-version
