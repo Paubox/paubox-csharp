@@ -33,7 +33,7 @@ namespace Paubox
                 throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
 
             _apiKey = apiKey;
-            _apiBaseURL = "https://api.paubox.com/v1/";
+            _apiBaseURL = "https://api.paubox.com/v1/email/";
             _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
         }
 
@@ -83,7 +83,7 @@ namespace Paubox
                 throw new ArgumentException("APIKey not found in configuration", nameof(configuration));
 
             _apiKey = apiKey;
-            _apiBaseURL = "https://api.paubox.com/v1/";
+            _apiBaseURL = "https://api.paubox.com/v1/email/";
             _apiHelper = apiHelper ?? throw new ArgumentNullException(nameof(apiHelper));
         }
 

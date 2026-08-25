@@ -60,7 +60,7 @@ public class ExportSubmissionPdfTest
 
         _formsLibrary.ExportSubmissionPdf(FormId, SubmissionId);
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/submissions/{SubmissionId}/submission-pdf",
             capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);

@@ -68,7 +68,7 @@ public class CopyFormTest
 
         _formsLibrary.CopyForm(FormId, NewTitle);
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual("api/forms/copy", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("POST", capturedVerb);

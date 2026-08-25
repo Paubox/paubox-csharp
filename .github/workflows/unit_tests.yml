@@ -42,3 +42,14 @@ jobs:
           dll=Paubox_Csharp/EmailLib/bin/Release/net8.0/Paubox.Email.API.dll
           test -f "$dll" || { echo "FAIL: $dll was not produced; update release-please.yml if the path moved" >&2; exit 1; }
           echo "OK: $dll ($(stat -c%s "$dll") bytes)"
+
+  route-check:
+    name: Base URLs are routed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probe the base URLs the libraries hardcode
+        run: |
+          grep -rhoE 'https://api\.paubox\.com[a-zA-Z0-9/_.-]*' Paubox_Csharp/EmailLib \
+            | .github/scripts/route-check.sh

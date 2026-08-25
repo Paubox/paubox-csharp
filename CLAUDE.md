@@ -8,8 +8,8 @@ This is the official Paubox C# SDK. It wraps two Paubox APIs:
 
 | Library | Class | Base URL | Auth |
 |---|---|---|---|
-| Email API | `EmailLibrary` | `https://api.paubox.com/v1/` | `Token token={apiKey}` header |
-| Forms API | `FormsLibrary` | `https://api.paubox.com/forms/` | Scoped API key (`Bearer {apiKey}`, `forms` scope) for management endpoints; public endpoints unauthenticated |
+| Email API | `EmailLibrary` | `https://api.paubox.com/v1/email/` | `Token token={apiKey}` header |
+| Forms API | `FormsLibrary` | `https://api.paubox.com/v1/forms/` | Scoped API key (`Bearer {apiKey}`, `forms` scope) for management endpoints; public endpoints unauthenticated |
 
 ## Repository Structure
 

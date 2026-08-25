@@ -66,7 +66,7 @@ public class ExportSubmissionCsvTest
 
         _formsLibrary.ExportSubmissionsCsv(FormId);
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/submissions/submission-csv", capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
         Assert.AreEqual("GET", capturedVerb);
@@ -147,7 +147,7 @@ public class ExportSubmissionCsvTest
 
         _formsLibrary.ExportSubmissionCsv(FormId, SubmissionId);
 
-        Assert.AreEqual("https://api.paubox.com/forms/", capturedBaseUrl);
+        Assert.AreEqual("https://api.paubox.com/v1/forms/", capturedBaseUrl);
         Assert.AreEqual($"api/forms/{FormId}/submissions/submission-csv/{SubmissionId}",
             capturedRequestUri);
         Assert.AreEqual("Bearer test-api-key", capturedAuth);
