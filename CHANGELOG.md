@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/Paubox/paubox-csharp/compare/v1.0.0...v1.0.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* target the documented /v1/email and /v1/forms base URLs ([#28](https://github.com/Paubox/paubox-csharp/issues/28)) ([a8bd23d](https://github.com/Paubox/paubox-csharp/commit/a8bd23d286b6de8719649d7a1f1bc84042c906d9))
+
 ## 1.0.0 (2026-08-21)
 
 First tagged release. This SDK had never been published to NuGet and had never
