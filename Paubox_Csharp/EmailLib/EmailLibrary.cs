@@ -356,10 +356,46 @@ namespace Paubox
             return apiResponse;
         }
 
-        /// <summary>
-        /// Gets Authorization Header
-        /// </summary>
-        /// <returns></returns>
+        public ScheduleMessageResponse ScheduleMessage(Message message, string scheduledAt)
+        {
+            JObject requestObject = JObject.FromObject(new
+            {
+                data = new Dictionary<string, object>
+                {
+                    ["message"] = message.ToJson(),
+                    ["scheduled_at"] = scheduledAt
+                }
+            });
+
+            string response = _apiHelper.CallToAPI(_apiBaseURL, "schedule", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+            return JsonConvert.DeserializeObject<ScheduleMessageResponse>(response);
+        }
+
+        public ScheduledMessageStatusResponse GetScheduledMessage(string sourceTrackingId)
+        {
+            string requestURI = string.Format("schedule/{0}", sourceTrackingId);
+            string response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+            return JsonConvert.DeserializeObject<ScheduledMessageStatusResponse>(response);
+        }
+
+        public RescheduleResponse RescheduleMessage(string sourceTrackingId, string scheduledAt)
+        {
+            string requestURI = string.Format("schedule/{0}", sourceTrackingId);
+            JObject requestObject = JObject.FromObject(new
+            {
+                scheduled_at = scheduledAt
+            });
+            string response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "PATCH", JsonConvert.SerializeObject(requestObject));
+            return JsonConvert.DeserializeObject<RescheduleResponse>(response);
+        }
+
+        public CancelScheduledResponse CancelScheduledMessage(string sourceTrackingId)
+        {
+            string requestURI = string.Format("schedule/{0}/cancel", sourceTrackingId);
+            string response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "POST", "{}");
+            return JsonConvert.DeserializeObject<CancelScheduledResponse>(response);
+        }
+
         private string GetAuthorizationHeader()
         {
             return string.Format("Token token={0}", _apiKey);

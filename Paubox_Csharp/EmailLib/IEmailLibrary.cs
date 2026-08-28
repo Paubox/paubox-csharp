@@ -15,5 +15,9 @@ namespace Paubox
         DynamicTemplateResponse UpdateDynamicTemplate(int templateId, string templateName, string templatePath);
         DeleteDynamicTemplateResponse DeleteDynamicTemplate(int templateId);
         SendMessageResponse SendTemplatedMessage(TemplatedMessage message);
+        ScheduleMessageResponse ScheduleMessage(Message message, string scheduledAt);
+        ScheduledMessageStatusResponse GetScheduledMessage(string sourceTrackingId);
+        RescheduleResponse RescheduleMessage(string sourceTrackingId, string scheduledAt);
+        CancelScheduledResponse CancelScheduledMessage(string sourceTrackingId);
     }
 }
