@@ -1,10 +1,6 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
 
 namespace Paubox
 {
@@ -105,14 +101,13 @@ namespace Paubox
         /// <returns></returns>
         protected static bool? ReturnValidForceSecureNotificationValue(string forceSecureNotification)
         {
-            string forceSecureNotificationValue = null;
             if (string.IsNullOrWhiteSpace(forceSecureNotification))
             {
                 return null;
             }
             else
             {
-                forceSecureNotificationValue = forceSecureNotification.Trim().ToLower();
+                string forceSecureNotificationValue = forceSecureNotification.Trim().ToLower();
                 if (forceSecureNotificationValue.Equals("true"))
                 {
                     return true;
