@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -94,37 +93,29 @@ namespace Paubox
         /// <returns>GetEmailDispositionResponse</returns>
         public GetEmailDispositionResponse GetEmailDisposition(string sourceTrackingId)
         {
-            GetEmailDispositionResponse apiResponse = new GetEmailDispositionResponse();
-            try
+            string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+            GetEmailDispositionResponse apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
+            if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
             {
-                string requestURI = string.Format("message_receipt?sourceTrackingId={0}", sourceTrackingId);
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
-                apiResponse = JsonConvert.DeserializeObject<GetEmailDispositionResponse>(Response);
-                if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
-                {
-                    throw new SystemException(Response);
-                }
+                throw new SystemException(Response);
+            }
 
-                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
-                {
-                    throw new SystemException(Response);
-                }
+            if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
+            {
+                throw new SystemException(Response);
+            }
 
-                if (apiResponse != null && apiResponse.Data != null && apiResponse.Data.Message != null
-                    && apiResponse.Data.Message.Message_Deliveries != null && apiResponse.Data.Message.Message_Deliveries.Count > 0)
+            if (apiResponse.Data != null && apiResponse.Data.Message != null
+                && apiResponse.Data.Message.Message_Deliveries != null && apiResponse.Data.Message.Message_Deliveries.Count > 0)
+            {
+                foreach (var message_deliveries in apiResponse.Data.Message.Message_Deliveries)
                 {
-                    foreach (var message_deliveries in apiResponse.Data.Message.Message_Deliveries)
+                    if (string.IsNullOrWhiteSpace(message_deliveries.Status.OpenedStatus))
                     {
-                        if (string.IsNullOrWhiteSpace(message_deliveries.Status.OpenedStatus))
-                        {
-                            message_deliveries.Status.OpenedStatus = "unopened";
-                        }
+                        message_deliveries.Status.OpenedStatus = "unopened";
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             return apiResponse;
         }
@@ -136,33 +127,25 @@ namespace Paubox
         /// <returns>SendMessageResponse</returns>
         public SendMessageResponse SendMessage(Message message)
         {
-            SendMessageResponse apiResponse = new SendMessageResponse();
-            try
+            //Prepare JSON request for passing it to Send Message API
+            JObject requestObject = JObject.FromObject(new
             {
-                //Prepare JSON request for passing it to Send Message API
-                JObject requestObject = JObject.FromObject(new
-                {
-                    data = new Dictionary<string, object> {
-                        ["message"] = message.ToJson()
-                    }
-                });
-
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
-                apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
-
-                if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
-                {
-                    throw new SystemException(Response);
+                data = new Dictionary<string, object> {
+                    ["message"] = message.ToJson()
                 }
+            });
 
-                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
-                {
-                    throw new SystemException(Response);
-                }
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, "messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+            SendMessageResponse apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
+
+            if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
+            {
+                throw new SystemException(Response);
             }
-            catch (Exception ex)
+
+            if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
             {
-                throw ex;
+                throw new SystemException(Response);
             }
 
             return apiResponse;
@@ -175,29 +158,21 @@ namespace Paubox
         /// <returns>SendBulkMessagesResponse</returns>
         public SendBulkMessagesResponse SendBulkMessages(Message[] messages)
         {
-            SendBulkMessagesResponse apiResponse = new SendBulkMessagesResponse();
-            try
+            // Convert each message to JSON using LINQ Select (map function)
+            JObject requestObject = JObject.FromObject(new
             {
-                // Convert each message to JSON using LINQ Select (map function)
-                JObject requestObject = JObject.FromObject(new
+                data = new Dictionary<string, object>
                 {
-                    data = new Dictionary<string, object>
-                    {
-                        { "messages", messages.Select(message => message.ToJson()).ToList() }
-                    }
-                });
-
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, "bulk_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
-                apiResponse = JsonConvert.DeserializeObject<SendBulkMessagesResponse>(Response);
-
-                if (apiResponse.Messages == null)
-                {
-                    throw new SystemException(Response);
+                    { "messages", messages.Select(message => message.ToJson()).ToList() }
                 }
-            }
-            catch (Exception ex)
+            });
+
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, "bulk_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+            SendBulkMessagesResponse apiResponse = JsonConvert.DeserializeObject<SendBulkMessagesResponse>(Response);
+
+            if (apiResponse.Messages == null)
             {
-                throw ex;
+                throw new SystemException(Response);
             }
 
             return apiResponse;
@@ -210,35 +185,27 @@ namespace Paubox
         /// <returns>SendMessageResponse</returns>
         public SendMessageResponse SendTemplatedMessage(TemplatedMessage message)
         {
-            SendMessageResponse apiResponse = new SendMessageResponse();
-            try
+            //Prepare JSON request for passing it to Send Templated Message API
+            JObject requestObject = JObject.FromObject(new
             {
-                //Prepare JSON request for passing it to Send Templated Message API
-                JObject requestObject = JObject.FromObject(new
-                {
-                    data = new Dictionary<string, object> {
-                        ["template_name"] = message.TemplateName,
-                        ["template_values"] = JsonConvert.SerializeObject(message.TemplateValues),
-                        ["message"] = message.ToJson()
-                    }
-                });
-
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, "templated_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
-                apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
-
-                if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
-                {
-                    throw new SystemException(Response);
+                data = new Dictionary<string, object> {
+                    ["template_name"] = message.TemplateName,
+                    ["template_values"] = JsonConvert.SerializeObject(message.TemplateValues),
+                    ["message"] = message.ToJson()
                 }
+            });
 
-                if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
-                {
-                    throw new SystemException(Response);
-                }
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, "templated_messages", GetAuthorizationHeader(), "POST", JsonConvert.SerializeObject(requestObject));
+            SendMessageResponse apiResponse = JsonConvert.DeserializeObject<SendMessageResponse>(Response);
+
+            if (apiResponse.Data == null && apiResponse.SourceTrackingId == null && apiResponse.Errors == null)
+            {
+                throw new SystemException(Response);
             }
-            catch (Exception ex)
+
+            if (apiResponse.Errors != null && apiResponse.Errors.Count > 0)
             {
-                throw ex;
+                throw new SystemException(Response);
             }
 
             return apiResponse;
@@ -251,21 +218,13 @@ namespace Paubox
         /// <returns>GetDynamicTemplateResponse</returns>
         public GetDynamicTemplateResponse GetDynamicTemplate(int templateId)
         {
-            GetDynamicTemplateResponse apiResponse = new GetDynamicTemplateResponse();
-            try
-            {
-                string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
-                apiResponse = JsonConvert.DeserializeObject<GetDynamicTemplateResponse>(Response);
+            string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+            GetDynamicTemplateResponse apiResponse = JsonConvert.DeserializeObject<GetDynamicTemplateResponse>(Response);
 
-                if (apiResponse.Error != null)
-                {
-                    throw new SystemException(Response);
-                }
-            }
-            catch (Exception ex)
+            if (apiResponse.Error != null)
             {
-                throw ex;
+                throw new SystemException(Response);
             }
 
 
@@ -278,17 +237,9 @@ namespace Paubox
         /// <returns>List<DynamicTemplateSummary></returns>
         public List<DynamicTemplateSummary> ListDynamicTemplates()
         {
-            List<DynamicTemplateSummary> apiResponse = new List<DynamicTemplateSummary>();
-            try
-            {
-                string requestURI = "dynamic_templates";
-                string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
-                apiResponse = JsonConvert.DeserializeObject<List<DynamicTemplateSummary>>(Response);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            string requestURI = "dynamic_templates";
+            string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+            List<DynamicTemplateSummary> apiResponse = JsonConvert.DeserializeObject<List<DynamicTemplateSummary>>(Response);
 
             return apiResponse;
         }
@@ -323,10 +274,9 @@ namespace Paubox
         /// <returns>DynamicTemplateResponse</returns>
         public DynamicTemplateResponse UpdateDynamicTemplate(int templateId, string templateName, string templatePath)
         {
-            DynamicTemplateResponse apiResponse = new DynamicTemplateResponse();
             string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
             string Response = _apiHelper.UploadTemplate(_apiBaseURL, requestURI, GetAuthorizationHeader(), "PATCH", templateName, templatePath);
-            apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
+            DynamicTemplateResponse apiResponse = JsonConvert.DeserializeObject<DynamicTemplateResponse>(Response);
 
             if (apiResponse.Error != null)
             {
@@ -343,10 +293,9 @@ namespace Paubox
         /// <returns>DeleteDynamicTemplateResponse</returns>
         public DeleteDynamicTemplateResponse DeleteDynamicTemplate(int templateId)
         {
-            DeleteDynamicTemplateResponse apiResponse = new DeleteDynamicTemplateResponse();
             string requestURI = string.Format("dynamic_templates/{0}", templateId.ToString());
             string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "DELETE");
-            apiResponse = JsonConvert.DeserializeObject<DeleteDynamicTemplateResponse>(Response);
+            DeleteDynamicTemplateResponse apiResponse = JsonConvert.DeserializeObject<DeleteDynamicTemplateResponse>(Response);
 
             if (apiResponse.Error != null)
             {
