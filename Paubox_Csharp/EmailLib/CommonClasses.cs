@@ -156,6 +156,66 @@ namespace Paubox
         public string Error { get; set; }
     }
 
+    public class ScheduleMessageResponse
+    {
+        [JsonProperty("sourceTrackingId")]
+        public string SourceTrackingId { get; set; }
+
+        [JsonProperty("scheduledAt")]
+        public string ScheduledAt { get; set; }
+
+        public string State { get; set; }
+        public string Data { get; set; }
+        public List<Error> Errors { get; set; }
+    }
+
+    public class ScheduledMessageStatusResponse
+    {
+        [JsonProperty("sourceTrackingId")]
+        public string SourceTrackingId { get; set; }
+
+        [JsonProperty("scheduledAt")]
+        public string ScheduledAt { get; set; }
+
+        public string State { get; set; }
+
+        [JsonProperty("messageId")]
+        public long MessageId { get; set; }
+
+        [JsonProperty("sentAt")]
+        public string SentAt { get; set; }
+
+        [JsonProperty("cancelledAt")]
+        public string CancelledAt { get; set; }
+
+        [JsonProperty("errorMessage")]
+        public string ErrorMessage { get; set; }
+
+        public List<Error> Errors { get; set; }
+    }
+
+    public class RescheduleResponse
+    {
+        [JsonProperty("sourceTrackingId")]
+        public string SourceTrackingId { get; set; }
+
+        [JsonProperty("scheduledAt")]
+        public string ScheduledAt { get; set; }
+
+        public string Data { get; set; }
+        public List<Error> Errors { get; set; }
+    }
+
+    public class CancelScheduledResponse
+    {
+        [JsonProperty("sourceTrackingId")]
+        public string SourceTrackingId { get; set; }
+
+        public string State { get; set; }
+        public string Data { get; set; }
+        public List<Error> Errors { get; set; }
+    }
+
     public class Error
     {
         public int Code { get; set; }
