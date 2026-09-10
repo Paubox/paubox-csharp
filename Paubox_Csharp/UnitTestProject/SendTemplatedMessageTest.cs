@@ -93,8 +93,6 @@ public class SendTemplatedMessageTest
                     ["message"] = new JObject
                     {
                         ["recipients"] = new JArray { "someone@domain.com", "someoneelse@domain.com" },
-                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
-                        ["cc"] = new JArray { "cc-recipient@domain.com" },
                         ["headers"] = new JObject
                         {
                             ["subject"] = "Testing!",
@@ -102,7 +100,8 @@ public class SendTemplatedMessageTest
                             ["reply-to"] = "reply-to@yourdomain.com"
                         },
                         ["allowNonTLS"] = false,
-                        ["attachments"] = null
+                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
+                        ["cc"] = new JArray { "cc-recipient@domain.com" }
                     }
                 }
             }

@@ -72,8 +72,6 @@ public class SendBulkMessagesTest
                         new JObject
                         {
                             ["recipients"] = new JArray { "recipient1@domain.com" },
-                            ["bcc"] = new JArray { "bcc1@domain.com" },
-                            ["cc"] = new JArray { "cc1@domain.com" },
                             ["headers"] = new JObject
                             {
                                 ["subject"] = "Email 1",
@@ -83,7 +81,8 @@ public class SendBulkMessagesTest
                                 ["X-Another-Header"] = "Another Value"
                             },
                             ["allowNonTLS"] = false,
-                            ["attachments"] = null,
+                            ["bcc"] = new JArray { "bcc1@domain.com" },
+                            ["cc"] = new JArray { "cc1@domain.com" },
                             ["content"] = new JObject
                             {
                                 ["text/plain"] = "Email 1 Content",
@@ -93,8 +92,6 @@ public class SendBulkMessagesTest
                         new JObject
                         {
                             ["recipients"] = new JArray { "recipient2@domain.com" },
-                            ["bcc"] = new JArray { "bcc2@domain.com" },
-                            ["cc"] = new JArray { "cc2@domain.com" },
                             ["headers"] = new JObject
                             {
                                 ["subject"] = "Email 2",
@@ -102,6 +99,8 @@ public class SendBulkMessagesTest
                                 ["reply-to"] = "reply-to2@yourdomain.com"
                             },
                             ["allowNonTLS"] = false,
+                            ["bcc"] = new JArray { "bcc2@domain.com" },
+                            ["cc"] = new JArray { "cc2@domain.com" },
                             ["attachments"] = new JArray
                             {
                                 new JObject
