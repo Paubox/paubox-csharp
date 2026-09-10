@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1](https://github.com/Paubox/paubox-csharp/compare/v1.1.0...v1.1.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* omit null fields from message JSON payload ([#32](https://github.com/Paubox/paubox-csharp/issues/32)) ([8d248e8](https://github.com/Paubox/paubox-csharp/commit/8d248e84ca6b13116a488c8486fddd2b76eb62c5))
+
 ## [1.1.0](https://github.com/Paubox/paubox-csharp/compare/v1.0.0...v1.1.0) (2026-09-09)
 
 
