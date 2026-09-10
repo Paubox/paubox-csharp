@@ -64,8 +64,6 @@ public class SendMessageTest
                     ["message"] = new JObject
                     {
                         ["recipients"] = new JArray { "someone@domain.com", "someoneelse@domain.com" },
-                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
-                        ["cc"] = new JArray { "cc-recipient@domain.com" },
                         ["headers"] = new JObject
                         {
                             ["subject"] = "Test email",
@@ -73,7 +71,8 @@ public class SendMessageTest
                             ["reply-to"] = "reply-to@yourdomain.com"
                         },
                         ["allowNonTLS"] = false,
-                        ["attachments"] = null,
+                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
+                        ["cc"] = new JArray { "cc-recipient@domain.com" },
                         ["content"] = new JObject
                         {
                             ["text/plain"] = "This is a test email.",
@@ -129,8 +128,6 @@ public class SendMessageTest
                     ["message"] = new JObject
                     {
                         ["recipients"] = new JArray { "someone@domain.com", "someoneelse@domain.com" },
-                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
-                        ["cc"] = new JArray { "cc-recipient@domain.com" },
                         ["headers"] = new JObject
                         {
                             ["subject"] = "Test email",
@@ -140,7 +137,8 @@ public class SendMessageTest
                             ["X-Another-Header"] = "Another Value"
                         },
                         ["allowNonTLS"] = false,
-                        ["attachments"] = null,
+                        ["bcc"] = new JArray { "bcc-recipient@domain.com" },
+                        ["cc"] = new JArray { "cc-recipient@domain.com" },
                         ["content"] = new JObject
                         {
                             ["text/plain"] = "This is a test email.",

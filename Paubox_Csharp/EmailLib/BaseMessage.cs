@@ -48,11 +48,14 @@ namespace Paubox
         {
             this.Validate();
 
-            JObject headerJSON = JObject.FromObject(new Dictionary<string, string>() {
+            var headerDict = new Dictionary<string, string>() {
                 { "subject" , this.Header.Subject},
                 { "from" , this.Header.From},
-                { "reply-to" , this.Header.ReplyTo}
-            });
+            };
+            if (this.Header.ReplyTo != null)
+                headerDict["reply-to"] = this.Header.ReplyTo;
+
+            JObject headerJSON = JObject.FromObject(headerDict);
 
             if (this.Header.CustomHeaders != null && this.Header.CustomHeaders.Count > 0)
             {
@@ -79,15 +82,19 @@ namespace Paubox
                 }
             }
 
-            JObject MessageJSON = JObject.FromObject(new
+            JObject MessageJSON = new JObject
             {
-                recipients = this.Recipients,
-                bcc = this.Bcc,
-                cc = this.Cc,
-                headers = headerJSON,
-                allowNonTLS = this.AllowNonTLS,
-                attachments = attachmentJSONArray
-            });
+                ["recipients"] = JToken.FromObject(this.Recipients),
+                ["headers"] = headerJSON,
+                ["allowNonTLS"] = this.AllowNonTLS
+            };
+
+            if (this.Bcc != null)
+                MessageJSON["bcc"] = JToken.FromObject(this.Bcc);
+            if (this.Cc != null)
+                MessageJSON["cc"] = JToken.FromObject(this.Cc);
+            if (attachmentJSONArray != null)
+                MessageJSON["attachments"] = attachmentJSONArray;
 
             bool? forceSecureNotificationValue = ReturnValidForceSecureNotificationValue(this.ForceSecureNotification);
             if (forceSecureNotificationValue != null) // Add forceSecureNotificationValue to Request, only if it is not null
