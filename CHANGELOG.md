@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/Paubox/paubox-csharp/compare/v1.1.1...v1.2.0) (2026-09-16)
+
+
+### Features
+
+* add receiving (inbound email) endpoints ([#34](https://github.com/Paubox/paubox-csharp/issues/34)) ([82abf49](https://github.com/Paubox/paubox-csharp/commit/82abf499552f1b37f6387809019ffe92f979b367))
+
 ## [1.1.1](https://github.com/Paubox/paubox-csharp/compare/v1.1.0...v1.1.1) (2026-09-10)
 
 
