@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/Paubox/paubox-csharp/compare/v1.2.0...v1.3.0) (2026-09-17)
+
+
+### Features
+
+* webhook endpoint CRUD support ([#36](https://github.com/Paubox/paubox-csharp/issues/36)) ([8620d9a](https://github.com/Paubox/paubox-csharp/commit/8620d9a7f9183be45dee2da9d205a7c087a1bd23))
+
 ## [1.2.0](https://github.com/Paubox/paubox-csharp/compare/v1.1.1...v1.2.0) (2026-09-16)
 
 
