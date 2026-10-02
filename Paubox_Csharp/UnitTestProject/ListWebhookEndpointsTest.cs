@@ -95,7 +95,7 @@ public class ListWebhookEndpointsTest
             {
                 ["id"] = 2,
                 ["target_url"] = "https://example.com/webhook2",
-                ["events"] = new List<string> { "inbound_mail_received" },
+                ["events"] = new List<string> { "api_mail_log_temporary_failure", "api_mail_log_permanent_failure" },
                 ["active"] = false,
                 ["created_at"] = "2026-02-20T14:30:00Z",
                 ["updated_at"] = "2026-02-20T14:30:00Z"
