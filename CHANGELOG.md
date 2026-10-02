@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1](https://github.com/Paubox/paubox-csharp/compare/v1.3.0...v1.3.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* **receiving:** match the Paubox-id receiving API and return attachment bytes ([#38](https://github.com/Paubox/paubox-csharp/issues/38)) ([9791f01](https://github.com/Paubox/paubox-csharp/commit/9791f0128013ba046972a790a80ff350b206f5c8))
+
 ## [1.3.0](https://github.com/Paubox/paubox-csharp/compare/v1.2.0...v1.3.0) (2026-09-17)
 
 
