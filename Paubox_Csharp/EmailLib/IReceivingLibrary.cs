@@ -1,3 +1,5 @@
+using System;
+
 namespace Paubox
 {
     public interface IReceivingLibrary
@@ -12,6 +14,9 @@ namespace Paubox
         DeleteMailboxResponse DeleteMailbox(int domainId, int mailboxId);
         ReceivedEmailListResponse ListReceivedEmails(ListReceivedEmailsParams parameters = null);
         ReceivedEmailResponse GetReceivedEmail(string emailId);
+        byte[] DownloadAttachmentBytes(string emailId, string attachmentId);
+
+        [Obsolete("Returns the attachment as text, which corrupts binary files. Use DownloadAttachmentBytes(emailId, attachmentId) with ReceivedAttachment.Id; blob ids are no longer accepted.")]
         string DownloadAttachment(string emailId, string blobId);
     }
 }
