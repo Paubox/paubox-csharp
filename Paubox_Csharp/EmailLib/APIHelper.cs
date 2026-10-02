@@ -30,6 +30,8 @@ namespace Paubox
             new MediaTypeWithQualityHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue PdfAccept =
             new MediaTypeWithQualityHeaderValue("application/pdf");
+        private static readonly MediaTypeWithQualityHeaderValue AnyAccept =
+            new MediaTypeWithQualityHeaderValue("*/*");
 
         /// <summary>
         /// Executes an HTTP request against a Paubox API and returns the response body.
@@ -108,6 +110,32 @@ namespace Paubox
                     }
 
                     return bytes;
+                }
+            }
+        }
+
+        public byte[] CallToAPIBinary(string BaseAPIUrl, string requestURI, string authHeader, string APIVerb)
+        {
+            if (APIVerb != "GET")
+                throw new ArgumentException("Invalid API verb: " + APIVerb);
+
+            Uri absoluteUri = BuildUri(BaseAPIUrl, requestURI);
+
+            using (var request = new HttpRequestMessage(HttpMethod.Get, absoluteUri))
+            {
+                request.Headers.Accept.Add(AnyAccept);
+                if (!string.IsNullOrEmpty(authHeader))
+                    request.Headers.TryAddWithoutValidation("Authorization", authHeader);
+
+                using (HttpResponseMessage response = _httpClient.SendAsync(request).GetAwaiter().GetResult())
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string errorBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        throw new PauboxApiException((int)response.StatusCode, APIVerb, requestURI, errorBody);
+                    }
+
+                    return response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                 }
             }
         }

@@ -148,12 +148,24 @@ namespace Paubox
             return JsonConvert.DeserializeObject<ReceivedEmailResponse>(response);
         }
 
+        public byte[] DownloadAttachmentBytes(string emailId, string attachmentId)
+        {
+            if (string.IsNullOrWhiteSpace(emailId))
+                throw new ArgumentException("Email ID cannot be null or empty", nameof(emailId));
+            if (string.IsNullOrWhiteSpace(attachmentId))
+                throw new ArgumentException("Attachment ID cannot be null or empty", nameof(attachmentId));
+
+            string requestURI = string.Format("receiving/{0}/attachments/{1}", emailId, attachmentId);
+            return _apiHelper.CallToAPIBinary(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
+        }
+
+        [Obsolete("Returns the attachment as text, which corrupts binary files. Use DownloadAttachmentBytes(emailId, attachmentId) with ReceivedAttachment.Id; blob ids are no longer accepted.")]
         public string DownloadAttachment(string emailId, string blobId)
         {
             if (string.IsNullOrWhiteSpace(emailId))
                 throw new ArgumentException("Email ID cannot be null or empty", nameof(emailId));
             if (string.IsNullOrWhiteSpace(blobId))
-                throw new ArgumentException("Blob ID cannot be null or empty", nameof(blobId));
+                throw new ArgumentException("Attachment ID cannot be null or empty", nameof(blobId));
 
             string requestURI = string.Format("receiving/{0}/attachments/{1}", emailId, blobId);
             return _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
