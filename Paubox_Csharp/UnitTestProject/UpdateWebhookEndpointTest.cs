@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Moq;
 using Paubox;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 [TestFixture]
 public class UpdateWebhookEndpointTest
@@ -12,112 +10,89 @@ public class UpdateWebhookEndpointTest
     private Mock<IAPIHelper> _mockApiHelper;
     private WebhookLibrary _webhookLibrary;
 
+    private const string EndpointId = "2ec66c21-bf48-48eb-8d28-f80b2d6b77c7";
+
     [SetUp]
     public void Setup()
     {
         _mockApiHelper = new Mock<IAPIHelper>();
-        _webhookLibrary = new WebhookLibrary("testApiKey", _mockApiHelper.Object);
+        _webhookLibrary = new WebhookLibrary(_mockApiHelper.Object, "testApiKey");
     }
 
-    [Test]
-    public void TestUpdateWebhookEndpointReturnsData()
+    private static string UpdatedResponse(string status)
     {
-        string apiResponse = SuccessResponse();
-        MockApiResponse(apiResponse);
-
-        var request = new UpdateWebhookEndpointRequest { Active = false };
-        WebhookEndpointResponse result = _webhookLibrary.UpdateWebhookEndpoint(1, request);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual("Webhook updated!", result.Message);
-        Assert.IsNotNull(result.Data);
-        Assert.AreEqual(1, result.Data.Id);
-    }
-
-    [Test]
-    public void TestUpdateWebhookEndpointSendsCorrectRequest()
-    {
-        MockApiResponse(SuccessResponse());
-
-        var request = new UpdateWebhookEndpointRequest { Active = false };
-        _webhookLibrary.UpdateWebhookEndpoint(42, request);
-
-        _mockApiHelper.Verify(
-            x => x.CallToAPI(
-                It.Is<string>(url => url == "https://api.paubox.com/v1/email/"),
-                It.Is<string>(uri => uri == "webhook_endpoints/42"),
-                It.Is<string>(auth => auth == "Token token=testApiKey"),
-                It.Is<string>(verb => verb == "PATCH"),
-                It.IsAny<string>()
-            ),
-            Times.Once
-        );
-    }
-
-    [Test]
-    public void TestUpdateWebhookEndpointSendsCorrectBody()
-    {
-        string capturedBody = null;
-
-        _mockApiHelper.Setup(
-            x => x.CallToAPI(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                "PATCH",
-                It.IsAny<string>()
-            )
-        ).Callback<string, string, string, string, string>((url, uri, auth, verb, body) =>
-        {
-            capturedBody = body;
-        }).Returns(SuccessResponse());
-
-        var request = new UpdateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/new-webhook",
-            Active = false
-        };
-
-        _webhookLibrary.UpdateWebhookEndpoint(1, request);
-
-        JObject parsed = JObject.Parse(capturedBody);
-        Assert.AreEqual("https://example.com/new-webhook", parsed["target_url"].ToString());
-        Assert.AreEqual(false, parsed["active"].Value<bool>());
-    }
-
-    [Test]
-    public void TestUpdateWebhookEndpointRejectsNullRequest()
-    {
-        Assert.Throws<ArgumentNullException>(() => _webhookLibrary.UpdateWebhookEndpoint(1, null));
+        return @"{""data"":{""id"":""" + EndpointId + @""",
+            ""target_url"":""https://hooks.example.com/paubox"",
+            ""status"":""" + status + @""",
+            ""events"":[""forms.submission.created""],
+            ""created_at"":""2026-10-09T01:43:41.639968+00:00"",
+            ""updated_at"":""2026-10-09T02:00:00.000000+00:00""}}";
     }
 
     private void MockApiResponse(string response)
     {
-        _mockApiHelper.Setup(
-            x => x.CallToAPI(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                "PATCH",
-                It.IsAny<string>()
-            )
-        ).Returns(response);
+        _mockApiHelper
+            .Setup(x => x.CallToAPI(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                                    It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(response);
     }
 
-    private string SuccessResponse()
+    [Test]
+    public void TestSendsOnlyTheFieldsSet()
     {
-        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        MockApiResponse(UpdatedResponse("disabled"));
+
+        WebhookEndpoint result = _webhookLibrary.UpdateWebhookEndpoint(
+            EndpointId, new UpdateWebhookEndpointRequest { Status = "disabled" });
+
+        Assert.AreEqual("disabled", result.Status);
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(
+                It.IsAny<string>(),
+                It.Is<string>(uri => uri == "endpoints/" + EndpointId),
+                It.Is<string>(auth => auth == "Bearer testApiKey"),
+                It.Is<string>(verb => verb == "PATCH"),
+                // target_url and events are omitted, not sent as null.
+                It.Is<string>(body =>
+                    body.Contains("status") &&
+                    !body.Contains("target_url") &&
+                    !body.Contains("events"))),
+            Times.Once);
+    }
+
+    [Test]
+    public void TestSendsTargetUrlAndEventsTogether()
+    {
+        MockApiResponse(UpdatedResponse("active"));
+
+        _webhookLibrary.UpdateWebhookEndpoint(EndpointId, new UpdateWebhookEndpointRequest
         {
-            ["message"] = "Webhook updated!",
-            ["data"] = new Dictionary<string, object>
-            {
-                ["id"] = 1,
-                ["target_url"] = "https://example.com/new-webhook",
-                ["events"] = new List<string> { "api_mail_log_delivered" },
-                ["active"] = false,
-                ["created_at"] = "2026-01-15T10:00:00Z",
-                ["updated_at"] = "2026-01-15T12:00:00Z"
-            }
+            TargetUrl = "https://new.example.com/hook",
+            Events = new List<string> { "forms.submission.created" }
         });
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.Is<string>(body =>
+                    body.Contains("https://new.example.com/hook") &&
+                    body.Contains("forms.submission.created"))),
+            Times.Once);
+    }
+
+    [Test]
+    public void TestValidatesBeforeSending()
+    {
+        Assert.Throws<ArgumentException>(() => _webhookLibrary.UpdateWebhookEndpoint(
+            "not-a-uuid", new UpdateWebhookEndpointRequest { Status = "disabled" }));
+
+        Assert.Throws<ArgumentNullException>(() =>
+            _webhookLibrary.UpdateWebhookEndpoint(EndpointId, null));
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                             It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
     }
 }

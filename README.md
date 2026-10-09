@@ -50,6 +50,14 @@ The API wrapper allows you to construct and send messages, and interact with Pau
     - [Form Stats](#form-stats)
     - [List Form Submissions](#list-form-submissions)
     - [Export Submissions (CSV / PDF)](#export-submissions-csv--pdf)
+- [Webhooks](#webhooks)
+  - [Initializing the WebhookLibrary](#initializing-the-webhooklibrary)
+  - [Create a webhook endpoint](#create-a-webhook-endpoint)
+  - [List webhook endpoints](#list-webhook-endpoints)
+  - [Get a webhook endpoint](#get-a-webhook-endpoint)
+  - [Update a webhook endpoint](#update-a-webhook-endpoint)
+  - [Delete a webhook endpoint](#delete-a-webhook-endpoint)
+  - [Error handling](#error-handling-1)
 - [Contributing](#contributing)
 - [License](#license)
 - [Copyright](#copyright)
@@ -753,6 +761,113 @@ catch (PauboxApiException ex)
     // ex.Body is the raw response — opt in when you know the endpoint's contract
 }
 ```
+
+## Webhooks
+
+A webhook endpoint is a URL you own that Paubox notifies when something happens. `WebhookLibrary`
+manages those subscriptions: which URL to notify, and for which events.
+
+### Initializing the WebhookLibrary
+
+Construct it with a **scoped API key**, sent as `Authorization: Bearer {apiKey}`:
+
+```csharp
+var webhooks = new WebhookLibrary("your-scoped-api-key");
+```
+
+Which events a key may subscribe to follows from its scopes. The SDK does not check scopes — the
+service refuses an event the key isn't scoped for with 403, and an unrecognised event with 422.
+
+The key and base URL can also come from `IConfiguration`, under `WebhooksAPIKey` and
+`WebhooksBaseURL`:
+
+```csharp
+var webhooks = new WebhookLibrary(config);
+```
+
+### Create a webhook endpoint
+
+```csharp
+CreatedWebhookEndpoint endpoint = webhooks.CreateWebhookEndpoint(
+    new CreateWebhookEndpointRequest
+    {
+        TargetUrl = "https://example.com/paubox-webhook",
+        Events = new List<string> { "forms.submission.created" }
+    });
+
+Console.WriteLine(endpoint.Id);             // UUID
+Console.WriteLine(endpoint.SigningSecret);  // whsec_... — store this now
+```
+
+`SigningSecret` is returned **once**, here. It is not on `GetWebhookEndpoint` or
+`ListWebhookEndpoints`, and there is no way to read it back — recovering from a lost secret means
+deleting the endpoint and creating a new one. Use it to verify that deliveries really came from
+Paubox.
+
+### List webhook endpoints
+
+```csharp
+WebhookEndpointList result = webhooks.ListWebhookEndpoints();
+
+foreach (WebhookEndpoint e in result.Data)
+    Console.WriteLine($"{e.Id} {e.TargetUrl} {e.Status}");
+
+Console.WriteLine(result.PageInfo.Count);  // total matching, not the page length
+```
+
+Pass `ListWebhookEndpointsParams` to paginate:
+
+```csharp
+var page2 = webhooks.ListWebhookEndpoints(
+    new ListWebhookEndpointsParams { Page = 2, Items = 25 });
+```
+
+### Get a webhook endpoint
+
+```csharp
+WebhookEndpoint endpoint = webhooks.GetWebhookEndpoint("2ec66c21-bf48-48eb-8d28-f80b2d6b77c7");
+```
+
+### Update a webhook endpoint
+
+Only the properties you set are sent, so changing the status leaves the URL and events alone:
+
+```csharp
+WebhookEndpoint updated = webhooks.UpdateWebhookEndpoint(
+    endpoint.Id, new UpdateWebhookEndpointRequest { Status = "disabled" });
+```
+
+Pausing deliveries without losing the subscription is what `"disabled"` is for; set `"active"` to
+resume. Changing `Events` replaces the list rather than adding to it.
+
+### Delete a webhook endpoint
+
+```csharp
+webhooks.DeleteWebhookEndpoint(endpoint.Id);
+```
+
+Returns nothing — the service answers `204 No Content`. Deleting stops every event on that
+endpoint, and the signing secret goes with it.
+
+### Error handling
+
+As with Forms, a non-2xx response throws `PauboxApiException`, with the raw body on `Body` rather
+than `Message`:
+
+```csharp
+try
+{
+    webhooks.CreateWebhookEndpoint(request);
+}
+catch (PauboxApiException ex)
+{
+    Console.WriteLine($"HTTP {ex.StatusCode}: {ex.Verb} {ex.Endpoint}");
+}
+```
+
+Two cases worth handling explicitly: subscribing a `TargetUrl` that already has an endpoint comes
+back as 422, and an id that doesn't belong to your account is a 404 rather than a 403. An id that
+isn't a UUID is rejected locally with `ArgumentException`, before any request is made.
 
 ## Contributing
 

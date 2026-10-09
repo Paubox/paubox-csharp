@@ -51,5 +51,15 @@ jobs:
 
       - name: Probe the base URLs the libraries hardcode
         run: |
-          grep -rhoE 'https://api\.paubox\.com[a-zA-Z0-9/_.-]*' Paubox_Csharp/EmailLib \
-            | .github/scripts/route-check.sh
+          {
+            grep -rhoE 'https://api\.paubox\.com[a-zA-Z0-9/_.-]*' Paubox_Csharp/EmailLib \
+              --exclude=WebhookLibrary.cs
+            # The webhooks base is probed with /endpoints appended. The gateway
+            # scopes its rule to that one resource so the producers' /v1/events
+            # ingest route stays off the public host, which leaves the bare base
+            # unrouted by design — probing it directly would fail this check for
+            # a URL the library never requests on its own.
+            grep -hoE 'https://api\.paubox\.com[a-zA-Z0-9/_.-]*' \
+              Paubox_Csharp/EmailLib/WebhookLibrary.cs \
+              | sed 's#/*$#/endpoints#'
+          } | .github/scripts/route-check.sh
