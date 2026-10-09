@@ -9,6 +9,9 @@
   - [Authentication (Forms)](#authentication-forms)
   - [FormsLibrary Methods (Public)](#formslibrary-methods-public)
   - [FormsLibrary Methods (Management)](#formslibrary-methods-management)
+- [Webhooks API](#webhooks-api)
+  - [Authentication (Webhooks)](#authentication-webhooks)
+  - [WebhookLibrary Methods](#webhooklibrary-methods)
 - [Error Handling](#error-handling)
 
 ---
@@ -538,6 +541,162 @@ and the first four bytes are the `%PDF` magic sequence — otherwise it throws
 | `submissionId` | `string` (UUID) | Yes | The submission's unique identifier |
 
 **Response:** raw PDF bytes as `byte[]`.
+
+---
+
+## Webhooks API
+
+A webhook endpoint is a URL you own that Paubox notifies when something happens.
+`WebhookLibrary` manages those subscriptions: which URL to notify, and for which events.
+
+**Base URL:** `https://api.paubox.com/v1/webhooks/`
+
+Every request carries the `endpoints` resource. The bare base is unrouted on the public gateway
+by design: the rule is scoped to `/endpoints` so the producers' event-ingest route stays private.
+
+### Authentication (Webhooks)
+
+A scoped API key, sent as a Bearer header — not the Email API's `Token token=`:
+
+```
+Authorization: Bearer <SCOPED_API_KEY>
+```
+
+```csharp
+var webhooks = new WebhookLibrary("YOUR-SCOPED-API-KEY");
+
+// Or from IConfiguration, reading WebhooksAPIKey and optionally WebhooksBaseURL
+var webhooks = new WebhookLibrary(configuration);
+```
+
+Which events a key may subscribe to follows from its scopes. The SDK does not inspect them, so
+an event the key is not scoped for returns 403 and an unrecognised one 422.
+
+### WebhookLibrary Methods
+
+| Method | HTTP | Returns |
+|---|---|---|
+| `ListWebhookEndpoints(ListWebhookEndpointsParams)` | `GET /endpoints` | `WebhookEndpointList` |
+| `CreateWebhookEndpoint(CreateWebhookEndpointRequest)` | `POST /endpoints` | `CreatedWebhookEndpoint` |
+| `GetWebhookEndpoint(string id)` | `GET /endpoints/{id}` | `WebhookEndpoint` |
+| `UpdateWebhookEndpoint(string id, UpdateWebhookEndpointRequest)` | `PATCH /endpoints/{id}` | `WebhookEndpoint` |
+| `DeleteWebhookEndpoint(string id)` | `DELETE /endpoints/{id}` | `void` |
+
+---
+
+#### ListWebhookEndpoints
+
+Returns the endpoints this key can act on. Endpoints carrying an event the key is not scoped for
+are filtered out by the service.
+
+**Parameters:** optional `ListWebhookEndpointsParams` with `Page` and `Items`. Pass `null` for
+the service's defaults.
+
+**Response (200):**
+```json
+{
+  "data": [
+    {
+      "id": "2ec66c21-bf48-48eb-8d28-f80b2d6b77c7",
+      "target_url": "https://example.com/paubox-webhook",
+      "status": "active",
+      "events": ["forms.submission.created"],
+      "created_at": "2026-10-09T01:43:41.639968+00:00",
+      "updated_at": "2026-10-09T01:43:41.639968+00:00"
+    }
+  ],
+  "page_info": { "count": 1, "items": 50 }
+}
+```
+
+The envelope is returned rather than just the rows: `PageInfo.Count` is the total number of
+matching endpoints, not the length of `Data`, and a caller paginating needs it.
+
+```csharp
+WebhookEndpointList result = webhooks.ListWebhookEndpoints();
+
+var page2 = webhooks.ListWebhookEndpoints(
+    new ListWebhookEndpointsParams { Page = 2, Items = 25 });
+```
+
+---
+
+#### CreateWebhookEndpoint
+
+**Request body:**
+- `target_url` (string, required) — an https URL resolving to a publicly routable address
+- `events` (array of strings, required, non-empty)
+
+**Response (201):** the endpoint plus `signing_secret`, which the service returns **only here**.
+It is absent from get and list and cannot be read back: recovering from a lost secret means
+replacing the endpoint. That is why it lives on `CreatedWebhookEndpoint` and no other type.
+
+```csharp
+CreatedWebhookEndpoint created = webhooks.CreateWebhookEndpoint(
+    new CreateWebhookEndpointRequest
+    {
+        TargetUrl = "https://example.com/paubox-webhook",
+        Events = new List<string> { "forms.submission.created" }
+    });
+
+created.SigningSecret; // whsec_...
+```
+
+**Errors:**
+- `422` — missing or malformed `target_url`, an empty `events`, an unrecognised event, or a
+  `target_url` that already has an endpoint
+- `403` — an event this key is not scoped for
+
+Event names are not validated client-side: the catalog belongs to the service and grows without
+an SDK release.
+
+---
+
+#### GetWebhookEndpoint
+
+**Path parameter:** `id` (UUID, required)
+
+**Response (200):** the endpoint, unwrapped from its `data` envelope. The signing secret is not
+included.
+
+**Errors:** `404` if no such endpoint exists, or it belongs to another account.
+
+```csharp
+WebhookEndpoint endpoint = webhooks.GetWebhookEndpoint("2ec66c21-bf48-48eb-8d28-f80b2d6b77c7");
+```
+
+An id that does not parse as a `Guid` throws `ArgumentException` before any request is sent.
+
+---
+
+#### UpdateWebhookEndpoint
+
+A partial update: only the non-null properties on the request are serialized, so changing the
+status leaves the URL and events alone.
+
+**Request body (all optional, at least one meaningful):**
+- `TargetUrl` (string)
+- `Status` (string) — `"active"` or `"disabled"`
+- `Events` (list of strings) — replaces the list rather than adding to it
+
+```csharp
+WebhookEndpoint updated = webhooks.UpdateWebhookEndpoint(
+    id, new UpdateWebhookEndpointRequest { Status = "disabled" });
+```
+
+`disabled` pauses deliveries without losing the subscription; `active` resumes them.
+
+---
+
+#### DeleteWebhookEndpoint
+
+**Response:** `204 No Content`. Returns `void` — there is nothing to deserialize.
+
+Deleting stops every event on that endpoint and discards its signing secret.
+
+```csharp
+webhooks.DeleteWebhookEndpoint(id);
+```
 
 ---
 
