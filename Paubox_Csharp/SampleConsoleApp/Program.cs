@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Paubox;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace SampleConsoleApp
 {

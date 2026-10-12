@@ -7,7 +7,6 @@ using Paubox;
 public class FormsLibraryBaseUrlTest
 {
     private const string StagingBaseUrl = "https://apx.staging.paubox.com/forms/";
-    private const string CustomerId = "20602";
 
     [Test]
     public void ExplicitBaseUrlOverridesProdDefault()
