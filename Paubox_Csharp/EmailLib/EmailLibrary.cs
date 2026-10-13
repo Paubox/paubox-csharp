@@ -283,7 +283,13 @@ namespace Paubox
             {
                 string requestURI = "dynamic_templates";
                 string Response = _apiHelper.CallToAPI(_apiBaseURL, requestURI, GetAuthorizationHeader(), "GET");
-                apiResponse = JsonConvert.DeserializeObject<List<DynamicTemplateSummary>>(Response);
+                JToken parsed = JToken.Parse(Response);
+                JToken templates = parsed.Type == JTokenType.Object ? parsed["templates"] : parsed;
+                if (templates == null || templates.Type != JTokenType.Array)
+                {
+                    throw new SystemException(Response);
+                }
+                apiResponse = templates.ToObject<List<DynamicTemplateSummary>>();
             }
             catch (Exception ex)
             {

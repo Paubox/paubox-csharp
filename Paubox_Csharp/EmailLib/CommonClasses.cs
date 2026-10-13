@@ -127,6 +127,20 @@ namespace Paubox
 
     public class DynamicTemplateResponse
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        [JsonProperty("api_customer_id")]
+        public int ApiCustomerId { get; set; }
+
+        public string Body { get; set; }
+
+        [JsonProperty("created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [JsonProperty("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
+
         public string Message { get; set; }
         public DynamicTemplateParams Params { get; set; }
         public string Error { get; set; }

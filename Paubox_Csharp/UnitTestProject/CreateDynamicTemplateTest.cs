@@ -38,6 +38,24 @@ public class CreateDynamicTemplateTest
         DynamicTemplateResponse result = _emailLibrary.CreateDynamicTemplate(templateName, templatePath);
 
         Assert.IsNotNull(result);
+        Assert.AreEqual(123, result.Id);
+        Assert.AreEqual("Example Template", result.Name);
+        Assert.AreEqual(56789, result.ApiCustomerId);
+        Assert.AreEqual("<p>Hello {{name}}</p>", result.Body);
+        Assert.IsNotNull(result.CreatedAt);
+        Assert.IsNull(result.Error);
+    }
+
+    [Test]
+    public void TestStillAcceptsTheLegacyMessageResponse()
+    {
+        MockApiResponse(LegacySuccessResponse());
+
+        string templateName = "Example Template";
+        string templatePath = Path.Combine(_projectDir, "Fixtures", "ExampleTemplate.hbs");
+        DynamicTemplateResponse result = _emailLibrary.CreateDynamicTemplate(templateName, templatePath);
+
+        Assert.IsNotNull(result);
         Assert.AreEqual("Template Example Template created!", result.Message);
         Assert.AreEqual("Example Template", result.Params.Name);
         Assert.AreEqual("ExampleTemplate.hbs", result.Params.Body.OriginalFilename);
@@ -75,6 +93,11 @@ public class CreateDynamicTemplateTest
     }
 
     private string SuccessResponse()
+    {
+        return JsonConvert.SerializeObject(new Dictionary<string, object> { ["id"] = 123, ["api_customer_id"] = 56789, ["name"] = "Example Template", ["body"] = "<p>Hello {{name}}</p>", ["metadata"] = null, ["created_at"] = "2026-10-13T17:02:11.123Z", ["updated_at"] = "2026-10-13T17:02:11.123Z" });
+    }
+
+    private string LegacySuccessResponse()
     {
         return JsonConvert.SerializeObject(new Dictionary<string, object>
         {
