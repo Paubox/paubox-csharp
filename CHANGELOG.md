@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/Paubox/paubox-csharp/compare/v1.3.1...v2.0.0) (2026-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* manage webhook subscriptions on the Paubox webhooks service ([#40](https://github.com/Paubox/paubox-csharp/issues/40))
+
+### Features
+
+* manage webhook subscriptions on the Paubox webhooks service ([#40](https://github.com/Paubox/paubox-csharp/issues/40)) ([9ba2fa2](https://github.com/Paubox/paubox-csharp/commit/9ba2fa2e268944e2f59e56273f04c9ff323b25fe))
+
 ## [1.3.1](https://github.com/Paubox/paubox-csharp/compare/v1.3.0...v1.3.1) (2026-10-02)
 
 
