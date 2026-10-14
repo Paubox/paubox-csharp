@@ -39,11 +39,10 @@ public class UpdateDynamicTemplateTest
         DynamicTemplateResponse result = _emailLibrary.UpdateDynamicTemplate(templateId, templateName, templatePath);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual("Template Updated Example Template updated!", result.Message);
-        Assert.AreEqual("Updated Example Template", result.Params.Name);
-        Assert.AreEqual("ExampleTemplate.hbs", result.Params.Body.OriginalFilename);
-        Assert.AreEqual("text/x-handlebars-template", result.Params.Body.ContentType);
-        Assert.AreEqual("Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n", result.Params.Body.Headers);
+        Assert.AreEqual(123, result.Id);
+        Assert.AreEqual("Updated Example Template", result.Name);
+        Assert.AreEqual("<p>Bye {{name}}</p>", result.Body);
+        Assert.IsNull(result.Error);
     }
 
     [Test]
@@ -58,9 +57,9 @@ public class UpdateDynamicTemplateTest
         DynamicTemplateResponse result = _emailLibrary.UpdateDynamicTemplate(templateId, templateName, null);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual("Template Updated Example Template updated!", result.Message);
-        Assert.AreEqual("Updated Example Template", result.Params.Name);
-        Assert.IsNull(result.Params.Body);
+        Assert.AreEqual(123, result.Id);
+        Assert.AreEqual("Updated Example Template", result.Name);
+        Assert.IsNull(result.Error);
     }
 
     [Test]
@@ -116,32 +115,12 @@ public class UpdateDynamicTemplateTest
 
     private string SuccessUpdateFileAndNameResponse()
     {
-        return JsonConvert.SerializeObject(new DynamicTemplateResponse
-        {
-            Message = "Template Updated Example Template updated!",
-            Params = new DynamicTemplateParams
-            {
-                Name = "Updated Example Template",
-                Body = new DynamicTemplateParamsBody {
-                    Tempfile = "...",
-                    OriginalFilename = "ExampleTemplate.hbs",
-                    ContentType = "text/x-handlebars-template",
-                    Headers = "Content-Disposition: form-data; name=\"data[body]\"; filename=\"ExampleTemplate.hbs\"\r\nContent-Type: text/x-handlebars-template\r\n"
-                }
-            }
-        });
+        return JsonConvert.SerializeObject(new Dictionary<string, object> { ["id"] = 123, ["api_customer_id"] = 56789, ["name"] = "Updated Example Template", ["body"] = "<p>Bye {{name}}</p>", ["metadata"] = null, ["created_at"] = "2026-10-13T17:02:11.123Z", ["updated_at"] = "2026-10-13T17:02:11.123Z" });
     }
 
     private string SuccessUpdateNameOnlyResponse()
     {
-        return JsonConvert.SerializeObject(new DynamicTemplateResponse
-        {
-            Message = "Template Updated Example Template updated!",
-            Params = new DynamicTemplateParams
-            {
-                Name = "Updated Example Template",
-            }
-        });
+        return JsonConvert.SerializeObject(new Dictionary<string, object> { ["id"] = 123, ["api_customer_id"] = 56789, ["name"] = "Updated Example Template", ["body"] = "<p>Hello {{name}}</p>", ["metadata"] = null, ["created_at"] = "2026-10-13T17:02:11.123Z", ["updated_at"] = "2026-10-13T17:02:11.123Z" });
     }
 
     private string ValidationErrorResponse()
