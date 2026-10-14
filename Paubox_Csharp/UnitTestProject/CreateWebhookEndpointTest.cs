@@ -4,7 +4,6 @@ using NUnit.Framework;
 using Moq;
 using Paubox;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 [TestFixture]
 public class CreateWebhookEndpointTest
@@ -12,203 +11,133 @@ public class CreateWebhookEndpointTest
     private Mock<IAPIHelper> _mockApiHelper;
     private WebhookLibrary _webhookLibrary;
 
+    private const string EndpointId = "2ec66c21-bf48-48eb-8d28-f80b2d6b77c7";
+
     [SetUp]
     public void Setup()
     {
         _mockApiHelper = new Mock<IAPIHelper>();
-        _webhookLibrary = new WebhookLibrary("testApiKey", _mockApiHelper.Object);
+        _webhookLibrary = new WebhookLibrary(_mockApiHelper.Object, "testApiKey");
     }
 
-    [Test]
-    public void TestCreateWebhookEndpointReturnsData()
+    private static string CreatedResponse()
     {
-        string apiResponse = SuccessResponse();
-        MockApiResponse(apiResponse);
-
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook",
-            Events = new List<string> { "api_mail_log_delivered" }
-        };
-
-        WebhookEndpointResponse result = _webhookLibrary.CreateWebhookEndpoint(request);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual("Webhook created!", result.Message);
-        Assert.IsNotNull(result.Data);
-        Assert.AreEqual(1, result.Data.Id);
-        Assert.AreEqual("https://example.com/webhook", result.Data.TargetUrl);
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointSendsCorrectRequest()
-    {
-        MockApiResponse(SuccessResponse());
-
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook",
-            Events = new List<string> { "api_mail_log_delivered" }
-        };
-
-        _webhookLibrary.CreateWebhookEndpoint(request);
-
-        _mockApiHelper.Verify(
-            x => x.CallToAPI(
-                It.Is<string>(url => url == "https://api.paubox.com/v1/email/"),
-                It.Is<string>(uri => uri == "webhook_endpoints"),
-                It.Is<string>(auth => auth == "Token token=testApiKey"),
-                It.Is<string>(verb => verb == "POST"),
-                It.IsAny<string>()
-            ),
-            Times.Once
-        );
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointSendsCorrectBody()
-    {
-        string capturedBody = null;
-
-        _mockApiHelper.Setup(
-            x => x.CallToAPI(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                "POST",
-                It.IsAny<string>()
-            )
-        ).Callback<string, string, string, string, string>((url, uri, auth, verb, body) =>
-        {
-            capturedBody = body;
-        }).Returns(SuccessResponse());
-
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook",
-            Events = new List<string> { "api_mail_log_delivered", "api_mail_log_opened" },
-            SigningKey = "sk_test"
-        };
-
-        _webhookLibrary.CreateWebhookEndpoint(request);
-
-        JObject parsed = JObject.Parse(capturedBody);
-        Assert.AreEqual("https://example.com/webhook", parsed["target_url"].ToString());
-        Assert.AreEqual(2, ((JArray)parsed["events"]).Count);
-        Assert.AreEqual("sk_test", parsed["signing_key"].ToString());
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointOmitsNullOptionalFields()
-    {
-        string capturedBody = null;
-
-        _mockApiHelper.Setup(
-            x => x.CallToAPI(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                "POST",
-                It.IsAny<string>()
-            )
-        ).Callback<string, string, string, string, string>((url, uri, auth, verb, body) =>
-        {
-            capturedBody = body;
-        }).Returns(SuccessResponse());
-
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook",
-            Events = new List<string> { "api_mail_log_delivered" }
-        };
-
-        _webhookLibrary.CreateWebhookEndpoint(request);
-
-        JObject parsed = JObject.Parse(capturedBody);
-        Assert.IsNull(parsed["signing_key"]);
-        Assert.IsNull(parsed["api_key"]);
-        Assert.IsNull(parsed["active"]);
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointRejectsNullRequest()
-    {
-        Assert.Throws<ArgumentNullException>(() => _webhookLibrary.CreateWebhookEndpoint(null));
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointRejectsNullTargetUrl()
-    {
-        var request = new CreateWebhookEndpointRequest
-        {
-            Events = new List<string> { "api_mail_log_delivered" }
-        };
-
-        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(request));
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointRejectsEmptyTargetUrl()
-    {
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "",
-            Events = new List<string> { "api_mail_log_delivered" }
-        };
-
-        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(request));
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointRejectsNullEvents()
-    {
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook"
-        };
-
-        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(request));
-    }
-
-    [Test]
-    public void TestCreateWebhookEndpointRejectsEmptyEvents()
-    {
-        var request = new CreateWebhookEndpointRequest
-        {
-            TargetUrl = "https://example.com/webhook",
-            Events = new List<string>()
-        };
-
-        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(request));
+        return @"{""data"":{""id"":""" + EndpointId + @""",
+            ""target_url"":""https://hooks.example.com/paubox"",
+            ""status"":""active"",
+            ""events"":[""forms.submission.created""],
+            ""created_at"":""2026-10-09T01:43:41.639968+00:00"",
+            ""updated_at"":""2026-10-09T01:43:41.639968+00:00"",
+            ""signing_secret"":""whsec_abc123""},
+            ""message"":""Store this signing_secret now""}";
     }
 
     private void MockApiResponse(string response)
     {
-        _mockApiHelper.Setup(
-            x => x.CallToAPI(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                "POST",
-                It.IsAny<string>()
-            )
-        ).Returns(response);
+        _mockApiHelper
+            .Setup(x => x.CallToAPI(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                                    It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(response);
     }
 
-    private string SuccessResponse()
+    private static CreateWebhookEndpointRequest ValidRequest()
     {
-        return JsonConvert.SerializeObject(new Dictionary<string, object>
+        return new CreateWebhookEndpointRequest
         {
-            ["message"] = "Webhook created!",
-            ["data"] = new Dictionary<string, object>
+            TargetUrl = "https://hooks.example.com/paubox",
+            Events = new List<string> { "forms.submission.created" }
+        };
+    }
+
+    /// <summary>
+    /// The service returns the signing secret only on create; losing it means
+    /// replacing the endpoint, so the client must surface it.
+    /// </summary>
+    [Test]
+    public void TestReturnsTheSigningSecret()
+    {
+        MockApiResponse(CreatedResponse());
+
+        CreatedWebhookEndpoint result = _webhookLibrary.CreateWebhookEndpoint(ValidRequest());
+
+        Assert.AreEqual("whsec_abc123", result.SigningSecret);
+        Assert.AreEqual(EndpointId, result.Id);
+        Assert.AreEqual("active", result.Status);
+    }
+
+    [Test]
+    public void TestPostsTargetUrlAndEvents()
+    {
+        MockApiResponse(CreatedResponse());
+
+        _webhookLibrary.CreateWebhookEndpoint(ValidRequest());
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(
+                It.IsAny<string>(),
+                It.Is<string>(uri => uri == "endpoints"),
+                It.Is<string>(auth => auth == "Bearer testApiKey"),
+                It.Is<string>(verb => verb == "POST"),
+                It.Is<string>(body =>
+                    body.Contains("\"target_url\":\"https://hooks.example.com/paubox\"") &&
+                    body.Contains("\"events\":[\"forms.submission.created\"]"))),
+            Times.Once);
+    }
+
+    [Test]
+    public void TestValidatesLocallyBeforeSending()
+    {
+        Assert.Throws<ArgumentNullException>(() => _webhookLibrary.CreateWebhookEndpoint(null));
+
+        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(
+            new CreateWebhookEndpointRequest { Events = new List<string> { "x" } }));
+
+        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(
+            new CreateWebhookEndpointRequest { TargetUrl = "https://e.test/h" }));
+
+        Assert.Throws<ArgumentException>(() => _webhookLibrary.CreateWebhookEndpoint(
+            new CreateWebhookEndpointRequest
             {
-                ["id"] = 1,
-                ["target_url"] = "https://example.com/webhook",
-                ["events"] = new List<string> { "api_mail_log_delivered" },
-                ["active"] = true,
-                ["created_at"] = "2026-01-15T10:00:00Z",
-                ["updated_at"] = "2026-01-15T10:00:00Z"
-            }
+                TargetUrl = "https://e.test/h",
+                Events = new List<string>()
+            }));
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                             It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
+    }
+
+    /// <summary>
+    /// The catalog belongs to the service and grows without an SDK release, so
+    /// an unrecognised name must reach the server rather than be rejected here.
+    /// </summary>
+    [Test]
+    public void TestDoesNotValidateEventNames()
+    {
+        MockApiResponse(CreatedResponse());
+
+        _webhookLibrary.CreateWebhookEndpoint(new CreateWebhookEndpointRequest
+        {
+            TargetUrl = "https://e.test/h",
+            Events = new List<string> { "some.future.event" }
         });
+
+        _mockApiHelper.Verify(
+            x => x.CallToAPI(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.Is<string>(body => body.Contains("some.future.event"))),
+            Times.Once);
+    }
+
+    [Test]
+    public void TestUpdateRequestOmitsUnsetFields()
+    {
+        string body = JsonConvert.SerializeObject(
+            new UpdateWebhookEndpointRequest { Status = "disabled" });
+
+        Assert.IsTrue(body.Contains("status"));
+        Assert.IsFalse(body.Contains("target_url"));
+        Assert.IsFalse(body.Contains("events"));
     }
 }
